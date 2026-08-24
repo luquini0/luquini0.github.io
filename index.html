@@ -342,7 +342,8 @@ body:not([data-lang]) .t{visibility:hidden;}
   position:relative; box-shadow:6px 6px 0 0 var(--accent); transition:transform .2s ease, box-shadow .2s ease;
 }
 .project-card:hover{transform:translate(-3px,-3px); box-shadow:9px 9px 0 0 var(--accent);}
-.pc-badge{position:absolute; top:20px; right:20px; font-size:10px; font-family:'JetBrains Mono', monospace; font-weight:700; padding:3px 9px; letter-spacing:0.03em; border:2px solid var(--text);}
+.pc-badges{position:absolute; top:20px; right:20px; display:flex; flex-direction:column; gap:6px; align-items:flex-end;}
+.pc-badge{font-size:10px; font-family:'JetBrains Mono', monospace; font-weight:700; padding:3px 9px; letter-spacing:0.03em; border:2px solid var(--text);}
 .pc-badge.own{background:var(--accent); color:#0a0a08;}
 .pc-badge.ref{background:var(--accent-3); color:#0a0a08;}
 .pc-icon{width:40px; height:40px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; background:var(--accent); color:#0a0a08; border:2px solid var(--text);}
@@ -818,7 +819,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="projects-grid">
 
       <a href="#hero" class="project-card reveal">
-        <span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span>
+        <div class="pc-badges"><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/></svg></div>
         <h3 class="t" data-es="Luquini0's Interactive" data-en="Luquini0's Interactive">Luquini0's Interactive</h3>
         <p class="t" data-es="Single-page interactiva con gate de acceso, bilingüe y consola funcional — la estás viendo ahora." data-en="Interactive single-page site with access gate, bilingual, functional console — you're looking at it right now.">Single-page interactiva con gate de acceso y consola funcional.</p>
@@ -826,7 +827,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
 
       <a href="https://luquini0.github.io/Portfolio/" target="_blank" rel="noopener" class="project-card reveal">
-        <span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span>
+        <div class="pc-badges"><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/><polyline points="12 7 12 12 16 14"/></svg></div>
         <h3 class="t" data-es="Portfolio (versión anterior)" data-en="Old Portfolio">Portfolio (versión anterior)</h3>
         <p class="t"
@@ -838,7 +839,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
 
       <a href="https://rielahuerta.com" target="_blank" rel="noopener" class="project-card reveal">
-        <span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span>
+        <div class="pc-badges"><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 22c5-3 8-7 8-12a8 8 0 0 0-16 0c0 5 3 9 8 12z"/><path d="M12 13a4 4 0 0 0 4-4c-3 0-4 1-4 4z"/><path d="M12 13a4 4 0 0 1-4-4c3 0 4 1 4 4z"/></svg></div>
         <h3 class="t" data-es="Rie La Huerta" data-en="Rie La Huerta">Rie La Huerta</h3>
         <p class="t"
@@ -850,7 +851,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
 
       <a href="https://arikaya.com.au" target="_blank" rel="noopener" class="project-card reveal">
-        <span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span>
+        <div class="pc-badges"><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M9 21v-6h6v6"/></svg></div>
         <h3 class="t" data-es="Arikaya" data-en="Arikaya">Arikaya</h3>
         <p class="t"
@@ -862,7 +863,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
 
       <a href="https://tap-mundial.pages.dev/" target="_blank" rel="noopener" class="project-card reveal">
-        <span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span>
+        <div class="pc-badges"><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a3 3 0 0 0 3 5"/><path d="M17 5h3a3 3 0 0 1-3 5"/></svg></div>
         <h3 class="t" data-es="Tap Mundial 2026" data-en="Tap Mundial 2026">Tap Mundial 2026</h3>
         <p class="t"
@@ -879,7 +880,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="projects-grid">
 
       <a href="https://luquini0.github.io/OneBlast/" target="_blank" rel="noopener" class="project-card reveal">
-        <span class="pc-badge ref t" data-es="Plantilla" data-en="Template">Plantilla</span>
+        <div class="pc-badges"><span class="pc-badge ref t" data-es="Template" data-en="Template">Template</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
         <h3 class="t" data-es="OneBlast" data-en="OneBlast">OneBlast</h3>
         <p class="t"
@@ -891,7 +892,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
 
       <a href="https://guchini-mundial.pages.dev/" target="_blank" rel="noopener" class="project-card reveal">
-        <span class="pc-badge ref t" data-es="Plantilla" data-en="Template">Plantilla</span>
+        <div class="pc-badges"><span class="pc-badge ref t" data-es="Template" data-en="Template">Template</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a3 3 0 0 0 3 5"/><path d="M17 5h3a3 3 0 0 1-3 5"/></svg></div>
         <h3 class="t" data-es="Guchini Mundial" data-en="Guchini Mundial">Guchini Mundial</h3>
         <p class="t"
@@ -903,7 +904,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
 
       <div class="project-card reveal">
-        <span class="pc-badge ref t" data-es="Plantilla" data-en="Template">Plantilla</span>
+        <div class="pc-badges"><span class="pc-badge ref t" data-es="Template" data-en="Template">Template</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="3" r="1"/><circle cx="12" cy="21" r="1"/><circle cx="3" cy="12" r="1"/><circle cx="21" cy="12" r="1"/></svg></div>
         <h3 class="t" data-es="Sacred Circles" data-en="Sacred Circles">Sacred Circles</h3>
         <p class="t"
@@ -919,7 +920,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
 
       <a href="https://luquini0.github.io/Tap/" target="_blank" rel="noopener" class="project-card reveal">
-        <span class="pc-badge ref t" data-es="Plantilla" data-en="Template">Plantilla</span>
+        <div class="pc-badges"><span class="pc-badge ref t" data-es="Template" data-en="Template">Template</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M5 9h12v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9z"/><path d="M5 9V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3"/></svg></div>
         <h3 class="t" data-es="Tap — Cervecería" data-en="Tap — Brewery">Tap — Cervecería</h3>
         <p class="t"
@@ -931,7 +932,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
 
       <a href="https://luquini0.github.io/RieLaHuerta/" target="_blank" rel="noopener" class="project-card reveal">
-        <span class="pc-badge ref t" data-es="Plantilla" data-en="Template">Plantilla</span>
+        <div class="pc-badges"><span class="pc-badge ref t" data-es="Template" data-en="Template">Template</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 22c5-3 8-7 8-12a8 8 0 0 0-16 0c0 5 3 9 8 12z"/><path d="M12 13a4 4 0 0 0 4-4c-3 0-4 1-4 4z"/><path d="M12 13a4 4 0 0 1-4-4c3 0 4 1 4 4z"/></svg></div>
         <h3 class="t" data-es="Huerta — Landing" data-en="Huerta — Landing">Huerta — Landing</h3>
         <p class="t"
@@ -943,7 +944,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
 
       <a href="https://luquini0.github.io/estrategia.financiera/" target="_blank" rel="noopener" class="project-card reveal">
-        <span class="pc-badge ref t" data-es="Plantilla" data-en="Template">Plantilla</span>
+        <div class="pc-badges"><span class="pc-badge ref t" data-es="Template" data-en="Template">Template</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg></div>
         <h3 class="t" data-es="Estrategia Financiera" data-en="Financial Strategy">Estrategia Financiera</h3>
         <p class="t"
@@ -955,7 +956,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
 
       <a href="https://luquini0.github.io/ArteOrganica/" target="_blank" rel="noopener" class="project-card reveal">
-        <span class="pc-badge ref t" data-es="Plantilla" data-en="Template">Plantilla</span>
+        <div class="pc-badges"><span class="pc-badge ref t" data-es="Template" data-en="Template">Template</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M3 12h18"/></svg></div>
         <h3 class="t" data-es="Arte Orgánica" data-en="Arte Orgánica">Arte Orgánica</h3>
         <p class="t"
