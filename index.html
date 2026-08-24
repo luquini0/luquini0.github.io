@@ -345,6 +345,7 @@ body:not([data-lang]) .t{visibility:hidden;}
 .pc-badge{position:absolute; top:20px; right:20px; font-size:10px; font-family:'JetBrains Mono', monospace; font-weight:700; padding:3px 9px; letter-spacing:0.03em; border:2px solid var(--text);}
 .pc-badge.own{background:var(--accent); color:#0a0a08;}
 .pc-badge.ref{background:var(--accent-3); color:#0a0a08;}
+.pc-badge.client{background:var(--accent-2); color:#0a0a08;}
 .pc-icon{width:40px; height:40px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; background:var(--accent); color:#0a0a08; border:2px solid var(--text);}
 .project-card h3{font-size:15.5px; margin-bottom:8px; padding-right:70px; text-transform:uppercase;}
 .project-card p{font-size:13px; color:var(--text-dim); margin-bottom:14px;}
@@ -820,13 +821,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#hero" class="project-card reveal">
         <span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/></svg></div>
-        <h3 class="t" data-es="Esta plataforma" data-en="This platform">Esta plataforma</h3>
+        <h3 class="t" data-es="Luquini0's Interactive" data-en="Luquini0's Interactive">Luquini0's Interactive</h3>
         <p class="t" data-es="Single-page interactiva con gate de acceso, bilingüe y consola funcional — la estás viendo ahora." data-en="Interactive single-page site with access gate, bilingual, functional console — you're looking at it right now.">Single-page interactiva con gate de acceso y consola funcional.</p>
         <div class="pc-tags"><span class="chip">HTML/CSS/JS</span><span class="chip t" data-es="Diseño UI" data-en="UI Design">Diseño UI</span></div>
       </a>
 
-      <a href="https://rielahuerta.com" target="_blank" rel="noopener" class="project-card reveal">
+      <a href="https://luquini0.github.io/Portfolio/" target="_blank" rel="noopener" class="project-card reveal">
         <span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/><polyline points="12 7 12 12 16 14"/></svg></div>
+        <h3 class="t" data-es="Portfolio (versión anterior)" data-en="Old Portfolio">Portfolio (versión anterior)</h3>
+        <p class="t"
+          data-es="Mi portfolio personal previo, antes de esta plataforma — lo dejo online como referencia de evolución."
+          data-en="My earlier personal portfolio, before this current platform — kept online to show how the design evolved.">
+          Mi portfolio personal previo a esta plataforma.
+        </p>
+        <div class="pc-tags"><span class="chip">HTML/CSS/JS</span><span class="chip t" data-es="Versión anterior" data-en="Previous version">Versión anterior</span></div>
+      </a>
+
+      <a href="https://rielahuerta.com" target="_blank" rel="noopener" class="project-card reveal">
+        <span class="pc-badge client t" data-es="Cliente" data-en="Client work">Cliente</span>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 22c5-3 8-7 8-12a8 8 0 0 0-16 0c0 5 3 9 8 12z"/><path d="M12 13a4 4 0 0 0 4-4c-3 0-4 1-4 4z"/><path d="M12 13a4 4 0 0 1-4-4c3 0 4 1 4 4z"/></svg></div>
         <h3 class="t" data-es="Rie La Huerta" data-en="Rie La Huerta">Rie La Huerta</h3>
         <p class="t"
@@ -838,7 +851,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
 
       <a href="https://arikaya.com.au" target="_blank" rel="noopener" class="project-card reveal">
-        <span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span>
+        <span class="pc-badge client t" data-es="Cliente" data-en="Client work">Cliente</span>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M9 21v-6h6v6"/></svg></div>
         <h3 class="t" data-es="Arikaya" data-en="Arikaya">Arikaya</h3>
         <p class="t"
@@ -850,7 +863,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
 
       <a href="https://tap-mundial.pages.dev/" target="_blank" rel="noopener" class="project-card reveal">
-        <span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span>
+        <span class="pc-badge client t" data-es="Cliente" data-en="Client work">Cliente</span>
         <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a3 3 0 0 0 3 5"/><path d="M17 5h3a3 3 0 0 1-3 5"/></svg></div>
         <h3 class="t" data-es="Tap Mundial 2026" data-en="Tap Mundial 2026">Tap Mundial 2026</h3>
         <p class="t"
@@ -952,18 +965,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           Plantilla de e-commerce con identidad orgánica.
         </p>
         <div class="pc-tags"><span class="chip t" data-es="Template" data-en="Template">Template</span><span class="chip">E-commerce</span></div>
-      </a>
-
-      <a href="https://luquini0.github.io/Portfolio/" target="_blank" rel="noopener" class="project-card reveal">
-        <span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span>
-        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/><polyline points="12 7 12 12 16 14"/></svg></div>
-        <h3 class="t" data-es="Portfolio (versión anterior)" data-en="Old Portfolio">Portfolio (versión anterior)</h3>
-        <p class="t"
-          data-es="Mi portfolio personal previo, antes de esta plataforma — lo dejo online como referencia de evolución."
-          data-en="My earlier personal portfolio, before this current platform — kept online to show how the design evolved.">
-          Mi portfolio personal previo a esta plataforma.
-        </p>
-        <div class="pc-tags"><span class="chip">HTML/CSS/JS</span><span class="chip t" data-es="Versión anterior" data-en="Previous version">Versión anterior</span></div>
       </a>
 
     </div>
@@ -1742,13 +1743,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     ]; };
 
     var PROJECT_LIST = function(){ return [
-      tr('Esta plataforma (propio)', 'This platform (own build)'),
-      tr('Rie La Huerta — rielahuerta.com (propio, en producción)', 'Rie La Huerta — rielahuerta.com (own build, live)'),
-      tr('Arikaya — arikaya.com.au (propio, en producción)', 'Arikaya — arikaya.com.au (own build, live)'),
-      tr('Tap Mundial 2026 — tap-mundial.pages.dev (propio, en producción)', 'Tap Mundial 2026 — tap-mundial.pages.dev (own build, live)'),
+      tr("Luquini0's Interactive (propio)", "Luquini0's Interactive (own build)"),
+      tr('Portfolio, versión anterior (propio)', 'Old Portfolio (own build)'),
+      tr('Rie La Huerta — rielahuerta.com (cliente, en producción)', 'Rie La Huerta — rielahuerta.com (client work, live)'),
+      tr('Arikaya — arikaya.com.au (cliente, en producción)', 'Arikaya — arikaya.com.au (client work, live)'),
+      tr('Tap Mundial 2026 — tap-mundial.pages.dev (cliente, en producción)', 'Tap Mundial 2026 — tap-mundial.pages.dev (client work, live)'),
       tr('OneBlast (plantilla propia)', 'OneBlast (own template)'),
       tr('Guchini Mundial (plantilla propia)', 'Guchini Mundial (own template)'),
       tr('Sacred Circles — HTML/CSS/JS & Webflow (plantilla propia, dos versiones)', 'Sacred Circles — HTML/CSS/JS & Webflow (own template, two builds)'),
+      tr('Tap — Cervecería (plantilla propia)', 'Tap — Brewery (own template)'),
+      tr('Huerta — Landing (plantilla propia)', 'Huerta — Landing (own template)'),
+      tr('Estrategia Financiera (plantilla propia)', 'Financial Strategy (own template)'),
+      tr('Arte Orgánica (plantilla propia)', 'Arte Orgánica (own template)'),
     ]; };
 
     var EDUCATION_LIST = function(){ return [
