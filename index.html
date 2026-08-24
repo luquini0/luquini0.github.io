@@ -174,10 +174,19 @@ section{padding:100px 0; position:relative;}
 .gate-skip:hover{border-color:var(--accent-2); color:var(--accent-2);}
 .gate-hud{display:flex; justify-content:space-between; font-size:13px; margin-bottom:10px; color:var(--text-dim);}
 .gate-hud b{color:var(--accent); font-size:15px;}
-#gateCanvas{display:block; margin:0 auto; border:2px solid var(--text); background:var(--panel-2); image-rendering:pixelated;}
-.gate-pad{display:grid; grid-template-columns:repeat(3,44px); gap:4px; justify-content:center; margin:14px 0 4px;}
-.gate-pad button{width:44px; height:44px; background:var(--panel-2); border:2px solid var(--border); color:var(--text); font-size:16px; display:flex; align-items:center; justify-content:center;}
-.gate-pad button:hover{border-color:var(--accent); color:var(--accent);}
+#gateCanvas{display:block; margin:0 auto; border:2px solid var(--text); background:var(--panel-2); image-rendering:pixelated; max-width:100%; height:auto;}
+.only-touch{display:none;}
+@media (hover:none) and (pointer:coarse){
+  .only-touch{display:block;}
+  .only-desktop{display:none;}
+}
+.joystick{width:120px; height:120px; margin:14px auto 4px; touch-action:none;}
+.joystick-base{width:120px; height:120px; border-radius:50%; background:var(--panel-2); border:3px solid var(--text); position:relative;}
+.joystick-knob{
+  width:52px; height:52px; border-radius:50%; background:var(--accent); border:2px solid var(--text);
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); box-shadow:3px 3px 0 0 var(--text);
+  transition:transform .08s ease;
+}
 #gate-result-title{font-size:22px; margin-bottom:6px; letter-spacing:0.02em;}
 .gate-code{
   font-size:30px; font-weight:700; letter-spacing:0.28em; color:var(--accent); background:var(--panel-2);
@@ -425,12 +434,9 @@ footer a{color:var(--text-dim);}
 .demo-note{font-size:12px; color:var(--text-faint); margin-top:10px;}
 
 /* play popup */
-#demoSnakeCanvas{display:block; margin:0 auto; border:2px solid var(--text); background:var(--panel-2);}
+#demoSnakeCanvas{display:block; margin:0 auto; border:2px solid var(--text); background:var(--panel-2); max-width:100%; height:auto; image-rendering:pixelated;}
 .demo-hud{display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:13px; margin-bottom:10px;}
 .demo-hud b{color:var(--accent);}
-.demo-pad{display:grid; grid-template-columns:repeat(3,40px); gap:4px; justify-content:center; margin:12px 0 4px;}
-.demo-pad button{width:40px; height:40px; background:var(--panel-2); border:2px solid var(--border); color:var(--text); font-size:15px;}
-.demo-pad button:hover{border-color:var(--accent); color:var(--accent);}
 
 /* sandbox popup */
 .sb-code{height:130px; resize:vertical; white-space:pre;}
@@ -505,11 +511,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <span class="gate-goal"><span class="t" data-es="Meta" data-en="Goal">Meta</span>: 8</span>
       </div>
       <canvas id="gateCanvas" width="280" height="280"></canvas>
-      <div class="gate-pad" aria-hidden="true">
-        <span></span><button type="button" data-dir="up">▲</button><span></span>
-        <button type="button" data-dir="left">◀</button><button type="button" data-dir="down">▼</button><button type="button" data-dir="right">▶</button>
+      <div class="joystick only-touch" id="gateJoystick" aria-hidden="true">
+        <div class="joystick-base"><div class="joystick-knob" id="gateJoystickKnob"></div></div>
       </div>
-      <p class="term-hint t" data-es="Flechas / WASD para moverte" data-en="Arrow keys / WASD to move">Flechas / WASD para moverte</p>
+      <p class="term-hint only-desktop t" data-es="Flechas / WASD para moverte" data-en="Arrow keys / WASD to move">Flechas / WASD para moverte</p>
+      <p class="term-hint only-touch t" data-es="Arrastrá el joystick para moverte" data-en="Drag the joystick to move">Arrastrá el joystick para moverte</p>
     </div>
 
     <div id="gate-result" style="display:none;">
@@ -900,6 +906,54 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
 
+      <a href="https://luquini0.github.io/Tap/" target="_blank" rel="noopener" class="project-card reveal">
+        <span class="pc-badge ref t" data-es="Plantilla" data-en="Template">Plantilla</span>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M5 9h12v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9z"/><path d="M5 9V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3"/></svg></div>
+        <h3 class="t" data-es="Tap — Cervecería" data-en="Tap — Brewery">Tap — Cervecería</h3>
+        <p class="t"
+          data-es="Sitio de marca para una cervecería artesanal de fábrica: identidad visual, storytelling de producto y visor 3D del envase."
+          data-en="Brand site for an artisanal factory brewery: visual identity, product storytelling and a 3D bottle viewer.">
+          Sitio de marca para una cervecería artesanal.
+        </p>
+        <div class="pc-tags"><span class="chip t" data-es="Branding" data-en="Branding">Branding</span><span class="chip t" data-es="Landing Page" data-en="Landing Page">Landing Page</span></div>
+      </a>
+
+      <a href="https://luquini0.github.io/RieLaHuerta/" target="_blank" rel="noopener" class="project-card reveal">
+        <span class="pc-badge ref t" data-es="Plantilla" data-en="Template">Plantilla</span>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 22c5-3 8-7 8-12a8 8 0 0 0-16 0c0 5 3 9 8 12z"/><path d="M12 13a4 4 0 0 0 4-4c-3 0-4 1-4 4z"/><path d="M12 13a4 4 0 0 1-4-4c3 0 4 1 4 4z"/></svg></div>
+        <h3 class="t" data-es="Huerta — Landing" data-en="Huerta — Landing">Huerta — Landing</h3>
+        <p class="t"
+          data-es="Landing page de práctica para un negocio de verduras y flores comestibles — pieza de portfolio, sin relación con el sitio real en producción."
+          data-en="Practice landing page for a fresh-produce & edible-flowers business — a portfolio piece, unrelated to the real production site above.">
+          Landing page de práctica para un negocio de verduras y flores.
+        </p>
+        <div class="pc-tags"><span class="chip t" data-es="Landing Page" data-en="Landing Page">Landing Page</span><span class="chip t" data-es="Diseño Web" data-en="Web Design">Diseño Web</span></div>
+      </a>
+
+      <a href="https://luquini0.github.io/estrategia.financiera/" target="_blank" rel="noopener" class="project-card reveal">
+        <span class="pc-badge ref t" data-es="Plantilla" data-en="Template">Plantilla</span>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg></div>
+        <h3 class="t" data-es="Estrategia Financiera" data-en="Financial Strategy">Estrategia Financiera</h3>
+        <p class="t"
+          data-es="Plataforma web de estrategia financiera con perfiles de usuario autenticados y panel personal."
+          data-en="Financial-strategy web app with authenticated user profiles and a personal dashboard.">
+          Plataforma web de estrategia financiera con perfiles autenticados.
+        </p>
+        <div class="pc-tags"><span class="chip t" data-es="Web App" data-en="Web App">Web App</span><span class="chip">Auth</span></div>
+      </a>
+
+      <a href="https://luquini0.github.io/ArteOrganica/" target="_blank" rel="noopener" class="project-card reveal">
+        <span class="pc-badge ref t" data-es="Plantilla" data-en="Template">Plantilla</span>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M3 12h18"/></svg></div>
+        <h3 class="t" data-es="Arte Orgánica" data-en="Arte Orgánica">Arte Orgánica</h3>
+        <p class="t"
+          data-es="Plantilla de e-commerce con identidad orgánica y artesanal: catálogo de productos, blog y carrito de compra."
+          data-en="Organic, artisanal-styled e-commerce template: product catalog, blog and shopping cart.">
+          Plantilla de e-commerce con identidad orgánica.
+        </p>
+        <div class="pc-tags"><span class="chip t" data-es="Template" data-en="Template">Template</span><span class="chip">E-commerce</span></div>
+      </a>
+
     </div>
   </div>
 </section>
@@ -1235,6 +1289,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     window.__closeDemo = close;
   })();
 
+  /* ---------------- shared virtual joystick (touch devices only) ---------------- */
+  // onDir(dir) fires repeatedly while dragging, same 4-direction vocabulary
+  // ('up'/'down'/'left'/'right') the keyboard/D-pad handlers already use.
+  window.__createJoystick = function(baseEl, knobEl, onDir){
+    var active = false, cx = 0, cy = 0, radius = 40;
+    function start(x, y){
+      var r = baseEl.getBoundingClientRect();
+      cx = r.left + r.width/2; cy = r.top + r.height/2;
+      radius = r.width/2 - 26;
+      active = true;
+      move(x, y);
+    }
+    function move(x, y){
+      if(!active) return;
+      var dx = x - cx, dy = y - cy;
+      var dist = Math.min(Math.sqrt(dx*dx + dy*dy), radius);
+      var angle = Math.atan2(dy, dx);
+      knobEl.style.transform = 'translate(calc(-50% + ' + (Math.cos(angle)*dist).toFixed(1) + 'px), calc(-50% + ' + (Math.sin(angle)*dist).toFixed(1) + 'px))';
+      if(Math.sqrt(dx*dx + dy*dy) > 14){
+        onDir(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+      }
+    }
+    function end(){ active = false; knobEl.style.transform = 'translate(-50%,-50%)'; }
+    baseEl.addEventListener('touchstart', function(e){ var t=e.touches[0]; start(t.clientX,t.clientY); e.preventDefault(); }, {passive:false});
+    baseEl.addEventListener('touchmove', function(e){ var t=e.touches[0]; move(t.clientX,t.clientY); e.preventDefault(); }, {passive:false});
+    baseEl.addEventListener('touchend', end);
+    baseEl.addEventListener('touchcancel', end);
+  };
+
   /* ---------------- interactive terminal ---------------- */
   (function(){
     var termOutput = document.getElementById('termOutput');
@@ -1352,11 +1435,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var html =
         '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="dsScore">0</b></span></div>' +
         '<canvas id="demoSnakeCanvas" width="240" height="240"></canvas>' +
-        '<div class="demo-pad" aria-hidden="true">' +
-          '<span></span><button type="button" data-dir="up">▲</button><span></span>' +
-          '<button type="button" data-dir="left">◀</button><button type="button" data-dir="down">▼</button><button type="button" data-dir="right">▶</button>' +
+        '<div class="joystick only-touch" id="demoJoystick" aria-hidden="true">' +
+          '<div class="joystick-base"><div class="joystick-knob" id="demoJoystickKnob"></div></div>' +
         '</div>' +
-        '<p class="term-hint">' + tr('Flechas / WASD. Se reinicia solo si perdés.','Arrow keys / WASD. Restarts on its own if you lose.') + '</p>';
+        '<p class="term-hint only-desktop">' + tr('Flechas / WASD. Se reinicia solo si perdés.','Arrow keys / WASD. Restarts on its own if you lose.') + '</p>' +
+        '<p class="term-hint only-touch">' + tr('Arrastrá el joystick. Se reinicia solo si perdés.','Drag the joystick. Restarts on its own if you lose.') + '</p>';
 
       window.__openDemo(tr('Snake — minijuego','Snake — mini game'), html, function(body){
         var canvas = document.getElementById('demoSnakeCanvas');
@@ -1399,15 +1482,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           else if((k==='arrowright'||k==='d') && dir.x!==-1){ nextDir={x:1,y:0}; e.preventDefault(); }
         };
         document.addEventListener('keydown', keyHandler);
-        body.querySelectorAll('.demo-pad button[data-dir]').forEach(function(btn){
-          btn.addEventListener('click', function(){
-            var d = btn.getAttribute('data-dir');
+        if(window.__createJoystick){
+          window.__createJoystick(body.querySelector('#demoJoystick'), body.querySelector('#demoJoystickKnob'), function(d){
             if(d==='up'&&dir.y!==1) nextDir={x:0,y:-1};
             else if(d==='down'&&dir.y!==-1) nextDir={x:0,y:1};
             else if(d==='left'&&dir.x!==1) nextDir={x:-1,y:0};
             else if(d==='right'&&dir.x!==-1) nextDir={x:1,y:0};
           });
-        });
+        }
       }, function(){
         clearInterval(timer);
         document.removeEventListener('keydown', keyHandler);
@@ -2064,16 +2146,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       else if((k === 'arrowright' || k === 'd') && dir.x !== -1){ nextDir = {x:1,y:0}; e.preventDefault(); }
     });
 
-    document.querySelectorAll('.gate-pad button[data-dir]').forEach(function(btn){
-      btn.addEventListener('click', function(){
+    if(window.__createJoystick){
+      window.__createJoystick(document.getElementById('gateJoystick'), document.getElementById('gateJoystickKnob'), function(d){
         if(!running) return;
-        var d = btn.getAttribute('data-dir');
         if(d==='up' && dir.y!==1) nextDir={x:0,y:-1};
         else if(d==='down' && dir.y!==-1) nextDir={x:0,y:1};
         else if(d==='left' && dir.x!==1) nextDir={x:-1,y:0};
         else if(d==='right' && dir.x!==-1) nextDir={x:1,y:0};
       });
-    });
+    }
 
     gateForm.addEventListener('submit', function(e){
       e.preventDefault();
