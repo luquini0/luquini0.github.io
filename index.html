@@ -2486,9 +2486,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var codeEl = document.getElementById('gcCode');
     var choicesEl = document.getElementById('gcChoices');
 
-    // A small pool of one-liners spanning the actual skills on this site
-    // (JS, HTTP, Django, networking, blockchain) so the gate doubles as a
-    // quick, honest sample of the stack instead of a generic captcha.
+    // A wide pool of one-liners spanning the actual skills on this site
+    // (JS, Python/Django, React Native, web, networking, security,
+    // blockchain/AI, SEO, 3D) so the gate doubles as a quick, honest
+    // sample of the stack instead of a generic captcha, and repeats
+    // rarely across visits.
     var CHALLENGES = [
       { es:{ prompt:'Completá el resultado:', code:'[1, 2, 3].map(n => n * 2)\n// → ___', choices:['[2, 4, 6]','[1, 2, 3]','undefined'] },
         en:{ prompt:'Complete the result:', code:'[1, 2, 3].map(n => n * 2)\n// → ___', choices:['[2, 4, 6]','[1, 2, 3]','undefined'] },
@@ -2507,7 +2509,79 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         correct:1 },
       { es:{ prompt:'¿Qué método HTTP se usa para crear un recurso nuevo?', code:'fetch(url, { method: "___" })', choices:['GET','POST','DELETE'] },
         en:{ prompt:'Which HTTP method creates a new resource?', code:'fetch(url, { method: "___" })', choices:['GET','POST','DELETE'] },
-        correct:1 }
+        correct:1 },
+      { es:{ prompt:'Completá el resultado:', code:'let a = [1, 2];\na.push(3);\n// a.length → ___', choices:['2','3','4'] },
+        en:{ prompt:'Complete the result:', code:'let a = [1, 2];\na.push(3);\n// a.length → ___', choices:['2','3','4'] },
+        correct:1 },
+      { es:{ prompt:'Completá el resultado:', code:'[x for x in range(3)]\n# → ___', choices:['[0, 1, 2]','[1, 2, 3]','[0, 1, 2, 3]'] },
+        en:{ prompt:'Complete the result:', code:'[x for x in range(3)]\n# → ___', choices:['[0, 1, 2]','[1, 2, 3]','[0, 1, 2, 3]'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué componente de React Native muestra texto en pantalla?', code:"import { ___ } from 'react-native';", choices:['Text','View','Label'] },
+        en:{ prompt:'Which React Native component renders text?', code:"import { ___ } from 'react-native';", choices:['Text','View','Label'] },
+        correct:0 },
+      { es:{ prompt:'Completá para centrar ítems en un flex container:', code:'.box { display: flex; ___: center; }', choices:['align-items','flex-wrap','position'] },
+        en:{ prompt:'Complete it to center items in a flex container:', code:'.box { display: flex; ___: center; }', choices:['align-items','flex-wrap','position'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué comando deshace el último commit sin perder los cambios?', code:'$ git reset --soft ___', choices:['HEAD~1','--hard','commit'] },
+        en:{ prompt:'Which command undoes the last commit but keeps the changes?', code:'$ git reset --soft ___', choices:['HEAD~1','--hard','commit'] },
+        correct:0 },
+      { es:{ prompt:'¿Cuál es más seguro para hashear contraseñas?', code:'hash(password) // usando ___', choices:['MD5','bcrypt','Base64'] },
+        en:{ prompt:'Which is more secure for hashing passwords?', code:'hash(password) // using ___', choices:['MD5','bcrypt','Base64'] },
+        correct:1 },
+      { es:{ prompt:'VPN significa:', code:'// VPN = ___', choices:['Virtual Private Network','Verified Public Node','Virtual Protocol Node'] },
+        en:{ prompt:'VPN stands for:', code:'// VPN = ___', choices:['Virtual Private Network','Verified Public Node','Virtual Protocol Node'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué hace el DNS?', code:"dns.resolve('sitio.com')\n// → ___", choices:['Traduce dominios a IPs','Cifra el tráfico','Asigna IPs dinámicas'] },
+        en:{ prompt:'What does DNS do?', code:"dns.resolve('site.com')\n// → ___", choices:['Translates domain names to IPs','Encrypts traffic','Assigns dynamic IPs'] },
+        correct:0 },
+      { es:{ prompt:'¿En qué lenguaje se escriben los smart contracts de Ethereum?', code:'// Ethereum smart contract', choices:['Solidity','Rust','Ruby'] },
+        en:{ prompt:'What language are Ethereum smart contracts written in?', code:'// Ethereum smart contract', choices:['Solidity','Rust','Ruby'] },
+        correct:0 },
+      { es:{ prompt:'LLM significa:', code:'// LLM = ___', choices:['Large Language Model','Linear Logic Machine','Local Language Module'] },
+        en:{ prompt:'LLM stands for:', code:'// LLM = ___', choices:['Large Language Model','Linear Logic Machine','Local Language Module'] },
+        correct:0 },
+      { es:{ prompt:'SEO significa:', code:'// SEO = ___', choices:['Search Engine Optimization','Site Export Options','Server Efficiency Overview'] },
+        en:{ prompt:'SEO stands for:', code:'// SEO = ___', choices:['Search Engine Optimization','Site Export Options','Server Efficiency Overview'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué mide el CTR en una campaña?', code:'campaign.ctr // = ___', choices:['Tasa de clics','Costo total','Tiempo de carga'] },
+        en:{ prompt:'What does CTR measure in a campaign?', code:'campaign.ctr // = ___', choices:['Click-through rate','Total cost','Load time'] },
+        correct:0 },
+      { es:{ prompt:'En 3D, ¿para qué sirve el UV mapping?', code:'// UV mapping → ___', choices:['Proyectar texturas sobre un modelo','Animar huesos','Calcular iluminación'] },
+        en:{ prompt:'In 3D, what is UV mapping for?', code:'// UV mapping → ___', choices:['Projecting textures onto a model','Animating bones','Calculating lighting'] },
+        correct:0 },
+      { es:{ prompt:'API significa:', code:'// API = ___', choices:['Application Programming Interface','Automated Process Integration','Advanced Protocol Interchange'] },
+        en:{ prompt:'API stands for:', code:'// API = ___', choices:['Application Programming Interface','Automated Process Integration','Advanced Protocol Interchange'] },
+        correct:0 },
+      { es:{ prompt:'Completá el resultado:', code:"1 === '1'\n// → ___", choices:['false','true','undefined'] },
+        en:{ prompt:'Complete the result:', code:"1 === '1'\n// → ___", choices:['false','true','undefined'] },
+        correct:0 },
+      { es:{ prompt:'Completá el resultado:', code:'3 / 2\n# → ___', choices:['1.5','1','1.0'] },
+        en:{ prompt:'Complete the result:', code:'3 / 2\n# → ___', choices:['1.5','1','1.0'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué código HTTP indica "no encontrado"?', code:'GET /ruta-inexistente\n// → ___', choices:['200','404','500'] },
+        en:{ prompt:'Which HTTP code means "not found"?', code:'GET /missing-route\n// → ___', choices:['200','404','500'] },
+        correct:1 },
+      { es:{ prompt:'¿Para qué sirve un firewall?', code:'firewall.block(traffic) // ___', choices:['Filtrar tráfico de red no autorizado','Comprimir archivos','Acelerar el DNS'] },
+        en:{ prompt:'What is a firewall for?', code:'firewall.block(traffic) // ___', choices:['Filtering unauthorized network traffic','Compressing files','Speeding up DNS'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué comando crea y cambia a una rama nueva?', code:'$ git ___ feature-x', choices:['checkout -b','commit -b','branch -m'] },
+        en:{ prompt:'Which command creates and switches to a new branch?', code:'$ git ___ feature-x', choices:['checkout -b','commit -b','branch -m'] },
+        correct:0 },
+      { es:{ prompt:'Completá para definir dos columnas iguales en un grid:', code:'.grid { display: grid; ___: 1fr 1fr; }', choices:['grid-template-columns','flex-direction','columns'] },
+        en:{ prompt:'Complete it to define two equal grid columns:', code:'.grid { display: grid; ___: 1fr 1fr; }', choices:['grid-template-columns','flex-direction','columns'] },
+        correct:0 },
+      { es:{ prompt:'NFT significa:', code:'// NFT = ___', choices:['Non-Fungible Token','New Financial Transaction','Network File Transfer'] },
+        en:{ prompt:'NFT stands for:', code:'// NFT = ___', choices:['Non-Fungible Token','New Financial Transaction','Network File Transfer'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué devuelve siempre una función async?', code:'async function f() {}\n// f() → ___', choices:['Una Promise','Un objeto','Un array'] },
+        en:{ prompt:'What does an async function always return?', code:'async function f() {}\n// f() → ___', choices:['A Promise','An object','An array'] },
+        correct:0 },
+      { es:{ prompt:'CDN significa:', code:'// CDN = ___', choices:['Content Delivery Network','Central Data Node','Client Domain Name'] },
+        en:{ prompt:'CDN stands for:', code:'// CDN = ___', choices:['Content Delivery Network','Central Data Node','Client Domain Name'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué expresión cron corre todos los días a medianoche?', code:'# crontab\n___ /run-backup.sh', choices:['0 0 * * *','* * * * *','0 24 * * *'] },
+        en:{ prompt:'Which cron expression runs every day at midnight?', code:'# crontab\n___ /run-backup.sh', choices:['0 0 * * *','* * * * *','0 24 * * *'] },
+        correct:0 }
     ];
 
     var current = CHALLENGES[Math.floor(Math.random() * CHALLENGES.length)];
@@ -2576,7 +2650,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function bootSequence(){
-      var t1 = tr('conectando con luquini0.dev...', 'connecting to luquini0.dev...');
+      var t1 = tr('conectando con Luquini0...', 'connecting to Luquini0...');
       var t2 = tr('verificando identidad... token faltante', 'verifying identity... token missing');
       typeLine(boot1, t1, function(){
         typeLine(boot2, t2, function(){
