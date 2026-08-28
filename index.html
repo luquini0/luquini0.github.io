@@ -547,9 +547,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <h2 class="t" data-es="Acceso restringido" data-en="Restricted access">Acceso restringido</h2>
       <p class="gate-sub t"
-        data-es="Esta plataforma es privada. Resolvé el desafío para autenticarte."
-        data-en="This platform is private. Solve the challenge to authenticate.">
-        Esta plataforma es privada. Resolvé el desafío para autenticarte.
+        data-es="Acá no hay contraseñas, hay código. Resolvé el desafío para autenticarte."
+        data-en="No passwords here, just code. Solve the challenge to authenticate.">
+        Acá no hay contraseñas, hay código. Resolvé el desafío para autenticarte.
       </p>
 
       <div class="gate-term mono" id="gateTerm">
@@ -2581,11 +2581,95 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         correct:0 },
       { es:{ prompt:'¿Qué expresión cron corre todos los días a medianoche?', code:'# crontab\n___ /run-backup.sh', choices:['0 0 * * *','* * * * *','0 24 * * *'] },
         en:{ prompt:'Which cron expression runs every day at midnight?', code:'# crontab\n___ /run-backup.sh', choices:['0 0 * * *','* * * * *','0 24 * * *'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué flag de "ls" muestra también los archivos ocultos?', code:'$ ls ___', choices:['-a','-l','-r'] },
+        en:{ prompt:'Which "ls" flag also shows hidden files?', code:'$ ls ___', choices:['-a','-l','-r'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué palabra clave de SQL elimina duplicados?', code:'SELECT ___ nombre FROM clientes;', choices:['DISTINCT','UNIQUE','GROUP'] },
+        en:{ prompt:'Which SQL keyword removes duplicates?', code:'SELECT ___ name FROM customers;', choices:['DISTINCT','UNIQUE','GROUP'] },
+        correct:0 },
+      { es:{ prompt:'¿Cuál es la complejidad de la búsqueda binaria?', code:'// binary search en array ordenado', choices:['O(log n)','O(n)','O(n²)'] },
+        en:{ prompt:'What is the time complexity of binary search?', code:'// binary search on sorted array', choices:['O(log n)','O(n)','O(n²)'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué comando construye una imagen de Docker?', code:'$ docker ___ -t myapp .', choices:['build','run','ps'] },
+        en:{ prompt:'Which command builds a Docker image?', code:'$ docker ___ -t myapp .', choices:['build','run','ps'] },
+        correct:0 },
+      { es:{ prompt:'Completá para hacer opcional una propiedad en TypeScript:', code:'interface User { name: string; age___: number; }', choices:['?','!','*'] },
+        en:{ prompt:'Complete it to make a TypeScript property optional:', code:'interface User { name: string; age___: number; }', choices:['?','!','*'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué hook de React se usa para manejar estado local?', code:'const [count, setCount] = ___(0);', choices:['useState','useEffect','useRef'] },
+        en:{ prompt:'Which React hook manages local state?', code:'const [count, setCount] = ___(0);', choices:['useState','useEffect','useRef'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué header indica que el body es JSON?', code:"headers: { '___': 'application/json' }", choices:['Content-Type','Accept-Encoding','Authorization'] },
+        en:{ prompt:'Which header indicates a JSON body?', code:"headers: { '___': 'application/json' }", choices:['Content-Type','Accept-Encoding','Authorization'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué patrón regex matchea uno o más dígitos?', code:'/___/', choices:['\\d+','\\w+','\\s+'] },
+        en:{ prompt:'Which regex pattern matches one or more digits?', code:'/___/', choices:['\\d+','\\w+','\\s+'] },
+        correct:0 },
+      { es:{ prompt:'¿Para qué se usa Base64 principalmente?', code:'btoa("hola")\n// → ___', choices:['Codificar binario como texto','Cifrar datos','Comprimir archivos'] },
+        en:{ prompt:'What is Base64 mainly used for?', code:'btoa("hello")\n// → ___', choices:['Encoding binary as text','Encrypting data','Compressing files'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué función de Jest verifica un resultado esperado?', code:'___(sum(1, 2)).toBe(3);', choices:['expect','assert','check'] },
+        en:{ prompt:'Which Jest function checks an expected result?', code:'___(sum(1, 2)).toBe(3);', choices:['expect','assert','check'] },
+        correct:0 },
+      { es:{ prompt:'¿Cómo se accede a una variable de entorno en Node.js?', code:'const key = ___.API_KEY;', choices:['process.env','globalThis','system.env'] },
+        en:{ prompt:'How do you access an environment variable in Node.js?', code:'const key = ___.API_KEY;', choices:['process.env','globalThis','system.env'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué característica distingue a GraphQL de REST?', code:'// un endpoint, queries flexibles', choices:['Un solo endpoint para todas las consultas','Requiere XML','No soporta mutaciones'] },
+        en:{ prompt:'What distinguishes GraphQL from REST?', code:'// one endpoint, flexible queries', choices:['A single endpoint for all queries','It requires XML','It has no mutations'] },
+        correct:0 },
+      { es:{ prompt:'¿Cuántas partes tiene un JWT?', code:'header.payload.signature', choices:['3','2','4'] },
+        en:{ prompt:'How many parts does a JWT have?', code:'header.payload.signature', choices:['3','2','4'] },
+        correct:0 },
+      { es:{ prompt:'¿Para qué sirve OAuth?', code:'// authorization flow', choices:['Delegar acceso sin compartir contraseñas','Encriptar bases de datos','Comprimir tokens'] },
+        en:{ prompt:'What is OAuth for?', code:'// authorization flow', choices:['Delegating access without sharing passwords','Encrypting databases','Compressing tokens'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué etiqueta semántica se usa para el menú de navegación?', code:'<___>...</___>', choices:['nav','div','menu'] },
+        en:{ prompt:'Which semantic tag is used for the nav menu?', code:'<___>...</___>', choices:['nav','div','menu'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué atributo describe una imagen para lectores de pantalla?', code:'<img src="foto.jpg" ___="perro corriendo">', choices:['alt','title','aria-label'] },
+        en:{ prompt:'Which attribute describes an image for screen readers?', code:'<img src="photo.jpg" ___="dog running">', choices:['alt','title','aria-label'] },
+        correct:0 },
+      { es:{ prompt:'¿Para qué sirve un índice en una base de datos?', code:'CREATE INDEX idx ON tabla(columna);', choices:['Acelerar las búsquedas','Encriptar la tabla','Borrar duplicados'] },
+        en:{ prompt:'What is a database index for?', code:'CREATE INDEX idx ON table(column);', choices:['Speeding up lookups','Encrypting the table','Removing duplicates'] },
+        correct:0 },
+      { es:{ prompt:'Redis es principalmente una base de datos de tipo:', code:'// in-memory store', choices:['Clave-valor','Relacional','Documental'] },
+        en:{ prompt:'Redis is mainly what type of database?', code:'// in-memory store', choices:['Key-value','Relational','Document'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué comando instala las dependencias de un proyecto Node?', code:'$ ___', choices:['npm install','npm build','npm deploy'] },
+        en:{ prompt:"Which command installs a Node project's dependencies?", code:'$ ___', choices:['npm install','npm build','npm deploy'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué propiedad hace que padding y border no aumenten el ancho total?', code:'* { ___: border-box; }', choices:['box-sizing','box-model','box-fit'] },
+        en:{ prompt:'Which property keeps padding/border from growing the total width?', code:'* { ___: border-box; }', choices:['box-sizing','box-model','box-fit'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué comando crea un entorno virtual en Python?', code:'$ python -m ___ env', choices:['venv','pip','env'] },
+        en:{ prompt:'Which command creates a Python virtual environment?', code:'$ python -m ___ env', choices:['venv','pip','env'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué protocolo garantiza la entrega ordenada de paquetes?', code:'// entrega confiable y ordenada', choices:['TCP','UDP','ICMP'] },
+        en:{ prompt:'Which protocol guarantees ordered packet delivery?', code:'// reliable, ordered delivery', choices:['TCP','UDP','ICMP'] },
+        correct:0 },
+      { es:{ prompt:'XSS significa:', code:'// XSS = ___', choices:['Cross-Site Scripting','Extended Server Security','XML Site Sync'] },
+        en:{ prompt:'XSS stands for:', code:'// XSS = ___', choices:['Cross-Site Scripting','Extended Server Security','XML Site Sync'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué técnica previene la inyección SQL?', code:'db.query("SELECT * FROM u WHERE id = ?", [id]);', choices:['Consultas parametrizadas','Concatenar strings','Desactivar logs'] },
+        en:{ prompt:'Which technique prevents SQL injection?', code:'db.query("SELECT * FROM u WHERE id = ?", [id]);', choices:['Parameterized queries','String concatenation','Disabling logs'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué comando muestra el historial de commits?', code:'$ git ___', choices:['log','history','show-all'] },
+        en:{ prompt:'Which command shows the commit history?', code:'$ git ___', choices:['log','history','show-all'] },
         correct:0 }
     ];
 
     var current = CHALLENGES[Math.floor(Math.random() * CHALLENGES.length)];
     var solved = false;
+
+    // Shuffle once per challenge (not per render) so the correct answer
+    // doesn't always land in the same button, but the layout stays put
+    // if the visitor toggles language mid-challenge.
+    var order = [0, 1, 2];
+    for(var i = order.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = order[i]; order[i] = order[j]; order[j] = tmp;
+    }
 
     function unlock(){
       document.body.classList.add('unlocked');
@@ -2610,12 +2694,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       promptEl.textContent = c.prompt;
       codeEl.textContent = c.code;
       choicesEl.innerHTML = '';
-      c.choices.forEach(function(label, idx){
+      order.forEach(function(origIdx){
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'gc-choice';
-        btn.textContent = label;
-        btn.addEventListener('click', function(){ pick(idx, btn); });
+        btn.textContent = c.choices[origIdx];
+        btn.addEventListener('click', function(){ pick(origIdx, btn); });
         choicesEl.appendChild(btn);
       });
     }
