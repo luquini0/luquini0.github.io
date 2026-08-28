@@ -154,27 +154,17 @@ section{padding:100px 0; position:relative;}
 }
 .gate-card h2{font-size:24px; margin-bottom:8px; text-transform:uppercase;}
 .gate-sub{color:var(--text-dim); font-size:14.5px; margin-bottom:22px;}
-#gate-input{
-  width:100%; background:var(--bg-soft); border:2px solid var(--border); color:var(--text);
-  padding:13px 14px; font-size:15px; font-family:'JetBrains Mono', monospace; outline:none; transition:border-color .2s ease;
-}
-#gate-input:focus{border-color:var(--accent);}
-#gate-error{color:var(--danger); font-size:13.5px; margin-top:14px; display:none; font-family:'JetBrains Mono', monospace;}
-#gate-error.show{display:block;}
 .gate-lang-toggle{
   position:absolute; top:16px; right:16px; background:transparent; border:2px solid var(--border); color:var(--text-dim);
   font-size:11.5px; padding:5px 10px; letter-spacing:0.05em; font-family:'JetBrains Mono', monospace; font-weight:700;
 }
 .gate-lang-toggle:hover{border-color:var(--accent); color:var(--accent);}
-.gate-card-game{max-width:420px; padding-top:54px;}
+.gate-card-term{max-width:420px; padding-top:54px;}
 .gate-skip{
   position:absolute; top:16px; left:16px; background:transparent; border:2px solid var(--border); color:var(--text-dim);
   font-size:11.5px; padding:5px 10px; letter-spacing:0.05em; font-weight:700;
 }
 .gate-skip:hover{border-color:var(--accent-2); color:var(--accent-2);}
-.gate-hud{display:flex; justify-content:space-between; font-size:13px; margin-bottom:10px; color:var(--text-dim);}
-.gate-hud b{color:var(--accent); font-size:15px;}
-#gateCanvas{display:block; margin:0 auto; border:2px solid var(--text); background:var(--panel-2); image-rendering:pixelated; max-width:100%; height:auto;}
 .only-touch{display:none;}
 @media (hover:none) and (pointer:coarse){
   .only-touch{display:block;}
@@ -188,11 +178,31 @@ section{padding:100px 0; position:relative;}
   transition:transform .08s ease;
 }
 #gate-result-title{font-size:22px; margin-bottom:6px; letter-spacing:0.02em;}
-.gate-code{
-  font-size:30px; font-weight:700; letter-spacing:0.28em; color:var(--accent); background:var(--panel-2);
-  border:2px solid var(--text); padding:12px 10px; margin:12px 0 20px; text-align:center;
+.gate-term{background:var(--panel-2); border:2px solid var(--border); padding:12px 14px; font-size:12px; color:var(--text-dim); margin-bottom:16px; min-height:44px; text-align:left;}
+.gt-row{white-space:pre-wrap; word-break:break-word; line-height:1.6;}
+.gt-prompt{color:var(--accent); font-weight:700; margin-right:6px;}
+.gate-challenge{opacity:0; transform:translateY(6px); transition:opacity .3s ease, transform .3s ease;}
+.gate-challenge.show{opacity:1; transform:translateY(0);}
+.gc-prompt{font-size:13.5px; color:var(--text-dim); margin-bottom:10px; text-align:center;}
+.gc-code{
+  background:var(--bg-soft); border:2px solid var(--border); color:var(--accent);
+  font-size:13px; padding:14px 16px; margin:0 0 16px; white-space:pre-wrap; word-break:break-word; text-align:left;
 }
-#gate-input{text-align:center; letter-spacing:0.2em; text-transform:uppercase;}
+.gc-choices{display:flex; flex-direction:column; gap:8px;}
+.gc-choice{
+  background:transparent; border:2px solid var(--border); color:var(--text); font-family:'JetBrains Mono', monospace;
+  font-size:13px; padding:10px 14px; text-align:left; cursor:pointer; transition:border-color .15s ease, color .15s ease, background .15s ease;
+}
+.gc-choice:hover:not(:disabled){border-color:var(--accent); color:var(--accent);}
+.gc-choice.correct{border-color:var(--accent); background:rgba(203,255,62,0.14); color:var(--accent);}
+.gc-choice.wrong{border-color:var(--danger); color:var(--danger); animation:gcShake .35s ease;}
+.gc-choice:disabled{cursor:default; opacity:0.55;}
+@keyframes gcShake{
+  0%,100%{transform:translateX(0);}
+  25%{transform:translateX(-5px);}
+  50%{transform:translateX(5px);}
+  75%{transform:translateX(-3px);}
+}
 body.unlocked #gate{display:none;}
 body:not(.unlocked) #site{display:none;}
 
@@ -525,9 +535,9 @@ footer a{color:var(--text-dim);}
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
-<!-- ================= ACCESS GATE (arcade game) ================= -->
+<!-- ================= ACCESS GATE (dev-skill challenge) ================= -->
 <div id="gate">
-  <div class="gate-card gate-card-game">
+  <div class="gate-card gate-card-term">
     <button type="button" id="gate-skip" class="gate-skip mono t" data-es="Saltar →" data-en="Skip →">Saltar →</button>
     <button type="button" id="gate-lang" class="gate-lang-toggle mono">EN</button>
 
@@ -537,42 +547,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <h2 class="t" data-es="Acceso restringido" data-en="Restricted access">Acceso restringido</h2>
       <p class="gate-sub t"
-        data-es="Esta plataforma es privada. Jugá una partida para generar tu código de acceso — ganes o pierdas, te lo doy al terminar."
-        data-en="This platform is private. Play a round to generate your access code — win or lose, you'll get it at the end.">
-        Esta plataforma es privada. Jugá una partida para generar tu código de acceso.
+        data-es="Esta plataforma es privada. Resolvé el desafío para autenticarte."
+        data-en="This platform is private. Solve the challenge to authenticate.">
+        Esta plataforma es privada. Resolvé el desafío para autenticarte.
       </p>
-      <button type="button" id="gate-start" class="btn btn-primary" style="width:100%; justify-content:center;">
-        <span class="t" data-es="Jugar" data-en="Play">Jugar</span>
-      </button>
-    </div>
 
-    <div id="gate-game-wrap" style="display:none;">
-      <div class="gate-hud mono">
-        <span><span class="t" data-es="Puntos" data-en="Score">Puntos</span>: <b id="gate-score">0</b></span>
-        <span class="gate-goal"><span class="t" data-es="Meta" data-en="Goal">Meta</span>: 8</span>
+      <div class="gate-term mono" id="gateTerm">
+        <div class="gt-row"><span class="gt-prompt">$</span><span id="gtBoot1"></span></div>
+        <div class="gt-row"><span class="gt-prompt">$</span><span id="gtBoot2"></span></div>
       </div>
-      <canvas id="gateCanvas" width="280" height="280"></canvas>
-      <div class="joystick only-touch" id="gateJoystick" aria-hidden="true">
-        <div class="joystick-base"><div class="joystick-knob" id="gateJoystickKnob"></div></div>
+
+      <div class="gate-challenge" id="gateChallenge" style="display:none;">
+        <p class="gc-prompt" id="gcPrompt"></p>
+        <pre class="gc-code mono" id="gcCode"></pre>
+        <div class="gc-choices" id="gcChoices"></div>
       </div>
-      <p class="term-hint only-desktop t" data-es="Flechas / WASD para moverte" data-en="Arrow keys / WASD to move">Flechas / WASD para moverte</p>
-      <p class="term-hint only-touch t" data-es="Arrastrá el joystick para moverte" data-en="Drag the joystick to move">Arrastrá el joystick para moverte</p>
     </div>
 
     <div id="gate-result" style="display:none;">
-      <h2 id="gate-result-title" class="mono"></h2>
-      <p class="gate-sub t" data-es="Tu código de acceso:" data-en="Your access code:">Tu código de acceso:</p>
-      <div id="gate-code" class="gate-code mono"></div>
-      <form id="gate-form" autocomplete="off">
-        <input id="gate-input" type="text" class="t mono" data-es-placeholder="0000" data-en-placeholder="0000" placeholder="0000" autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="4">
-        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:14px;">
-          <span class="t" data-es="Ingresar" data-en="Enter">Ingresar</span>
-        </button>
-      </form>
-      <button type="button" id="gate-replay" class="btn btn-ghost" style="width:100%; justify-content:center; margin-top:10px;">
-        <span class="t" data-es="Jugar de nuevo" data-en="Play again">Jugar de nuevo</span>
-      </button>
-      <p id="gate-error" class="t" data-es="Código incorrecto — fijate bien arriba." data-en="Incorrect code — check it above.">Código incorrecto — fijate bien arriba.</p>
+      <div class="gate-lock ok">
+        <svg class="icon" viewBox="0 0 24 24" style="width:26px;height:26px;stroke:#0a0a08"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 id="gate-result-title" class="mono t" data-es="Acceso concedido" data-en="Access granted">Acceso concedido</h2>
+      <p class="gate-sub t" data-es="Autenticación correcta — cargando plataforma…" data-en="Authentication correct — loading platform…">Autenticación correcta — cargando plataforma…</p>
     </div>
   </div>
 </div>
@@ -1233,6 +1230,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var gateLang = document.getElementById('gate-lang');
     if(gateLang) gateLang.textContent = lang === 'es' ? 'EN' : 'ES';
     if(window.__termWelcome) window.__termWelcome();
+    if(window.__gateRerender) window.__gateRerender();
   }
   window.__setLang = applyLang;
 
@@ -2474,35 +2472,46 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   var y = document.getElementById('year');
   if(y) y.textContent = new Date().getFullYear();
 
-  /* ---------------- access gate: arcade game + dynamic code ---------------- */
+  /* ---------------- access gate: dev-skill challenge ---------------- */
   (function(){
     function tr(es, en){ return (document.body.getAttribute('data-lang') === 'en') ? en : es; }
 
     var introEl = document.getElementById('gate-intro');
-    var gameWrap = document.getElementById('gate-game-wrap');
     var resultEl = document.getElementById('gate-result');
-    var startBtn = document.getElementById('gate-start');
-    var replayBtn = document.getElementById('gate-replay');
     var skipBtn = document.getElementById('gate-skip');
-    var scoreEl = document.getElementById('gate-score');
-    var resultTitle = document.getElementById('gate-result-title');
-    var codeEl = document.getElementById('gate-code');
-    var gateForm = document.getElementById('gate-form');
-    var gateInput = document.getElementById('gate-input');
-    var gateError = document.getElementById('gate-error');
-    var canvas = document.getElementById('gateCanvas');
-    var ctx = canvas.getContext('2d');
+    var boot1 = document.getElementById('gtBoot1');
+    var boot2 = document.getElementById('gtBoot2');
+    var challengeEl = document.getElementById('gateChallenge');
+    var promptEl = document.getElementById('gcPrompt');
+    var codeEl = document.getElementById('gcCode');
+    var choicesEl = document.getElementById('gcChoices');
 
-    var CELL = 20, COLS = 14, ROWS = 14, WIN_SCORE = 8;
-    var currentCode = '';
-    var snake, dir, nextDir, food, score, tickTimer, running = false;
+    // A small pool of one-liners spanning the actual skills on this site
+    // (JS, HTTP, Django, networking, blockchain) so the gate doubles as a
+    // quick, honest sample of the stack instead of a generic captcha.
+    var CHALLENGES = [
+      { es:{ prompt:'Completá el resultado:', code:'[1, 2, 3].map(n => n * 2)\n// → ___', choices:['[2, 4, 6]','[1, 2, 3]','undefined'] },
+        en:{ prompt:'Complete the result:', code:'[1, 2, 3].map(n => n * 2)\n// → ___', choices:['[2, 4, 6]','[1, 2, 3]','undefined'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué puerto usa HTTPS por defecto?', code:'GET https://sitio.com:___', choices:['80','443','8080'] },
+        en:{ prompt:'What port does HTTPS use by default?', code:'GET https://site.com:___', choices:['80','443','8080'] },
+        correct:1 },
+      { es:{ prompt:'Comando para levantar el servidor de Django:', code:'$ ___', choices:['python manage.py runserver','npm run dev','django start'] },
+        en:{ prompt:'Command to start the Django dev server:', code:'$ ___', choices:['python manage.py runserver','npm run dev','django start'] },
+        correct:0 },
+      { es:{ prompt:'¿Qué protocolo asigna IPs automáticamente en una red?', code:'net.config(mode = "___")', choices:['DNS','DHCP','FTP'] },
+        en:{ prompt:'Which protocol auto-assigns IPs on a network?', code:'net.config(mode = "___")', choices:['DNS','DHCP','FTP'] },
+        correct:1 },
+      { es:{ prompt:'En blockchain, un grupo de transacciones confirmadas forma un:', code:'chain.push(___)', choices:['Wallet','Block','Node'] },
+        en:{ prompt:'In blockchain, a confirmed group of transactions forms a:', code:'chain.push(___)', choices:['Wallet','Block','Node'] },
+        correct:1 },
+      { es:{ prompt:'¿Qué método HTTP se usa para crear un recurso nuevo?', code:'fetch(url, { method: "___" })', choices:['GET','POST','DELETE'] },
+        en:{ prompt:'Which HTTP method creates a new resource?', code:'fetch(url, { method: "___" })', choices:['GET','POST','DELETE'] },
+        correct:1 }
+    ];
 
-    var CODE_CHARS = '0123456789';
-    function genCode(){
-      var s = '';
-      for(var i=0;i<4;i++) s += CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)];
-      return s;
-    }
+    var current = CHALLENGES[Math.floor(Math.random() * CHALLENGES.length)];
+    var solved = false;
 
     function unlock(){
       document.body.classList.add('unlocked');
@@ -2511,10 +2520,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // Anonymous, no personal data. Kept in localStorage for now; once the
     // Supabase project is wired up this same payload gets POSTed to a
-    // `gate_sessions` table (ts, outcome, score, lang) for visit analytics.
-    function logSession(outcome, scoreVal){
+    // `gate_sessions` table (ts, outcome, lang) for visit analytics.
+    function logSession(outcome){
       try{
-        var entry = { ts: new Date().toISOString(), outcome: outcome, score: scoreVal, lang: document.body.getAttribute('data-lang') || 'es' };
+        var entry = { ts: new Date().toISOString(), outcome: outcome, lang: document.body.getAttribute('data-lang') || 'es' };
         var log = JSON.parse(localStorage.getItem('luq_gate_log') || '[]');
         log.push(entry);
         localStorage.setItem('luq_gate_log', JSON.stringify(log.slice(-50)));
@@ -2522,111 +2531,70 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch(e){}
     }
 
-    function resetSnake(){
-      snake = [{x:6,y:7},{x:5,y:7},{x:4,y:7}];
-      dir = {x:1,y:0}; nextDir = {x:1,y:0};
-      score = 0;
-      scoreEl.textContent = '0';
-      placeFood();
-    }
-
-    function placeFood(){
-      var ok = false, fx, fy;
-      while(!ok){
-        fx = Math.floor(Math.random()*COLS);
-        fy = Math.floor(Math.random()*ROWS);
-        ok = !snake.some(function(s){ return s.x===fx && s.y===fy; });
-      }
-      food = {x:fx, y:fy};
-    }
-
-    function draw(){
-      ctx.fillStyle = '#171716';
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle = '#cbff3e';
-      snake.forEach(function(s){ ctx.fillRect(s.x*CELL+1, s.y*CELL+1, CELL-2, CELL-2); });
-      ctx.fillStyle = '#ff4d1c';
-      ctx.fillRect(food.x*CELL+2, food.y*CELL+2, CELL-4, CELL-4);
-    }
-
-    function tick(){
-      dir = nextDir;
-      var head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
-      var hit = head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS ||
-        snake.some(function(s){ return s.x===head.x && s.y===head.y; });
-      if(hit){ endGame('lose'); return; }
-      snake.unshift(head);
-      if(head.x === food.x && head.y === food.y){
-        score++;
-        scoreEl.textContent = String(score);
-        if(score >= WIN_SCORE){ draw(); endGame('win'); return; }
-        placeFood();
-      } else {
-        snake.pop();
-      }
-      draw();
-    }
-
-    function startGame(){
-      introEl.style.display = 'none';
-      resultEl.style.display = 'none';
-      gameWrap.style.display = '';
-      resetSnake();
-      draw();
-      running = true;
-      clearInterval(tickTimer);
-      tickTimer = setInterval(tick, 130);
-    }
-
-    function endGame(outcome){
-      running = false;
-      clearInterval(tickTimer);
-      gameWrap.style.display = 'none';
-      resultEl.style.display = '';
-      resultTitle.textContent = outcome === 'win' ? tr('¡GANASTE!','YOU WIN!') : tr('GAME OVER','GAME OVER');
-      resultTitle.style.color = outcome === 'win' ? 'var(--accent)' : 'var(--accent-2)';
-      currentCode = genCode();
-      codeEl.textContent = currentCode;
-      gateError.classList.remove('show');
-      gateInput.value = '';
-      setTimeout(function(){ gateInput.focus(); }, 50);
-      logSession(outcome, score);
-    }
-
-    startBtn.addEventListener('click', startGame);
-    replayBtn.addEventListener('click', startGame);
-    skipBtn.addEventListener('click', function(){ logSession('skip', 0); unlock(); });
-
-    document.addEventListener('keydown', function(e){
-      if(!running) return;
-      var k = e.key.toLowerCase();
-      if((k === 'arrowup' || k === 'w') && dir.y !== 1){ nextDir = {x:0,y:-1}; e.preventDefault(); }
-      else if((k === 'arrowdown' || k === 's') && dir.y !== -1){ nextDir = {x:0,y:1}; e.preventDefault(); }
-      else if((k === 'arrowleft' || k === 'a') && dir.x !== 1){ nextDir = {x:-1,y:0}; e.preventDefault(); }
-      else if((k === 'arrowright' || k === 'd') && dir.x !== -1){ nextDir = {x:1,y:0}; e.preventDefault(); }
-    });
-
-    if(window.__createJoystick){
-      window.__createJoystick(document.getElementById('gateJoystick'), document.getElementById('gateJoystickKnob'), function(d){
-        if(!running) return;
-        if(d==='up' && dir.y!==1) nextDir={x:0,y:-1};
-        else if(d==='down' && dir.y!==-1) nextDir={x:0,y:1};
-        else if(d==='left' && dir.x!==1) nextDir={x:-1,y:0};
-        else if(d==='right' && dir.x!==-1) nextDir={x:1,y:0};
+    function renderChallenge(){
+      var c = current[document.body.getAttribute('data-lang') === 'en' ? 'en' : 'es'];
+      promptEl.textContent = c.prompt;
+      codeEl.textContent = c.code;
+      choicesEl.innerHTML = '';
+      c.choices.forEach(function(label, idx){
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'gc-choice';
+        btn.textContent = label;
+        btn.addEventListener('click', function(){ pick(idx, btn); });
+        choicesEl.appendChild(btn);
       });
     }
 
-    gateForm.addEventListener('submit', function(e){
-      e.preventDefault();
-      var val = (gateInput.value || '').trim().toUpperCase();
-      if(val && val === currentCode){
-        unlock();
+    function pick(idx, btn){
+      if(solved) return;
+      if(idx === current.correct){
+        solved = true;
+        btn.classList.add('correct');
+        Array.prototype.forEach.call(choicesEl.querySelectorAll('.gc-choice'), function(b){ b.disabled = true; });
+        logSession('challenge');
+        setTimeout(function(){
+          introEl.style.display = 'none';
+          resultEl.style.display = '';
+          setTimeout(unlock, 700);
+        }, 500);
       } else {
-        gateError.classList.add('show');
-        gateInput.value = '';
-        gateInput.focus();
+        btn.classList.add('wrong');
+        btn.disabled = true;
+        setTimeout(function(){ btn.classList.remove('wrong'); }, 400);
       }
-    });
+    }
+
+    function typeLine(el, text, cb){
+      var i = 0;
+      el.textContent = '';
+      var iv = setInterval(function(){
+        el.textContent += text.charAt(i);
+        i++;
+        if(i >= text.length){ clearInterval(iv); if(cb) cb(); }
+      }, 16);
+    }
+
+    function bootSequence(){
+      var t1 = tr('conectando con luquini0.dev...', 'connecting to luquini0.dev...');
+      var t2 = tr('verificando identidad... token faltante', 'verifying identity... token missing');
+      typeLine(boot1, t1, function(){
+        typeLine(boot2, t2, function(){
+          renderChallenge();
+          challengeEl.style.display = 'block';
+          requestAnimationFrame(function(){ challengeEl.classList.add('show'); });
+        });
+      });
+    }
+
+    window.__gateRerender = function(){
+      if(solved) return;
+      if(challengeEl.classList.contains('show')) renderChallenge();
+    };
+
+    skipBtn.addEventListener('click', function(){ logSession('skip'); unlock(); });
+
+    bootSequence();
   })();
 })();
 </script>
