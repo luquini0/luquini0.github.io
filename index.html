@@ -394,6 +394,16 @@ body:not([data-lang]) .t{visibility:hidden;}
 .contact-card h2{font-size:clamp(28px,4.5vw,40px); margin-bottom:16px; text-transform:uppercase;}
 .contact-card p{color:var(--text-dim); max-width:52ch; margin:0 auto 30px;}
 .contact-actions{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:34px;}
+.cv-gate{display:flex; flex-direction:column; align-items:center; gap:10px;}
+.cv-gate-form{display:none; gap:8px; width:100%; max-width:280px;}
+.cv-gate-form input{
+  flex:1; min-width:0; background:var(--panel-2); border:2px solid var(--border); color:var(--text);
+  padding:10px 12px; font-size:13px;
+}
+.cv-gate-form input:focus{border-color:var(--accent); outline:none;}
+.cv-gate-form button{padding:0 16px; font-weight:800;}
+.cv-gate-links{display:none; gap:10px; flex-wrap:wrap; justify-content:center;}
+.cv-gate-error{display:none; color:var(--danger); font-size:12.5px; margin:0;}
 .social-row{display:flex; gap:14px; justify-content:center;}
 .social-row a{width:42px; height:42px; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--text-dim); transition:all .2s ease;}
 .social-row a:hover{border-color:var(--accent); color:var(--accent); transform:translateY(-3px);}
@@ -436,9 +446,24 @@ footer a{color:var(--text-dim);}
 .demo-note{font-size:12px; color:var(--text-faint); margin-top:10px;}
 
 /* play popup */
-#demoSnakeCanvas{display:block; margin:0 auto; border:2px solid var(--text); background:var(--panel-2); max-width:100%; height:auto; image-rendering:pixelated;}
+#demoSnakeCanvas, #demoPongCanvas, #demoDodgeCanvas{display:block; margin:0 auto; border:2px solid var(--text); background:var(--panel-2); max-width:100%; height:auto; image-rendering:pixelated;}
 .demo-hud{display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:13px; margin-bottom:10px;}
 .demo-hud b{color:var(--accent);}
+
+/* game intro + control bar (Snake/Pong/Dodge) */
+.game-intro{text-align:center;}
+.game-intro .g-emoji{font-size:40px; margin-bottom:8px;}
+.game-intro h3{font-family:'Space Grotesk',sans-serif; font-weight:800; text-transform:uppercase; font-size:16px; margin-bottom:10px;}
+.game-intro .demo-note{font-size:13px; line-height:1.6; margin-bottom:18px; text-align:left;}
+.game-bar{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;}
+.game-btn{
+  background:var(--panel-2); border:2px solid var(--border); color:var(--text);
+  width:34px; height:34px; flex-shrink:0; font-size:15px; line-height:1; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.game-btn:hover{border-color:var(--accent);}
+.game-btn.game-back{width:auto; padding:0 10px; font-size:12px; font-weight:700;}
+.game-bar-spacer{flex:1;}
 
 /* sandbox popup */
 .sb-code{height:130px; resize:vertical; white-space:pre;}
@@ -1123,14 +1148,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <svg class="icon" style="width:16px;height:16px;stroke:#06120f" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M22 6 12 13 2 6"/></svg>
           luquini0.contact@gmail.com
         </a>
-        <a href="CV_Luquini0_ES.docx" class="btn btn-ghost" download>
-          <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span class="t" data-es="Descargar CV (ES)" data-en="Download CV (ES)">Descargar CV (ES)</span>
-        </a>
-        <a href="CV_Luquini0_EN.docx" class="btn btn-ghost" download>
-          <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span class="t" data-es="Descargar CV (EN)" data-en="Download CV (EN)">Descargar CV (EN)</span>
-        </a>
+        <div class="cv-gate">
+          <button type="button" id="cvGateBtn" class="btn btn-ghost">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span class="t" data-es="Descargar CV" data-en="Download CV">Descargar CV</span>
+          </button>
+          <form id="cvGateForm" class="cv-gate-form" autocomplete="off">
+            <input type="password" id="cvGateInput" class="mono t" data-es-placeholder="Código de acceso" data-en-placeholder="Access code" placeholder="Código de acceso" autocomplete="off">
+            <button type="submit" class="btn btn-ghost" aria-label="Enviar">→</button>
+          </form>
+          <div id="cvGateLinks" class="cv-gate-links"></div>
+          <p id="cvGateError" class="cv-gate-error t" data-es="Código incorrecto — probá de nuevo." data-en="Incorrect code — try again.">Código incorrecto — probá de nuevo.</p>
+        </div>
       </div>
       <div class="social-row">
         <a href="https://github.com/luquini0" target="_blank" rel="noopener" aria-label="GitHub"><svg class="icon" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a>
@@ -1303,6 +1332,49 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     window.__closeDemo = close;
   })();
 
+  /* ---------------- CV download gate (contact section button) ---------------- */
+  (function(){
+    var CV_CODE = 'gettoknowme';
+    var gate = document.querySelector('.cv-gate');
+    var btn = document.getElementById('cvGateBtn');
+    var form = document.getElementById('cvGateForm');
+    var input = document.getElementById('cvGateInput');
+    var linksEl = document.getElementById('cvGateLinks');
+    var errEl = document.getElementById('cvGateError');
+    if(!gate || !btn) return;
+
+    function tr(es, en){ return (document.body.getAttribute('data-lang') === 'en') ? en : es; }
+
+    btn.addEventListener('click', function(){
+      btn.style.display = 'none';
+      form.style.display = 'flex';
+      input.focus();
+    });
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var val = (input.value || '').trim().toLowerCase();
+      if(val === CV_CODE){
+        form.style.display = 'none';
+        errEl.style.display = 'none';
+        linksEl.innerHTML =
+          '<a href="CV_Luquini0_ES.docx" class="btn btn-ghost" download>' +
+            '<svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+            tr('Descargar CV (ES)', 'Download CV (ES)') +
+          '</a>' +
+          '<a href="CV_Luquini0_EN.docx" class="btn btn-ghost" download>' +
+            '<svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+            tr('Descargar CV (EN)', 'Download CV (EN)') +
+          '</a>';
+        linksEl.style.display = 'flex';
+      } else {
+        errEl.style.display = 'block';
+        input.value = '';
+        input.focus();
+      }
+    });
+  })();
+
   /* ---------------- shared virtual joystick (touch devices only) ---------------- */
   // onDir(dir) fires repeatedly while dragging, same 4-direction vocabulary
   // ('up'/'down'/'left'/'right') the keyboard/D-pad handlers already use.
@@ -1414,6 +1486,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       ['Tap Mundial 2026', 'https://tap-mundial.pages.dev/']
     ];
 
+    /* CV downloads are code-gated: the file links never sit in the page
+       source, they're only built once the visitor types the right code. */
+    var CV_CODE = 'gettoknowme';
+    function printCvLinks(){
+      printRaw(tr('Descargar CV:', 'Download CV:'));
+      printRaw('<a href="CV_Luquini0_ES.docx" download>CV (ES) &rarr;</a>');
+      printRaw('<a href="CV_Luquini0_EN.docx" download>CV (EN) &rarr;</a>');
+    }
+    function startCvCode(){
+      termState = 'cvcode';
+      printRaw(tr('Los CV están protegidos. Ingresá el código de acceso (o escribí <span class="c2">cancel</span>).', "The CVs are protected. Enter the access code (or type <span class=\"c2\">cancel</span>)."));
+      termInput.type = 'password';
+      termInput.placeholder = tr('Código...', 'Code...');
+    }
+    function handleCvCode(raw){
+      if(raw.toLowerCase() === 'cancel'){
+        termState = 'idle';
+        termInput.type = 'text';
+        termInput.placeholder = tr("escribí 'help' y presioná Enter", "type 'help' and press Enter");
+        printRaw(tr('Cancelado.', 'Cancelled.'));
+        return;
+      }
+      if(raw.trim().toLowerCase() === CV_CODE){
+        termState = 'idle';
+        termInput.type = 'text';
+        termInput.placeholder = tr("escribí 'help' y presioná Enter", "type 'help' and press Enter");
+        printRaw('<span class="c1">✓</span> ' + tr('Código correcto.', 'Correct code.'));
+        printCvLinks();
+      } else {
+        printRaw('<span class="c2">✕</span> ' + tr('Código incorrecto — probá de nuevo (o <span class="c2">cancel</span>).', "Incorrect code — try again (or <span class=\"c2\">cancel</span>)."));
+      }
+    }
+
     var guessTarget = null, guessTries = 0;
     function startGuess(){
       guessTarget = 1 + Math.floor(Math.random()*100);
@@ -1444,9 +1549,105 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     /* ---- demo popups: each shows one skill area as a small live tool ---- */
+
+    /* shared arcade utilities: sound + vibration prefs (persisted), beep, control bar */
+    var GAME_PREFS = {
+      sound: (function(){ try{ return localStorage.getItem('game_sound') !== '0'; }catch(e){ return true; } })(),
+      vibe:  (function(){ try{ return localStorage.getItem('game_vibe')  !== '0'; }catch(e){ return true; } })()
+    };
+    function gameSetPref(key, val){
+      GAME_PREFS[key] = val;
+      try{ localStorage.setItem('game_' + key, val ? '1' : '0'); }catch(e){}
+    }
+    var __gameAudioCtx = null;
+    function gameBeep(freq, dur){
+      if(!GAME_PREFS.sound) return;
+      try{
+        if(!__gameAudioCtx) __gameAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        var actx = __gameAudioCtx;
+        var osc = actx.createOscillator(), gain = actx.createGain();
+        osc.type = 'square'; osc.frequency.value = freq;
+        gain.gain.value = 0.05;
+        osc.connect(gain); gain.connect(actx.destination);
+        osc.start();
+        gain.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + dur);
+        osc.stop(actx.currentTime + dur);
+      }catch(e){}
+    }
+    function gameVibrate(pattern){
+      if(!GAME_PREFS.vibe) return;
+      try{ if(navigator.vibrate) navigator.vibrate(pattern); }catch(e){}
+    }
+    function gameBackBtn(){
+      return '<button type="button" class="game-btn game-back" title="' + tr('Elegir otro juego','Choose another game') + '">← ' + tr('Menú','Menu') + '</button>';
+    }
+    function gameControlBar(){
+      return '<div class="game-bar">' +
+        gameBackBtn() +
+        '<span class="game-bar-spacer"></span>' +
+        '<button type="button" class="game-btn game-sound" title="' + tr('Sonido','Sound') + '">' + (GAME_PREFS.sound ? '🔊' : '🔇') + '</button>' +
+        '<button type="button" class="game-btn game-vibe" title="' + tr('Vibración','Vibration') + '">' + (GAME_PREFS.vibe ? '📳' : '📴') + '</button>' +
+        '<button type="button" class="game-btn game-reset" title="' + tr('Reiniciar','Reset') + '">↺</button>' +
+      '</div>';
+    }
+    function wireGameBar(body, onReset){
+      body.querySelector('.game-back').addEventListener('click', openPlayDemo);
+      var soundBtn = body.querySelector('.game-sound');
+      soundBtn.addEventListener('click', function(){
+        gameSetPref('sound', !GAME_PREFS.sound);
+        soundBtn.textContent = GAME_PREFS.sound ? '🔊' : '🔇';
+      });
+      var vibeBtn = body.querySelector('.game-vibe');
+      vibeBtn.addEventListener('click', function(){
+        gameSetPref('vibe', !GAME_PREFS.vibe);
+        vibeBtn.textContent = GAME_PREFS.vibe ? '📳' : '📴';
+      });
+      if(onReset) body.querySelector('.game-reset').addEventListener('click', onReset);
+    }
+    function gameIntro(emoji, title, rules, onPlay){
+      var html =
+        gameBackBtn() +
+        '<div class="game-intro" style="margin-top:14px;">' +
+          '<div class="g-emoji">' + emoji + '</div>' +
+          '<h3>' + title + '</h3>' +
+          '<p class="demo-note">' + rules + '</p>' +
+          '<button type="button" class="btn btn-primary game-play-btn" style="width:100%;justify-content:center;">▶ ' + tr('Jugar','Play') + '</button>' +
+        '</div>';
+      window.__openDemo(title, html, function(body){
+        body.querySelector('.game-back').addEventListener('click', openPlayDemo);
+        body.querySelector('.game-play-btn').addEventListener('click', onPlay);
+      }, null);
+    }
+
     function openPlayDemo(){
+      var html =
+        '<p class="demo-note" style="margin-bottom:14px;">' + tr('Elegí un juego:','Choose a game:') + '</p>' +
+        '<button type="button" class="btn btn-ghost game-pick" data-game="snake" style="width:100%;justify-content:center;margin-bottom:8px;">🐍 Snake</button>' +
+        '<button type="button" class="btn btn-ghost game-pick" data-game="pong" style="width:100%;justify-content:center;margin-bottom:8px;">🏓 Pong</button>' +
+        '<button type="button" class="btn btn-ghost game-pick" data-game="dodge" style="width:100%;justify-content:center;">🚀 ' + tr('Esquivar','Dodge') + '</button>';
+
+      window.__openDemo(tr('Elegí un juego','Choose a game'), html, function(body){
+        body.querySelectorAll('.game-pick').forEach(function(btn){
+          btn.addEventListener('click', function(){
+            var g = btn.getAttribute('data-game');
+            if(g === 'snake') openSnakeGame();
+            else if(g === 'pong') openPongGame();
+            else if(g === 'dodge') openDodgeGame();
+          });
+        });
+      }, null);
+    }
+
+    function openSnakeGame(){
+      gameIntro('🐍', tr('Snake','Snake'),
+        tr('Comé los cuadrados rojos para crecer y sumar puntos. Si chocás contra el borde o contra vos mismo, arrancás de nuevo.','Eat the red squares to grow and score. Hit the wall or yourself and you start over.'),
+        startSnakeGame);
+    }
+
+    function startSnakeGame(){
       var timer, keyHandler;
       var html =
+        gameControlBar() +
         '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="dsScore">0</b></span></div>' +
         '<canvas id="demoSnakeCanvas" width="240" height="240"></canvas>' +
         '<div class="joystick only-touch" id="demoJoystick" aria-hidden="true">' +
@@ -1479,9 +1680,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           dir = nextDir;
           var head = {x:snake[0].x+dir.x, y:snake[0].y+dir.y};
           var hit = head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS||snake.some(function(s){return s.x===head.x&&s.y===head.y;});
-          if(hit){ reset(); draw(); return; }
+          if(hit){ gameBeep(120,0.25); gameVibrate(120); reset(); draw(); return; }
           snake.unshift(head);
-          if(head.x===food.x && head.y===food.y){ score++; scoreEl.textContent=String(score); place(); }
+          if(head.x===food.x && head.y===food.y){ score++; scoreEl.textContent=String(score); gameBeep(660,0.08); gameVibrate(15); place(); }
           else snake.pop();
           draw();
         }
@@ -1504,9 +1705,230 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             else if(d==='right'&&dir.x!==-1) nextDir={x:1,y:0};
           });
         }
+
+        wireGameBar(body, reset);
       }, function(){
         clearInterval(timer);
         document.removeEventListener('keydown', keyHandler);
+      });
+    }
+
+    function openPongGame(){
+      gameIntro('🏓', tr('Pong','Pong'),
+        tr('Movete de izquierda a derecha para devolver la pelota. La CPU juega arriba. Cada rebote tuyo suma un punto.','Move left and right to return the ball. The CPU plays up top. Every return you make scores a point.'),
+        startPongGame);
+    }
+
+    function startPongGame(){
+      var raf, keyDownHandler, keyUpHandler;
+      var html =
+        gameControlBar() +
+        '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="dpScore">0</b></span></div>' +
+        '<canvas id="demoPongCanvas" width="240" height="240"></canvas>' +
+        '<div class="joystick only-touch" id="pongJoystick" aria-hidden="true">' +
+          '<div class="joystick-base"><div class="joystick-knob" id="pongJoystickKnob"></div></div>' +
+        '</div>' +
+        '<p class="term-hint only-desktop">' + tr('Flechas / A-D para mover la paleta.','Arrow keys / A-D to move the paddle.') + '</p>' +
+        '<p class="term-hint only-touch">' + tr('Arrastrá el joystick para mover la paleta.','Drag the joystick to move the paddle.') + '</p>';
+
+      window.__openDemo(tr('Pong — minijuego','Pong — mini game'), html, function(body){
+        var canvas = document.getElementById('demoPongCanvas');
+        var ctx = canvas.getContext('2d');
+        var scoreEl = document.getElementById('dpScore');
+        var W = canvas.width, H = canvas.height;
+        var PW = 48, PH = 8;
+        var player, cpu, ball, score;
+        var keys = { left:false, right:false };
+
+        function resetBall(dir){
+          ball = { x: W/2, y: H/2, r: 5 };
+          ball.vx = (Math.random() < 0.5 ? -1 : 1) * (2 + Math.random());
+          ball.vy = dir * (2.4 + Math.random()*0.6);
+        }
+        function reset(){
+          player = { x: (W-PW)/2 };
+          cpu = { x: (W-PW)/2 };
+          score = 0; scoreEl.textContent = '0';
+          resetBall(-1);
+        }
+
+        function draw(){
+          ctx.fillStyle='#171716'; ctx.fillRect(0,0,W,H);
+          ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.setLineDash([4,6]);
+          ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.stroke(); ctx.setLineDash([]);
+          ctx.fillStyle='#cbff3e'; ctx.fillRect(player.x, H-16, PW, PH);
+          ctx.fillStyle='#ff4d1c'; ctx.fillRect(cpu.x, 16-PH, PW, PH);
+          ctx.fillStyle='#f3ede0'; ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); ctx.fill();
+        }
+
+        function step(){
+          var speed = 4.2;
+          if(keys.left) player.x -= speed;
+          if(keys.right) player.x += speed;
+          player.x = Math.max(0, Math.min(W-PW, player.x));
+
+          var cpuSpeed = 3.1, cpuCenter = cpu.x + PW/2;
+          if(cpuCenter < ball.x - 4) cpu.x += cpuSpeed;
+          else if(cpuCenter > ball.x + 4) cpu.x -= cpuSpeed;
+          cpu.x = Math.max(0, Math.min(W-PW, cpu.x));
+
+          ball.x += ball.vx; ball.y += ball.vy;
+          if(ball.x - ball.r < 0){ ball.x = ball.r; ball.vx *= -1; }
+          if(ball.x + ball.r > W){ ball.x = W-ball.r; ball.vx *= -1; }
+
+          if(ball.vy > 0 && ball.y + ball.r >= H-16 && ball.y + ball.r <= H-16+PH+6 && ball.x >= player.x-ball.r && ball.x <= player.x+PW+ball.r){
+            ball.y = H-16-ball.r; ball.vy *= -1;
+            ball.vx += ((ball.x - (player.x+PW/2)) / PW) * 1.5;
+            score++; scoreEl.textContent = String(score);
+            gameBeep(520, 0.06); gameVibrate(12);
+          }
+          if(ball.vy < 0 && ball.y - ball.r <= 16 && ball.y - ball.r >= 16-PH-6 && ball.x >= cpu.x-ball.r && ball.x <= cpu.x+PW+ball.r){
+            ball.y = 16+ball.r; ball.vy *= -1;
+            gameBeep(300, 0.05);
+          }
+
+          if(ball.y - ball.r > H){ gameBeep(150,0.2); gameVibrate(80); resetBall(-1); }
+          if(ball.y + ball.r < 0) resetBall(1);
+
+          draw();
+          raf = requestAnimationFrame(step);
+        }
+
+        keyDownHandler = function(e){
+          var k = e.key.toLowerCase();
+          if(k==='arrowleft'||k==='a'){ keys.left=true; e.preventDefault(); }
+          else if(k==='arrowright'||k==='d'){ keys.right=true; e.preventDefault(); }
+        };
+        keyUpHandler = function(e){
+          var k = e.key.toLowerCase();
+          if(k==='arrowleft'||k==='a') keys.left=false;
+          else if(k==='arrowright'||k==='d') keys.right=false;
+        };
+        document.addEventListener('keydown', keyDownHandler);
+        document.addEventListener('keyup', keyUpHandler);
+
+        if(window.__createJoystick){
+          window.__createJoystick(body.querySelector('#pongJoystick'), body.querySelector('#pongJoystickKnob'), function(d){
+            if(d==='left') player.x = Math.max(0, player.x - 5);
+            else if(d==='right') player.x = Math.min(W-PW, player.x + 5);
+          });
+        }
+
+        reset();
+        draw();
+        raf = requestAnimationFrame(step);
+
+        wireGameBar(body, reset);
+      }, function(){
+        cancelAnimationFrame(raf);
+        document.removeEventListener('keydown', keyDownHandler);
+        document.removeEventListener('keyup', keyUpHandler);
+      });
+    }
+
+    function openDodgeGame(){
+      gameIntro('🚀', tr('Esquivar','Dodge'),
+        tr('Subí y bajá para esquivar los obstáculos que vienen desde la derecha. Cada uno que pasás suma un punto, la velocidad sube con el tiempo.','Move up and down to dodge the obstacles coming from the right. Each one you pass scores a point, speed increases over time.'),
+        startDodgeGame);
+    }
+
+    function startDodgeGame(){
+      var raf, keyDownHandler, keyUpHandler;
+      var html =
+        gameControlBar() +
+        '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="ddScore">0</b></span></div>' +
+        '<canvas id="demoDodgeCanvas" width="240" height="240"></canvas>' +
+        '<div class="joystick only-touch" id="dodgeJoystick" aria-hidden="true">' +
+          '<div class="joystick-base"><div class="joystick-knob" id="dodgeJoystickKnob"></div></div>' +
+        '</div>' +
+        '<p class="term-hint only-desktop">' + tr('Flechas / W-S para esquivar. Se reinicia solo si chocás.','Arrow keys / W-S to dodge. Restarts on its own if you crash.') + '</p>' +
+        '<p class="term-hint only-touch">' + tr('Arrastrá el joystick para esquivar.','Drag the joystick to dodge.') + '</p>';
+
+      window.__openDemo(tr('Esquivar — minijuego','Dodge — mini game'), html, function(body){
+        var canvas = document.getElementById('demoDodgeCanvas');
+        var ctx = canvas.getContext('2d');
+        var scoreEl = document.getElementById('ddScore');
+        var W = canvas.width, H = canvas.height;
+        var player = { x: 26, y: H/2, size: 14 };
+        var obstacles = [];
+        var score = 0, frame = 0, speed = 2.4;
+        var keys = { up:false, down:false };
+
+        function reset(){
+          obstacles = []; score = 0; scoreEl.textContent = '0'; frame = 0; speed = 2.4; player.y = H/2;
+        }
+        function spawn(){
+          var gapH = 46;
+          var gapY = 20 + Math.random() * (H - 40 - gapH);
+          obstacles.push({ x: W, gapY: gapY, gapH: gapH, w: 16, passed:false });
+        }
+        function draw(){
+          ctx.fillStyle='#171716'; ctx.fillRect(0,0,W,H);
+          ctx.fillStyle='#ff4d1c';
+          obstacles.forEach(function(o){
+            ctx.fillRect(o.x, 0, o.w, o.gapY);
+            ctx.fillRect(o.x, o.gapY+o.gapH, o.w, H-(o.gapY+o.gapH));
+          });
+          ctx.fillStyle='#cbff3e';
+          ctx.fillRect(player.x-player.size/2, player.y-player.size/2, player.size, player.size);
+        }
+        function step(){
+          frame++;
+          if(frame % 70 === 0) spawn();
+          if(frame % 500 === 0) speed += 0.35;
+
+          var pspeed = 3.4;
+          if(keys.up) player.y -= pspeed;
+          if(keys.down) player.y += pspeed;
+          player.y = Math.max(player.size/2, Math.min(H-player.size/2, player.y));
+
+          for(var i=obstacles.length-1; i>=0; i--){
+            var o = obstacles[i];
+            o.x -= speed;
+            if(!o.passed && o.x + o.w < player.x){ o.passed = true; score++; scoreEl.textContent = String(score); gameBeep(700,0.05); }
+            if(o.x < -o.w) obstacles.splice(i,1);
+          }
+
+          var crashed = obstacles.some(function(o){
+            var withinX = player.x + player.size/2 > o.x && player.x - player.size/2 < o.x + o.w;
+            if(!withinX) return false;
+            return (player.y - player.size/2 < o.gapY) || (player.y + player.size/2 > o.gapY + o.gapH);
+          });
+          if(crashed){ gameBeep(120,0.25); gameVibrate(120); reset(); }
+
+          draw();
+          raf = requestAnimationFrame(step);
+        }
+
+        keyDownHandler = function(e){
+          var k = e.key.toLowerCase();
+          if(k==='arrowup'||k==='w'){ keys.up=true; e.preventDefault(); }
+          else if(k==='arrowdown'||k==='s'){ keys.down=true; e.preventDefault(); }
+        };
+        keyUpHandler = function(e){
+          var k = e.key.toLowerCase();
+          if(k==='arrowup'||k==='w') keys.up=false;
+          else if(k==='arrowdown'||k==='s') keys.down=false;
+        };
+        document.addEventListener('keydown', keyDownHandler);
+        document.addEventListener('keyup', keyUpHandler);
+
+        if(window.__createJoystick){
+          window.__createJoystick(body.querySelector('#dodgeJoystick'), body.querySelector('#dodgeJoystickKnob'), function(d){
+            if(d==='up') player.y = Math.max(player.size/2, player.y - 6);
+            else if(d==='down') player.y = Math.min(H-player.size/2, player.y + 6);
+          });
+        }
+
+        reset();
+        draw();
+        raf = requestAnimationFrame(step);
+
+        wireGameBar(body, reset);
+      }, function(){
+        cancelAnimationFrame(raf);
+        document.removeEventListener('keydown', keyDownHandler);
+        document.removeEventListener('keyup', keyUpHandler);
       });
     }
 
@@ -1821,6 +2243,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       history.push(cmd); historyIdx = history.length;
 
       if(termState === 'guess'){ handleGuess(cmd); return; }
+      if(termState === 'cvcode'){ handleCvCode(cmd); return; }
       if(termState !== 'idle'){ handleWizard(cmd); return; }
 
       var lower = cmd.toLowerCase();
@@ -1864,9 +2287,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           goSection('education');
           break;
         case 'cv': case 'resume':
-          printRaw(tr('Descargar CV:', 'Download CV:'));
-          printRaw('<a href="CV_Luquini0_ES.docx" download>CV (ES) &rarr;</a>');
-          printRaw('<a href="CV_Luquini0_EN.docx" download>CV (EN) &rarr;</a>');
+          startCvCode();
           break;
         case 'contact':
           startContact();
@@ -1982,8 +2403,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           break;
         case 'cat':
           if(parts[1] && (parts[1].indexOf('resume') >= 0 || parts[1].indexOf('cv') >= 0)){
-            printRaw('<a href="CV_Luquini0_ES.docx" download>CV (ES) &rarr;</a>');
-            printRaw('<a href="CV_Luquini0_EN.docx" download>CV (EN) &rarr;</a>');
+            startCvCode();
           } else {
             printRaw(tr('archivo no encontrado', 'file not found'));
           }
