@@ -326,12 +326,18 @@ body:not([data-lang]) .t{visibility:hidden;}
 /* ---------- Services ---------- */
 .services-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
 @media (max-width:900px){.services-grid{grid-template-columns:repeat(2,1fr);}}
-@media (max-width:600px){.services-grid{grid-template-columns:1fr;}}
 .service-card{background:var(--panel); border:2px solid var(--text); padding:24px; box-shadow:6px 6px 0 0 var(--accent-2); transition:transform .2s ease, box-shadow .2s ease;}
 .service-card:hover{transform:translate(-3px,-3px); box-shadow:9px 9px 0 0 var(--accent-2);}
 .svc-icon{width:40px; height:40px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; background:var(--accent-2); color:#0a0a08; border:2px solid var(--text);}
 .service-card h3{font-size:15.5px; margin-bottom:8px; text-transform:uppercase;}
 .service-card p{font-size:13.5px; color:var(--text-dim);}
+@media (max-width:520px){
+  .services-grid{gap:10px;}
+  .service-card{padding:14px;}
+  .svc-icon{width:32px; height:32px; margin-bottom:10px;}
+  .service-card h3{font-size:12.5px; margin-bottom:6px;}
+  .service-card p{font-size:11px;}
+}
 
 /* ---------- Projects ---------- */
 .projects-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
@@ -380,13 +386,20 @@ body:not([data-lang]) .t{visibility:hidden;}
 
 /* ---------- Education ---------- */
 .edu-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
-@media (max-width:760px){.edu-grid{grid-template-columns:1fr;}}
 .edu-card{background:var(--panel); border:2px solid var(--border); padding:18px 20px; display:flex; gap:14px; align-items:flex-start;}
 .edu-card.new{border-color:var(--accent); background:var(--panel);}
 .edu-year{font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--accent); min-width:78px;}
 .edu-title{font-size:14.5px; font-weight:700; margin-bottom:3px;}
 .edu-org{font-size:12.5px; color:var(--text-faint);}
 .edu-new-tag{font-size:9.5px; font-family:'JetBrains Mono', monospace; font-weight:700; background:var(--accent); color:#0a0a08; padding:2px 7px; margin-left:8px; vertical-align:middle;}
+@media (max-width:520px){
+  .edu-grid{gap:10px;}
+  .edu-card{flex-direction:column; gap:6px; padding:14px 16px;}
+  .edu-year{min-width:0;}
+  .edu-title{font-size:12.5px;}
+  .edu-org{font-size:11px;}
+  .edu-new-tag{display:inline-block; margin:4px 0 0;}
+}
 
 /* ---------- Contact ---------- */
 .contact-card{background:var(--panel); border:3px solid var(--text); padding:56px; text-align:center; position:relative; overflow:hidden; box-shadow:10px 10px 0 0 var(--accent);}
@@ -1737,18 +1750,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var scoreEl = document.getElementById('dpScore');
         var W = canvas.width, H = canvas.height;
         var PW = 48, PH = 8;
-        var player, cpu, ball, score;
+        var player, cpu, ball, score, frame, speedMult;
         var keys = { left:false, right:false };
 
         function resetBall(dir){
           ball = { x: W/2, y: H/2, r: 5 };
-          ball.vx = (Math.random() < 0.5 ? -1 : 1) * (2 + Math.random());
-          ball.vy = dir * (2.4 + Math.random()*0.6);
+          ball.vx = (Math.random() < 0.5 ? -1 : 1) * (2 + Math.random()) * speedMult;
+          ball.vy = dir * (2.4 + Math.random()*0.6) * speedMult;
         }
         function reset(){
           player = { x: (W-PW)/2 };
           cpu = { x: (W-PW)/2 };
           score = 0; scoreEl.textContent = '0';
+          frame = 0; speedMult = 0.6;
           resetBall(-1);
         }
 
@@ -1762,6 +1776,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         function step(){
+          frame++;
+          if(frame % 300 === 0 && speedMult < 1.3) speedMult = Math.min(1.3, speedMult + 0.05);
+
           var speed = 4.2;
           if(keys.left) player.x -= speed;
           if(keys.right) player.x += speed;
@@ -1851,11 +1868,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var W = canvas.width, H = canvas.height;
         var player = { x: 26, y: H/2, size: 14 };
         var obstacles = [];
-        var score = 0, frame = 0, speed = 2.4;
+        var score = 0, frame = 0, speed = 1.6;
         var keys = { up:false, down:false };
 
         function reset(){
-          obstacles = []; score = 0; scoreEl.textContent = '0'; frame = 0; speed = 2.4; player.y = H/2;
+          obstacles = []; score = 0; scoreEl.textContent = '0'; frame = 0; speed = 1.6; player.y = H/2;
         }
         function spawn(){
           var gapH = 46;
@@ -1875,7 +1892,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         function step(){
           frame++;
           if(frame % 70 === 0) spawn();
-          if(frame % 500 === 0) speed += 0.35;
+          if(frame % 450 === 0 && speed < 4.2) speed = Math.min(4.2, speed + 0.25);
 
           var pspeed = 3.4;
           if(keys.up) player.y -= pspeed;
@@ -2393,7 +2410,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           printRaw(new Date().toString());
           break;
         case 'pwd':
-          printRaw('/home/lucas/portfolio');
+          printRaw('/home/luquini0/portfolio');
           break;
         case 'ls':
           printRaw('about.txt&nbsp;&nbsp;skills.txt&nbsp;&nbsp;experience.log&nbsp;&nbsp;projects/&nbsp;&nbsp;education.txt&nbsp;&nbsp;contact.sh');
