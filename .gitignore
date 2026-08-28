@@ -4,3 +4,14 @@ versions/
 carta-presentacion-*.html
 cover-letter-*.html
 platform.md
+
+# Never commit real secrets (the Supabase publishable/anon key used in
+# src/js/supabase.js is meant to be public — RLS + the Edge Function do
+# the actual enforcement — but service-role keys or local env files
+# never belong in this repo).
+.env
+.env.local
+.env*.local
+supabase/.temp/
+supabase/.branches/
+node_modules/

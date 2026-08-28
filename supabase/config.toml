@@ -1,0 +1,4 @@
+# Supabase CLI project config. Kept minimal — this repo doesn't run
+# `supabase start` locally; migrations/functions here are the source of
+# truth and get applied straight to the hosted project.
+project_id = "zqoxwfugrrzlqwehlauq"

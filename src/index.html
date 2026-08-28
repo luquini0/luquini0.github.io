@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<!--
+  © 2026 Luquini0. Todos los derechos reservados. / All rights reserved.
+  Este código, su diseño y contenido son propiedad de Luquini0.
+  Prohibida su reproducción total o parcial sin autorización.
+-->
+<script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Luquini0 Plataforma",
+  "schemaVersion": 1,
+  "description": "Plataforma digital privada de Luquini0 — CV interactivo bilingüe (ES/EN) con gate de contraseña, consola funcional, servicios, proyectos, skills visuales y timeline de experiencia.",
+  "mcpTools": [],
+  "mcpServerNames": []
+}
+</script>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Luquini0 — Full-Stack Developer &amp; Automation Specialist</title>
+<meta name="robots" content="noindex, nofollow">
+<!-- Google Site Verification: keep google30db0a786cad8368.html in the repo root, do not remove/rename it -->
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-5TMDS4QR');</script>
+<!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6NCQ1WH2QN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6NCQ1WH2QN');
+</script>
+<link rel="icon" type="image/webp" href="assets/logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5TMDS4QR"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<canvas id="bgGrid" aria-hidden="true"></canvas>
+
+<!-- ================= ACCESS GATE (dev-skill challenge) ================= -->
+<div id="gate">
+  <div class="gate-card gate-card-term">
+    <button type="button" id="gate-skip" class="gate-skip mono t" data-es="Saltar →" data-en="Skip →">Saltar →</button>
+    <button type="button" id="gate-lang" class="gate-lang-toggle mono">EN</button>
+
+    <div id="gate-intro">
+      <div class="gate-lock">
+        <svg class="icon" viewBox="0 0 24 24" style="width:26px;height:26px;stroke:#0a0a08"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      </div>
+      <h2 class="t" data-es="Acceso restringido" data-en="Restricted access">Acceso restringido</h2>
+      <p class="gate-sub t"
+        data-es="Acá no hay contraseñas, hay código. Resolvé el desafío para autenticarte."
+        data-en="No passwords here, just code. Solve the challenge to authenticate.">
+        Acá no hay contraseñas, hay código. Resolvé el desafío para autenticarte.
+      </p>
+
+      <div class="gate-term mono" id="gateTerm">
+        <div class="gt-row"><span class="gt-prompt">$</span><span id="gtBoot1"></span></div>
+        <div class="gt-row"><span class="gt-prompt">$</span><span id="gtBoot2"></span></div>
+      </div>
+
+      <div class="gate-challenge" id="gateChallenge" style="display:none;">
+        <p class="gc-prompt" id="gcPrompt"></p>
+        <pre class="gc-code mono" id="gcCode"></pre>
+        <div class="gc-choices" id="gcChoices"></div>
+      </div>
+    </div>
+
+    <div id="gate-result" style="display:none;">
+      <div class="gate-lock ok">
+        <svg class="icon" viewBox="0 0 24 24" style="width:26px;height:26px;stroke:#0a0a08"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 id="gate-result-title" class="mono t" data-es="Acceso concedido" data-en="Access granted">Acceso concedido</h2>
+      <p class="gate-sub t" data-es="Autenticación correcta — cargando plataforma…" data-en="Authentication correct — loading platform…">Autenticación correcta — cargando plataforma…</p>
+    </div>
+  </div>
+</div>
+
+<div id="site">
+
+<nav id="nav">
+  <div class="wrap">
+    <div class="brand"><img class="brand-mark" src="assets/logo.webp" alt="Luquini0"> Luquini0</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#hero" class="t" data-es="Inicio" data-en="Home">Inicio</a></li>
+      <li><a href="#about" class="t" data-es="Sobre mí" data-en="About">Sobre mí</a></li>
+      <li><a href="#skills" class="t" data-es="Habilidades" data-en="Skills">Habilidades</a></li>
+      <li><a href="#services" class="t" data-es="Servicios" data-en="Services">Servicios</a></li>
+      <li><a href="#projects" class="t" data-es="Proyectos" data-en="Projects">Proyectos</a></li>
+      <li><a href="#experience" class="t" data-es="Experiencia" data-en="Experience">Experiencia</a></li>
+      <li><a href="#education" class="t" data-es="Educación" data-en="Education">Educación</a></li>
+      <li><a href="#contact" class="t" data-es="Contacto" data-en="Contact">Contacto</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <button id="langEs" class="active">ES</button>
+        <button id="langEn">EN</button>
+      </div>
+      <button class="nav-burger" id="navBurger" aria-label="Menu">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="hero-band">
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>FULL-STACK DEV</span><span>CYBERSECURITY</span><span>AUTOMATION</span><span>3D / BLENDER</span><span>BLOCKCHAIN</span><span>DISPONIBLE PARA PROYECTOS</span>
+    <span>FULL-STACK DEV</span><span>CYBERSECURITY</span><span>AUTOMATION</span><span>3D / BLENDER</span><span>BLOCKCHAIN</span><span>DISPONIBLE PARA PROYECTOS</span>
+  </div>
+</div>
+
+<!-- ================= HERO ================= -->
+<section id="hero">
+  <div class="wrap hero-grid">
+    <div class="reveal in">
+      <div class="eyebrow"><span class="dot"></span><span class="t" data-es="Disponible para nuevos proyectos" data-en="Available for new projects">Disponible para nuevos proyectos</span></div>
+      <div class="hero-id">
+        <div class="hero-avatar" id="heroAvatar">
+          <img src="assets/avatar.webp" alt="Luquini0">
+        </div>
+        <h1 class="hero-title">
+          <span class="t" data-es="Hola, soy" data-en="Hi, I'm">Hola, soy</span> <span class="accent">Luquini0</span><br>
+          <span class="t" data-es="especialista en IT con enfoque global." data-en="an IT specialist with a global reach.">especialista en IT con enfoque global.</span>
+        </h1>
+      </div>
+      <p class="hero-pitch t"
+        data-es="Profesional dinámico que combina desarrollo de software, ciberseguridad, diseño y automatización. Transformo algoritmos en aplicaciones funcionales y bien pensadas, con foco en código prolijo y soluciones preparadas para el futuro."
+        data-en="A dynamic professional who blends software development, cybersecurity, design and automation. I turn algorithms into functional, well-considered applications, with a focus on clean code and future-ready solutions.">
+        Profesional dinámico que combina desarrollo de software, ciberseguridad, diseño y automatización.
+      </p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-primary">
+          <span class="t" data-es="Ver proyectos" data-en="View projects">Ver proyectos</span>
+          <svg class="icon" style="width:16px;height:16px;stroke:#06120f" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a href="#contact" class="btn btn-ghost">
+          <span class="t" data-es="Contactar" data-en="Get in touch">Contactar</span>
+        </a>
+      </div>
+      <div class="hero-meta">
+        <div><span class="n">15+</span><span class="l t" data-es="Años de experiencia" data-en="Years of experience">Años de experiencia</span></div>
+        <div><span class="n">3</span><span class="l t" data-es="Idiomas · Español, Inglés &amp; Italiano" data-en="Languages · Spanish, English &amp; Italian">Idiomas · Español, Inglés &amp; Italiano</span></div>
+        <div><span class="n">12</span><span class="l t" data-es="Proyectos propios y de clientes" data-en="Own &amp; client projects">Proyectos propios y de clientes</span></div>
+        <div><span class="n">6</span><span class="l t" data-es="Servicios que ofrezco" data-en="Services I offer">Servicios que ofrezco</span></div>
+      </div>
+    </div>
+    <div class="reveal in">
+      <div class="terminal" id="liveTerminal">
+        <div class="terminal-bar"><span class="dotc red"></span><span class="dotc yellow"></span><span class="dotc green"></span><span class="tt">luquini0@shell — <span class="t" data-es="interactiva" data-en="interactive">interactiva</span></span></div>
+        <div class="terminal-body" id="termOutput"></div>
+        <div class="terminal-input-row">
+          <span class="c1">$</span>
+          <input type="text" id="termInput" class="mono t" autocomplete="off" spellcheck="false" data-es-placeholder="escribí 'help' y presioná Enter" data-en-placeholder="type 'help' and press Enter" placeholder="escribí 'help' y presioná Enter">
+        </div>
+      </div>
+      <p class="term-hint t" data-es="Consola interactiva — probá 'help', 'skills' o 'contact'." data-en="Interactive console — try 'help', 'skills' or 'contact'.">Consola interactiva — probá 'help', 'skills' o 'contact'.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ================= ABOUT ================= -->
+<section id="about">
+  <div class="wrap about-grid">
+    <div class="reveal">
+      <span class="section-tag t" data-es="Sobre mí" data-en="About me">Sobre mí</span>
+      <h2 class="section-title t" data-es="Tecnología, creatividad, seguridad e innovación." data-en="Technology, creativity, security and innovation.">Tecnología, creatividad, seguridad e innovación.</h2>
+      <div class="about-text">
+        <p class="t"
+          data-es="La combinación de desarrollo de software, creación de medios digitales, ciberseguridad y conocimientos en blockchain me permite abordar cada proyecto desde una perspectiva estratégica e innovadora. Mi trabajo se basa en código limpio, diseño claro, sistemas seguros y soluciones preparadas para el futuro."
+          data-en="The combination of software development, digital media creation, cybersecurity and blockchain knowledge lets me approach every project from a strategic, innovative perspective. My work is built on clean code, clear design, secure systems and future-ready solutions.">
+          La combinación de desarrollo de software, creación de medios digitales, ciberseguridad y conocimientos en blockchain...
+        </p>
+        <p class="t"
+          data-es="En 2025 sumé tres herramientas nuevas a este perfil: <strong>backend con Python y Django</strong>, orientado a construir plataformas completas; <strong>aplicaciones móviles nativas con React Native</strong>; y <strong>modelado y animación 3D con Blender</strong>. Se apoyan en años de experiencia previa en desarrollo web, ciberseguridad, SEO/SEM y automatización de procesos."
+          data-en="In 2025 I added three new tools to this profile: <strong>Python/Django backend development</strong>, focused on building complete platforms; <strong>native mobile apps with React Native</strong>; and <strong>3D modeling and animation with Blender</strong>. These build on years of prior experience in web development, cybersecurity, SEO/SEM and process automation.">
+          En 2025 sumé tres herramientas nuevas a este perfil...
+        </p>
+        <p class="t"
+          data-es="Soy un profesional dinámico que navega entre la tecnología, la creatividad, la seguridad y la innovación. Hoy combino <strong>proyectos propios y de clientes</strong> con <strong>consultoría IT y soporte técnico</strong> part-time, abarcando desde auditorías de seguridad e infraestructura hasta el desarrollo de plataformas web completas."
+          data-en="I'm a dynamic professional who navigates technology, creativity, security and innovation. I currently combine <strong>my own and client projects</strong> with part-time <strong>IT consulting and technical support</strong>, covering everything from security and infrastructure audits to full web platform development.">
+          Soy un profesional dinámico que navega entre la tecnología, la creatividad, la seguridad y la innovación.
+        </p>
+        <p class="t"
+          data-es="Me interesa entender cómo funciona algo por dentro — una arquitectura de software, una vulnerabilidad de seguridad, un modelo 3D — y traducir eso en soluciones prácticas y bien pensadas."
+          data-en="I care about understanding how something works underneath — a software architecture, a security vulnerability, a 3D model — and turning that understanding into practical, well-considered solutions.">
+          Me interesa entender cómo funciona algo por dentro...
+        </p>
+      </div>
+      <div class="langs-row">
+        <span class="chip t" data-es="Español · nativo" data-en="Spanish · native">Español · nativo</span>
+        <span class="chip t" data-es="Inglés · fluido" data-en="English · fluent">Inglés · fluido</span>
+        <span class="chip t" data-es="Italiano · fluido" data-en="Italian · fluent">Italiano · fluido</span>
+      </div>
+    </div>
+    <div class="reveal about-side">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="n">15+</div><div class="l t" data-es="Años combinando desarrollo, seguridad y diseño" data-en="Years combining development, security &amp; design">Años combinando desarrollo, seguridad y diseño</div></div>
+        <div class="stat-card"><div class="n">6</div><div class="l t" data-es="Roles profesionales en Argentina, Australia y España" data-en="Professional roles across Argentina, Australia &amp; Spain">Roles profesionales en Argentina, Australia y España</div></div>
+        <div class="stat-card"><div class="n">7+</div><div class="l t" data-es="Certificaciones y diplomas completados" data-en="Certifications &amp; diplomas completed">Certificaciones y diplomas completados</div></div>
+        <div class="stat-card"><div class="n">3</div><div class="l t" data-es="Cursos nuevos en 2025 (Django, React Native, 3D)" data-en="New courses in 2025 (Django, React Native, 3D)">Cursos nuevos en 2025</div></div>
+        <div class="stat-card"><div class="n">4</div><div class="l t" data-es="Idiomas: español nativo, inglés e italiano fluidos" data-en="Languages: native Spanish, fluent English &amp; Italian">Idiomas: español nativo, inglés e italiano fluidos</div></div>
+        <div class="stat-card"><div class="n">3+</div><div class="l t" data-es="Proyectos propios y de clientes en producción" data-en="Own &amp; client projects live in production">Proyectos propios y de clientes en producción</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SKILLS ================= -->
+<section id="skills">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-tag t" data-es="Stack técnico" data-en="Technical stack">Stack técnico</span>
+      <h2 class="section-title t" data-es="Habilidades técnicas" data-en="Technical skills">Habilidades técnicas</h2>
+      <p class="section-desc t" data-es="Un perfil híbrido: desarrollo, automatización, diseño, seguridad y datos." data-en="A hybrid profile: development, automation, design, security and data.">Un perfil híbrido.</p>
+    </div>
+    <div class="skills-grid">
+
+      <div class="skill-card reveal">
+        <div class="sicon"><svg class="icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+        <h4 class="t" data-es="Desarrollo de Software" data-en="Software Development">Desarrollo de Software</h4>
+        <div class="skill-tags"><span class="chip">Python</span><span class="chip">Django</span><span class="chip">JavaScript</span><span class="chip">React Native</span><span class="chip">HTML5/CSS3</span><span class="chip">PHP</span><span class="chip">Java</span><span class="chip">Git/GitHub</span></div>
+        <div class="skill-more">
+          <span class="skill-more-label t" data-es="También familiarizado con" data-en="Also familiar with">También familiarizado con</span>
+          <div class="skill-tags alt"><span class="chip">TypeScript</span><span class="chip">Node.js</span><span class="chip">REST APIs</span><span class="chip">GraphQL</span><span class="chip">Docker</span><span class="chip">CI/CD</span><span class="chip">Laravel</span><span class="chip">Flutter</span></div>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="sicon"><svg class="icon" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg></div>
+        <h4 class="t" data-es="Automatización &amp; Datos" data-en="Automation &amp; Data">Automatización &amp; Datos</h4>
+        <div class="skill-tags"><span class="chip t" data-es="Web scraping" data-en="Web scraping">Web scraping</span><span class="chip t" data-es="Integración de APIs" data-en="API integration">Integración de APIs</span><span class="chip t" data-es="Sincronización entre plataformas" data-en="Cross-platform sync">Sincronización entre plataformas</span><span class="chip t" data-es="ETL básico" data-en="Basic ETL">ETL básico</span></div>
+        <div class="skill-more">
+          <span class="skill-more-label t" data-es="También familiarizado con" data-en="Also familiar with">También familiarizado con</span>
+          <div class="skill-tags alt"><span class="chip">Selenium</span><span class="chip">BeautifulSoup</span><span class="chip">Scrapy</span><span class="chip">Playwright</span><span class="chip">Cron Jobs</span><span class="chip">n8n / Zapier</span><span class="chip">Pandas</span><span class="chip t" data-es="RPA básica" data-en="Basic RPA">RPA básica</span></div>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="sicon"><svg class="icon" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></div>
+        <h4 class="t" data-es="Bases de Datos &amp; Cloud" data-en="Databases &amp; Cloud">Bases de Datos &amp; Cloud</h4>
+        <div class="skill-tags"><span class="chip">MySQL</span><span class="chip">MongoDB</span><span class="chip">SQL Server</span><span class="chip">AWS</span></div>
+        <div class="skill-more">
+          <span class="skill-more-label t" data-es="También familiarizado con" data-en="Also familiar with">También familiarizado con</span>
+          <div class="skill-tags alt"><span class="chip">PostgreSQL</span><span class="chip">Firebase</span><span class="chip">Redis</span><span class="chip">Google Cloud</span><span class="chip">Azure</span><span class="chip">Supabase</span></div>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="sicon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5"/><line x1="12" y1="12" x2="12" y2="22"/></svg></div>
+        <h4 class="t" data-es="Diseño &amp; Contenido Digital" data-en="Design &amp; Digital Content">Diseño &amp; Contenido Digital</h4>
+        <div class="skill-tags"><span class="chip t" data-es="Modelado 3D (Blender)" data-en="3D modeling (Blender)">Modelado 3D (Blender)</span><span class="chip">UI/UX</span><span class="chip t" data-es="Gamificación" data-en="Gamification">Gamificación</span><span class="chip">Adobe Suite</span><span class="chip">GIMP</span><span class="chip">Canva</span></div>
+        <div class="skill-more">
+          <span class="skill-more-label t" data-es="También familiarizado con" data-en="Also familiar with">También familiarizado con</span>
+          <div class="skill-tags alt"><span class="chip">Figma</span><span class="chip">Adobe XD</span><span class="chip">After Effects</span><span class="chip t" data-es="Motion graphics" data-en="Motion graphics">Motion graphics</span><span class="chip t" data-es="Render y materiales PBR" data-en="Rendering &amp; PBR materials">Render y materiales PBR</span></div>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="sicon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"/></svg></div>
+        <h4 class="t" data-es="Ciberseguridad &amp; Infraestructura" data-en="Cybersecurity &amp; Infrastructure">Ciberseguridad &amp; Infraestructura</h4>
+        <div class="skill-tags"><span class="chip t" data-es="Evaluación de riesgos" data-en="Risk assessment">Evaluación de riesgos</span><span class="chip">VPN</span><span class="chip t" data-es="Virtualización" data-en="Virtualization">Virtualización</span><span class="chip">Firewalls</span><span class="chip t" data-es="Pentesting básico" data-en="Basic pentesting">Pentesting básico</span></div>
+        <div class="skill-more">
+          <span class="skill-more-label t" data-es="También familiarizado con" data-en="Also familiar with">También familiarizado con</span>
+          <div class="skill-tags alt"><span class="chip">Kali Linux</span><span class="chip">Wireshark</span><span class="chip">Nmap</span><span class="chip">OWASP Top 10</span><span class="chip t" data-es="Zero Trust (conceptos)" data-en="Zero Trust (concepts)">Zero Trust (conceptos)</span></div>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="sicon"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg></div>
+        <h4 class="t" data-es="SEO/SEM &amp; Marketing Digital" data-en="SEO/SEM &amp; Digital Marketing">SEO/SEM &amp; Marketing Digital</h4>
+        <div class="skill-tags"><span class="chip t" data-es="SEO on/off-page" data-en="On/off-page SEO">SEO on/off-page</span><span class="chip">Google Analytics</span><span class="chip">Meta Ads</span><span class="chip">LinkedIn Ads</span></div>
+        <div class="skill-more">
+          <span class="skill-more-label t" data-es="También familiarizado con" data-en="Also familiar with">También familiarizado con</span>
+          <div class="skill-tags alt"><span class="chip">Search Console</span><span class="chip">Tag Manager</span><span class="chip">X Ads</span><span class="chip t" data-es="Email marketing" data-en="Email marketing">Email marketing</span><span class="chip">CRO</span></div>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="sicon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l4.5 2.5M21 7l-4.5 2.5M12 12v10M3 7v10l9 5M21 7v10l-9 5"/></svg></div>
+        <h4 class="t" data-es="Blockchain &amp; IA" data-en="Blockchain &amp; AI">Blockchain &amp; IA</h4>
+        <div class="skill-tags"><span class="chip">Ethereum</span><span class="chip">BSC</span><span class="chip t" data-es="Tokens / NFTs" data-en="Tokens / NFTs">Tokens / NFTs</span><span class="chip t" data-es="Tokenomics" data-en="Tokenomics">Tokenomics</span></div>
+        <div class="skill-more">
+          <span class="skill-more-label t" data-es="También familiarizado con" data-en="Also familiar with">También familiarizado con</span>
+          <div class="skill-tags alt"><span class="chip t" data-es="Solidity básico" data-en="Basic Solidity">Solidity básico</span><span class="chip t" data-es="Smart contracts" data-en="Smart contracts">Smart contracts</span><span class="chip">OpenAI API</span><span class="chip t" data-es="Prompt engineering" data-en="Prompt engineering">Prompt engineering</span><span class="chip">Copilot</span><span class="chip">Midjourney</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= SERVICES ================= -->
+<section id="services">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-tag t" data-es="Qué puedo hacer por vos" data-en="What I can do for you">Qué puedo hacer por vos</span>
+      <h2 class="section-title t" data-es="Servicios" data-en="Services">Servicios</h2>
+      <p class="section-desc t" data-es="Basados en el stack completo: desarrollo, automatización, diseño, seguridad, marketing y blockchain." data-en="Built on the full stack: development, automation, design, security, marketing and blockchain.">Basados en el stack completo.</p>
+    </div>
+    <div class="services-grid">
+
+      <div class="service-card reveal">
+        <div class="svc-icon"><svg class="icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+        <h3 class="t" data-es="Desarrollo Web &amp; Apps" data-en="Web &amp; App Development">Desarrollo Web &amp; Apps</h3>
+        <p class="t" data-es="Plataformas full-stack con Python/Django, sitios a medida y apps móviles nativas con React Native." data-en="Full-stack platforms with Python/Django, custom websites and native mobile apps with React Native.">Plataformas full-stack con Python/Django, sitios a medida y apps móviles nativas.</p>
+      </div>
+
+      <div class="service-card reveal">
+        <div class="svc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg></div>
+        <h3 class="t" data-es="Automatización &amp; Integraciones" data-en="Automation &amp; Integrations">Automatización &amp; Integraciones</h3>
+        <p class="t" data-es="Scripts a medida para eliminar tareas manuales: scraping, sincronización entre plataformas e integración de APIs." data-en="Custom scripts to eliminate manual work: scraping, cross-platform syncing and API integration.">Scripts a medida para eliminar tareas manuales.</p>
+      </div>
+
+      <div class="service-card reveal">
+        <div class="svc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5"/><line x1="12" y1="12" x2="12" y2="22"/></svg></div>
+        <h3 class="t" data-es="Diseño &amp; Contenido 3D" data-en="Design &amp; 3D Content">Diseño &amp; Contenido 3D</h3>
+        <p class="t" data-es="UI/UX, contenido interactivo, gamificación y modelado/animación 3D con Blender." data-en="UI/UX, interactive content, gamification and 3D modeling/animation with Blender.">UI/UX, contenido interactivo, gamificación y modelado 3D.</p>
+      </div>
+
+      <div class="service-card reveal">
+        <div class="svc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"/></svg></div>
+        <h3 class="t" data-es="Ciberseguridad &amp; Infraestructura" data-en="Cybersecurity &amp; Infrastructure">Ciberseguridad &amp; Infraestructura</h3>
+        <p class="t" data-es="Evaluación de riesgos, hardening de sistemas, VPN, firewalls y buenas prácticas de seguridad." data-en="Risk assessment, systems hardening, VPN, firewalls and security best practices.">Evaluación de riesgos y hardening de sistemas.</p>
+      </div>
+
+      <div class="service-card reveal">
+        <div class="svc-icon"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg></div>
+        <h3 class="t" data-es="SEO/SEM &amp; Marketing Digital" data-en="SEO/SEM &amp; Digital Marketing">SEO/SEM &amp; Marketing Digital</h3>
+        <p class="t" data-es="Estrategias de posicionamiento orgánico y campañas pagas en Meta, LinkedIn y Google." data-en="Organic ranking strategies and paid campaigns on Meta, LinkedIn and Google.">Posicionamiento orgánico y campañas pagas.</p>
+      </div>
+
+      <div class="service-card reveal">
+        <div class="svc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l4.5 2.5M21 7l-4.5 2.5M12 12v10M3 7v10l9 5M21 7v10l-9 5"/></svg></div>
+        <h3 class="t" data-es="Consultoría Blockchain &amp; IA" data-en="Blockchain &amp; AI Consulting">Consultoría Blockchain &amp; IA</h3>
+        <p class="t" data-es="Tokens, NFTs y tokenomics, más incorporación práctica de herramientas de IA a flujos de trabajo." data-en="Tokens, NFTs and tokenomics, plus practical integration of AI tools into workflows.">Tokens, NFTs, tokenomics e incorporación de IA.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROJECTS ================= -->
+<section id="projects">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-tag t" data-es="Portfolio" data-en="Portfolio">Portfolio</span>
+      <h2 class="section-title t" data-es="Proyectos" data-en="Projects">Proyectos</h2>
+      <p class="section-desc t"
+        data-es="Sitios y plataformas reales que diseñé y desarrollé, más algunas plantillas propias. Esta sección se va a ir actualizando con nuevos proyectos."
+        data-en="Real sites and platforms I designed and built, plus a few of my own templates. This section keeps growing as new projects ship.">
+        Sitios y plataformas reales, más algunas plantillas propias.
+      </p>
+    </div>
+
+    <h3 class="pgroup-title t" data-es="En producción" data-en="Live &amp; in production">En producción</h3>
+    <div class="projects-grid">
+
+      <a href="#hero" class="project-card reveal">
+        <div class="pc-badges"><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/></svg></div>
+        <h3 class="t" data-es="Luquini0's Interactive" data-en="Luquini0's Interactive">Luquini0's Interactive</h3>
+        <p class="t" data-es="Single-page interactiva con gate de acceso, bilingüe y consola funcional — la estás viendo ahora." data-en="Interactive single-page site with access gate, bilingual, functional console — you're looking at it right now.">Single-page interactiva con gate de acceso y consola funcional.</p>
+        <div class="pc-tags"><span class="chip">HTML/CSS/JS</span><span class="chip t" data-es="Diseño UI" data-en="UI Design">Diseño UI</span></div>
+      </a>
+
+      <a href="https://luquini0.github.io/Portfolio/" target="_blank" rel="noopener" class="project-card reveal">
+        <div class="pc-badges"><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/><polyline points="12 7 12 12 16 14"/></svg></div>
+        <h3 class="t" data-es="Portfolio (versión anterior)" data-en="Old Portfolio">Portfolio (versión anterior)</h3>
+        <p class="t"
+          data-es="Mi portfolio personal previo, antes de esta plataforma — lo dejo online como referencia de evolución."
+          data-en="My earlier personal portfolio, before this current platform — kept online to show how the design evolved.">
+          Mi portfolio personal previo a esta plataforma.
+        </p>
+        <div class="pc-tags"><span class="chip">HTML/CSS/JS</span><span class="chip t" data-es="Versión anterior" data-en="Previous version">Versión anterior</span></div>
+      </a>
+
+      <a href="https://rielahuerta.com" target="_blank" rel="noopener" class="project-card reveal">
+        <div class="pc-badges"><span class="pc-badge client t" data-es="Cliente" data-en="Client">Cliente</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 22c5-3 8-7 8-12a8 8 0 0 0-16 0c0 5 3 9 8 12z"/><path d="M12 13a4 4 0 0 0 4-4c-3 0-4 1-4 4z"/><path d="M12 13a4 4 0 0 1-4-4c3 0 4 1 4 4z"/></svg></div>
+        <h3 class="t" data-es="Rie La Huerta" data-en="Rie La Huerta">Rie La Huerta</h3>
+        <p class="t"
+          data-es="Sitio institucional para una empresa de verduras frescas procesadas y flores comestibles: catálogo de productos, trazabilidad y cadena de frío. También audité su red y trabajé como consultor IT."
+          data-en="Corporate site for a fresh pre-processed produce and edible-flowers company: product catalog, traceability and cold-chain messaging. I also audited their network and worked as their IT consultant.">
+          Sitio institucional para una empresa de verduras frescas y flores comestibles.
+        </p>
+        <div class="pc-tags"><span class="chip t" data-es="Diseño Web" data-en="Web Design">Diseño Web</span><span class="chip t" data-es="Consultoría IT" data-en="IT Consulting">Consultoría IT</span></div>
+      </a>
+
+      <a href="https://arikaya.com.au" target="_blank" rel="noopener" class="project-card reveal">
+        <div class="pc-badges"><span class="pc-badge client t" data-es="Cliente" data-en="Client">Cliente</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M9 21v-6h6v6"/></svg></div>
+        <h3 class="t" data-es="Arikaya" data-en="Arikaya">Arikaya</h3>
+        <p class="t"
+          data-es="Sitio corporativo para Arikaya, Manly Beach (Sídney, Australia), desarrollado durante mi rol como Desarrollador Web &amp; Community Manager."
+          data-en="Corporate website for Arikaya, Manly Beach (Sydney, Australia), built during my time there as Web Developer &amp; Community Manager.">
+          Sitio corporativo para Arikaya, Manly Beach, Sídney.
+        </p>
+        <div class="pc-tags"><span class="chip t" data-es="Desarrollo Web" data-en="Web Development">Desarrollo Web</span><span class="chip">Australia</span></div>
+      </a>
+
+      <a href="https://tap-mundial.pages.dev/" target="_blank" rel="noopener" class="project-card reveal">
+        <div class="pc-badges"><span class="pc-badge client t" data-es="Cliente" data-en="Client">Cliente</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a3 3 0 0 0 3 5"/><path d="M17 5h3a3 3 0 0 1-3 5"/></svg></div>
+        <h3 class="t" data-es="Tap Mundial 2026" data-en="Tap Mundial 2026">Tap Mundial 2026</h3>
+        <p class="t"
+          data-es="Plataforma de fidelización gamificada para un bar argentino durante el Mundial 2026: puntos por visitas, juego de pronósticos, ranking en vivo y panel de administración."
+          data-en="Gamified loyalty platform for an Argentine bar during the 2026 World Cup: points for visits, a predictions game, a live leaderboard and an admin panel.">
+          Plataforma de fidelización gamificada para el Mundial 2026.
+        </p>
+        <div class="pc-tags"><span class="chip t" data-es="Gamificación" data-en="Gamification">Gamificación</span><span class="chip t" data-es="Panel Admin" data-en="Admin Panel">Panel Admin</span></div>
+      </a>
+
+    </div>
+
+    <h3 class="pgroup-title t" data-es="Plantillas &amp; ejemplos propios" data-en="Own templates &amp; examples">Plantillas &amp; ejemplos propios</h3>
+    <div class="projects-grid">
+
+      <a href="https://luquini0.github.io/OneBlast/" target="_blank" rel="noopener" class="project-card reveal">
+        <div class="pc-badges"><span class="pc-badge ref t" data-es="Template" data-en="Template">Template</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+        <h3 class="t" data-es="OneBlast" data-en="OneBlast">OneBlast</h3>
+        <p class="t"
+          data-es="Plantilla de sitio de producto/e-commerce: navegación clara, carrusel de imágenes y diseño responsive."
+          data-en="Product/e-commerce site template: clear navigation, image carousel and responsive design.">
+          Plantilla de sitio de producto/e-commerce.
+        </p>
+        <div class="pc-tags"><span class="chip t" data-es="Template" data-en="Template">Template</span><span class="chip">E-commerce</span></div>
+      </a>
+
+      <a href="https://guchini-mundial.pages.dev/" target="_blank" rel="noopener" class="project-card reveal">
+        <div class="pc-badges"><span class="pc-badge ref t" data-es="Template" data-en="Template">Template</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a3 3 0 0 0 3 5"/><path d="M17 5h3a3 3 0 0 1-3 5"/></svg></div>
+        <h3 class="t" data-es="Guchini Mundial" data-en="Guchini Mundial">Guchini Mundial</h3>
+        <p class="t"
+          data-es="Campaña promocional gamificada para una marca gastronómica de Mendoza, con portal de registro atado al Mundial 2026."
+          data-en="Gamified promo campaign for a Mendoza food brand, with a registration portal tied to the 2026 World Cup.">
+          Campaña promocional gamificada para una marca gastronómica.
+        </p>
+        <div class="pc-tags"><span class="chip t" data-es="Landing Page" data-en="Landing Page">Landing Page</span><span class="chip t" data-es="Gamificación" data-en="Gamification">Gamificación</span></div>
+      </a>
+
+      <div class="project-card reveal">
+        <div class="pc-badges"><span class="pc-badge ref t" data-es="Template" data-en="Template">Template</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="3" r="1"/><circle cx="12" cy="21" r="1"/><circle cx="3" cy="12" r="1"/><circle cx="21" cy="12" r="1"/></svg></div>
+        <h3 class="t" data-es="Sacred Circles" data-en="Sacred Circles">Sacred Circles</h3>
+        <p class="t"
+          data-es="E-commerce espiritual (mandalas y objetos rituales), construido dos veces para comparar enfoques: a mano y con Webflow."
+          data-en="Spiritual e-commerce (mandalas and ritual objects), built twice to compare approaches: hand-coded and with Webflow.">
+          E-commerce espiritual, construido a mano y con Webflow.
+        </p>
+        <div class="pc-tags"><span class="chip">HTML/CSS/JS</span><span class="chip">Webflow</span></div>
+        <div class="pc-links">
+          <a href="https://luquini0.github.io/sacredcircles/" target="_blank" rel="noopener">GitHub Pages &rarr;</a>
+          <a href="https://sacredcircles.webflow.io/" target="_blank" rel="noopener">Webflow &rarr;</a>
+        </div>
+      </div>
+
+      <a href="https://luquini0.github.io/Tap/" target="_blank" rel="noopener" class="project-card reveal">
+        <div class="pc-badges"><span class="pc-badge ref t" data-es="Template" data-en="Template">Template</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M5 9h12v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9z"/><path d="M5 9V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3"/></svg></div>
+        <h3 class="t" data-es="Tap — Cervecería" data-en="Tap — Brewery">Tap — Cervecería</h3>
+        <p class="t"
+          data-es="Sitio de marca para una cervecería artesanal de fábrica: identidad visual, storytelling de producto y visor 3D del envase."
+          data-en="Brand site for an artisanal factory brewery: visual identity, product storytelling and a 3D bottle viewer.">
+          Sitio de marca para una cervecería artesanal.
+        </p>
+        <div class="pc-tags"><span class="chip t" data-es="Branding" data-en="Branding">Branding</span><span class="chip t" data-es="Landing Page" data-en="Landing Page">Landing Page</span></div>
+      </a>
+
+      <a href="https://luquini0.github.io/HuertaUrbana/" target="_blank" rel="noopener" class="project-card reveal">
+        <div class="pc-badges"><span class="pc-badge ref t" data-es="Template" data-en="Template">Template</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 22c5-3 8-7 8-12a8 8 0 0 0-16 0c0 5 3 9 8 12z"/><path d="M12 13a4 4 0 0 0 4-4c-3 0-4 1-4 4z"/><path d="M12 13a4 4 0 0 1-4-4c3 0 4 1 4 4z"/></svg></div>
+        <h3 class="t" data-es="Huerta Urbana — Landing" data-en="Huerta Urbana — Landing">Huerta Urbana — Landing</h3>
+        <p class="t"
+          data-es="Landing page de práctica para un negocio de verduras y flores comestibles — pieza de portfolio, sin relación con el sitio real en producción."
+          data-en="Practice landing page for a fresh-produce & edible-flowers business — a portfolio piece, unrelated to the real production site above.">
+          Landing page de práctica para un negocio de verduras y flores.
+        </p>
+        <div class="pc-tags"><span class="chip t" data-es="Landing Page" data-en="Landing Page">Landing Page</span><span class="chip t" data-es="Diseño Web" data-en="Web Design">Diseño Web</span></div>
+      </a>
+
+      <a href="https://luquini0.github.io/estrategia.financiera/" target="_blank" rel="noopener" class="project-card reveal">
+        <div class="pc-badges"><span class="pc-badge ref t" data-es="Template" data-en="Template">Template</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg></div>
+        <h3 class="t" data-es="Estrategia Financiera" data-en="Financial Strategy">Estrategia Financiera</h3>
+        <p class="t"
+          data-es="Plataforma web de estrategia financiera con perfiles de usuario autenticados y panel personal."
+          data-en="Financial-strategy web app with authenticated user profiles and a personal dashboard.">
+          Plataforma web de estrategia financiera con perfiles autenticados.
+        </p>
+        <div class="pc-tags"><span class="chip t" data-es="Web App" data-en="Web App">Web App</span><span class="chip">Auth</span></div>
+      </a>
+
+      <a href="https://luquini0.github.io/ArteOrganica/" target="_blank" rel="noopener" class="project-card reveal">
+        <div class="pc-badges"><span class="pc-badge ref t" data-es="Template" data-en="Template">Template</span><span class="pc-badge own t" data-es="Propio" data-en="Own build">Propio</span></div>
+        <div class="pc-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M3 12h18"/></svg></div>
+        <h3 class="t" data-es="Arte Orgánica" data-en="Arte Orgánica">Arte Orgánica</h3>
+        <p class="t"
+          data-es="Plantilla de e-commerce con identidad orgánica y artesanal: catálogo de productos, blog y carrito de compra."
+          data-en="Organic, artisanal-styled e-commerce template: product catalog, blog and shopping cart.">
+          Plantilla de e-commerce con identidad orgánica.
+        </p>
+        <div class="pc-tags"><span class="chip t" data-es="Template" data-en="Template">Template</span><span class="chip">E-commerce</span></div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= EXPERIENCE ================= -->
+<section id="experience">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-tag t" data-es="Trayectoria" data-en="Track record">Trayectoria</span>
+      <h2 class="section-title t" data-es="Experiencia profesional" data-en="Professional experience">Experiencia profesional</h2>
+    </div>
+    <div class="timeline">
+
+      <div class="tl-item current reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-head">
+          <span class="tl-role t" data-es="IT Support" data-en="IT Support">IT Support</span>
+          <span class="tl-org">— Remote Hero <span class="t" data-es="(EE. UU., remoto)" data-en="(USA, Remote)">(EE. UU., remoto)</span></span>
+          <span class="badge-current t" data-es="ACTUAL" data-en="CURRENT">ACTUAL</span>
+        </div>
+        <div class="tl-dates t" data-es="2025 — Presente · fines de semana" data-en="2025 — Present · weekends">2025 — Presente · fines de semana</div>
+        <p class="tl-desc t"
+          data-es="Soporte técnico y actualización manual de reservas y calendarios en los sistemas de gestión internos, verificando la exactitud de los datos entre plataformas."
+          data-en="Technical support and manual updating of bookings and calendars across internal management systems, verifying data accuracy between platforms.">
+          Soporte técnico y actualización manual de reservas y calendarios.
+        </p>
+      </div>
+
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-head">
+          <span class="tl-role t" data-es="Consultor IT &amp; Desarrollador Web" data-en="IT Consultant &amp; Web Developer">Consultor IT &amp; Desarrollador Web</span>
+          <span class="tl-org">— Ríe La Huerta, Guaymallén, Mendoza, Argentina</span>
+        </div>
+        <div class="tl-dates">2024 — 2025</div>
+        <p class="tl-desc t"
+          data-es="Diseño y desarrollo del sitio institucional (rielahuerta.com), auditoría de seguridad de la red y consultoría IT integral para la empresa."
+          data-en="Designed and built the company's website (rielahuerta.com), audited network security and provided end-to-end IT consulting.">
+          Diseño y desarrollo del sitio institucional (rielahuerta.com), auditoría de red y consultoría IT.
+        </p>
+      </div>
+
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-head">
+          <span class="tl-role t" data-es="Analista de Sistemas" data-en="Systems Analyst">Analista de Sistemas</span>
+          <span class="tl-org">— Brader Hops, Godoy Cruz, Mendoza, Argentina</span>
+        </div>
+        <div class="tl-dates">2016 — 2025</div>
+        <p class="tl-desc t" data-es="Administración de infraestructura IT, redes y soporte técnico; implementación de mejoras de seguridad y continuidad operativa." data-en="Managed IT infrastructure, networks and technical support; implemented security and operational-continuity improvements.">Administración de infraestructura IT.</p>
+      </div>
+
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-head">
+          <span class="tl-role">CEO</span>
+          <span class="tl-org t" data-es="— Luquini0, España" data-en="— Luquini0, Spain">— Luquini0, España</span>
+        </div>
+        <div class="tl-dates">2018 — 2025</div>
+        <p class="tl-desc t" data-es="Dirección de emprendimiento propio de desarrollo web y servicios digitales; gestión integral de clientes, proyectos y equipo." data-en="Led own web development and digital services venture; full ownership of client relationships, project delivery and team management.">Dirección de emprendimiento propio.</p>
+      </div>
+
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-head">
+          <span class="tl-role t" data-es="Analista de Sistemas" data-en="Systems Analyst">Analista de Sistemas</span>
+          <span class="tl-org">— Ríe La Huerta, Guaymallén, Mendoza, Argentina</span>
+        </div>
+        <div class="tl-dates">2018 — 2025</div>
+        <p class="tl-desc t" data-es="Administración de sistemas y redes, soporte técnico y gestión de infraestructura tecnológica." data-en="Managed systems and network administration, technical support and technology infrastructure.">Administración de sistemas y redes.</p>
+      </div>
+
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-head">
+          <span class="tl-role t" data-es="Desarrollador Web &amp; Community Manager" data-en="Web Developer &amp; Community Manager">Desarrollador Web &amp; Community Manager</span>
+          <span class="tl-org">— Arikaya, Manly Beach, Sídney, Australia</span>
+        </div>
+        <div class="tl-dates">2020 — 2022</div>
+        <p class="tl-desc t" data-es="Desarrollo y mantenimiento de sitio web corporativo; gestión de redes sociales y estrategia de contenido digital." data-en="Developed and maintained the corporate website; managed social media and digital content strategy.">Desarrollo y mantenimiento de sitio web corporativo.</p>
+      </div>
+
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-head">
+          <span class="tl-role t" data-es="Desarrollador Web &amp; Redes Sociales" data-en="Web &amp; Social Media Developer">Desarrollador Web &amp; Redes Sociales</span>
+          <span class="tl-org">— Huerta Gourmet, Godoy Cruz, Mendoza, Argentina</span>
+        </div>
+        <div class="tl-dates">2012 — 2018</div>
+        <p class="tl-desc t" data-es="Diseño y desarrollo de sitio web; ejecución de campañas SEO/SEM y gestión de redes sociales." data-en="Designed and developed the company website; ran SEO/SEM campaigns and managed social media.">Diseño y desarrollo de sitio web.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= EDUCATION ================= -->
+<section id="education">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-tag t" data-es="Formación" data-en="Education">Formación</span>
+      <h2 class="section-title t" data-es="Educación &amp; certificaciones" data-en="Education &amp; certifications">Educación &amp; certificaciones</h2>
+    </div>
+    <div class="edu-grid">
+
+      <div class="edu-card new reveal">
+        <span class="edu-new-tag t" data-es="NUEVO" data-en="NEW">NUEVO</span>
+        <span class="edu-year">2025</span>
+        <div><span class="edu-title t" data-es="Python: Backend con Django" data-en="Python: Django Backend">Python: Backend con Django</span><div class="edu-org">CoderHouse, Argentina</div></div>
+      </div>
+
+      <div class="edu-card new reveal">
+        <span class="edu-new-tag t" data-es="NUEVO" data-en="NEW">NUEVO</span>
+        <span class="edu-year">2025</span>
+        <div><span class="edu-title t" data-es="React Native: Apps Nativas" data-en="React Native: Native Apps">React Native: Apps Nativas</span><div class="edu-org">CoderHouse, Argentina</div></div>
+      </div>
+
+      <div class="edu-card new reveal">
+        <span class="edu-new-tag t" data-es="NUEVO" data-en="NEW">NUEVO</span>
+        <span class="edu-year">2025</span>
+        <div><span class="edu-title t" data-es="Diseño 3D con Blender" data-en="3D Design with Blender">Diseño 3D con Blender</span><div class="edu-org">CoderHouse, Argentina</div></div>
+      </div>
+
+      <div class="edu-card reveal">
+        <span class="edu-year">2020–22</span>
+        <div><span class="edu-title t" data-es="Diplomatura Avanzada en Ciberseguridad" data-en="Advanced Diploma in Network Security">Diplomatura Avanzada en Ciberseguridad</span><div class="edu-org">ACBI, Sídney, Australia</div></div>
+      </div>
+
+      <div class="edu-card reveal">
+        <span class="edu-year">2018–20</span>
+        <div><span class="edu-title t" data-es="Diplomatura en Tecnologías de Medios Digitales" data-en="Diploma in Digital Media Technologies">Diplomatura en Tecnologías de Medios Digitales</span><div class="edu-org">ACBI, Sídney, Australia</div></div>
+      </div>
+
+      <div class="edu-card reveal">
+        <span class="edu-year">2014–16</span>
+        <div><span class="edu-title t" data-es="Ingeniería Industrial (2° año)" data-en="Industrial Engineering (2nd yr)">Ingeniería Industrial (2° año)</span><div class="edu-org">UNC, Mendoza, Argentina</div></div>
+      </div>
+
+      <div class="edu-card reveal">
+        <span class="edu-year">2006–12</span>
+        <div><span class="edu-title t" data-es="Bachiller en Humanidades / Bilingüismo" data-en="Bachiller's Degree, Humanities / Bilingualism">Bachiller en Humanidades / Bilingüismo</span><div class="edu-org">ICEI, Mendoza, Argentina</div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section id="contact">
+  <div class="wrap">
+    <div class="contact-card reveal">
+      <h2 class="t" data-es="¿Hablamos de tu próximo proyecto?" data-en="Let's talk about your next project.">¿Hablamos de tu próximo proyecto?</h2>
+      <p class="t" data-es="Disponible para trabajo remoto, freelance o colaboraciones. Escribime y te respondo a la brevedad." data-en="Available for remote work, freelance or collaborations. Reach out and I'll get back to you shortly.">Disponible para trabajo remoto, freelance o colaboraciones.</p>
+      <div class="contact-actions">
+        <a href="mailto:luquini0.contact@gmail.com?subject=Contacto%20desde%20la%20plataforma" class="btn btn-primary">
+          <svg class="icon" style="width:16px;height:16px;stroke:#06120f" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M22 6 12 13 2 6"/></svg>
+          luquini0.contact@gmail.com
+        </a>
+        <div class="cv-gate">
+          <button type="button" id="cvGateBtn" class="btn btn-ghost">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span class="t" data-es="Descargar CV" data-en="Download CV">Descargar CV</span>
+          </button>
+          <form id="cvGateForm" class="cv-gate-form" autocomplete="off">
+            <input type="password" id="cvGateInput" class="mono t" data-es-placeholder="Código de acceso" data-en-placeholder="Access code" placeholder="Código de acceso" autocomplete="off">
+            <button type="submit" class="btn btn-ghost" aria-label="Enviar">→</button>
+          </form>
+          <div id="cvGateLinks" class="cv-gate-links"></div>
+          <p id="cvGateError" class="cv-gate-error t" data-es="Código incorrecto — probá de nuevo." data-en="Incorrect code — try again.">Código incorrecto — probá de nuevo.</p>
+        </div>
+      </div>
+      <div class="social-row">
+        <a href="https://github.com/luquini0" target="_blank" rel="noopener" aria-label="GitHub"><svg class="icon" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a>
+        <a href="https://www.instagram.com/luquini0/" target="_blank" rel="noopener" aria-label="Instagram"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        <a href="https://twitter.com/luquinio" target="_blank" rel="noopener" aria-label="Twitter/X"><svg class="icon" viewBox="0 0 24 24" style="fill:currentColor; stroke:none;"><path d="M18.24 3h3.31l-7.23 8.26L23 21h-6.66l-5.21-6.82L5.16 21H1.85l7.73-8.84L1 3h6.83l4.71 6.24zm-1.16 16.2h1.83L7 4.7H5.03z"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="siteFooter">
+  <canvas id="footerRain" aria-hidden="true"></canvas>
+  <div class="wrap footer-inner">
+    <div class="footer-brand"><img class="footer-mark" src="assets/logo.webp" alt="Luquini0"> Luquini0</div>
+    <div class="footer-sign mono" id="footerSign" aria-hidden="true"><span class="fs-prompt">$</span><span id="footerSignText"></span><span class="fs-cursor">▋</span></div>
+    <div class="footer-legal">
+      <span class="t" data-es="Plataforma privada — acceso solo por invitación." data-en="Private platform — invite-only access.">Plataforma privada — acceso solo por invitación.</span>
+      · © <span id="year"></span> Luquini0 ·
+      <span class="t" data-es="Todos los derechos reservados." data-en="All rights reserved.">Todos los derechos reservados.</span>
+    </div>
+  </div>
+</footer>
+
+</div>
+
+<!-- ================= DEMO MODAL ================= -->
+<div id="demoModal" class="demo-modal">
+  <div class="demo-modal-card">
+    <div class="demo-modal-bar">
+      <span id="demoModalTitle" class="demo-modal-title mono"></span>
+      <button type="button" id="demoModalClose" class="demo-modal-close" aria-label="Close">✕</button>
+    </div>
+    <div id="demoModalBody" class="demo-modal-body"></div>
+  </div>
+</div>
+
+<script src="js/i18n.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/terminal.js"></script>
+<script src="js/lifecycle.js"></script>
+<script src="js/footer.js"></script>
+<script src="js/gate.js"></script>
+<script src="js/supabase.js"></script>
+</body>
+</html>

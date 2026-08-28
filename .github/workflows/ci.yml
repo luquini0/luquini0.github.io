@@ -1,0 +1,48 @@
+name: CI
+
+# Validates the build only — it does NOT deploy anything. GitHub Pages
+# keeps serving index.html straight from this branch, unchanged; this
+# workflow just makes sure that file always matches what src/ actually
+# produces, and that its inline scripts still parse.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Rebuild index.html from src/
+        run: node scripts/build.mjs
+
+      - name: Fail if the committed index.html has drifted from src/
+        run: |
+          if ! git diff --quiet -- index.html; then
+            echo "::error::index.html is out of sync with src/. Run 'node scripts/build.mjs' and commit the result."
+            git diff -- index.html
+            exit 1
+          fi
+
+      - name: Check every inline <script> block parses
+        run: |
+          node -e "
+            const fs = require('fs');
+            const html = fs.readFileSync('index.html', 'utf8');
+            const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+            let failed = false;
+            scripts.forEach((m, i) => {
+              try { new Function(m[1]); }
+              catch (e) { failed = true; console.error('script ' + i + ' failed to parse:', e.message); }
+            });
+            if (failed) process.exit(1);
+            console.log('All ' + scripts.length + ' inline <script> blocks parse cleanly.');
+          "

@@ -505,6 +505,14 @@ footer a{color:var(--text-dim);}
 .demo-hud{display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:13px; margin-bottom:10px;}
 .demo-hud b{color:var(--accent);}
 
+.leaderboard{margin-top:10px; min-height:16px; font-size:11.5px;}
+.leaderboard-loading, .leaderboard-empty{color:var(--text-faint); text-align:center;}
+.leaderboard-label{display:block; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px; font-size:10px;}
+.leaderboard-list{display:flex; flex-direction:column; gap:3px; list-style:none; margin:0; padding:0;}
+.leaderboard-list li{display:flex; justify-content:space-between; padding:4px 8px; background:var(--panel-2); border:1px solid var(--border);}
+.leaderboard-list .lb-rank{color:var(--text-faint);}
+.leaderboard-list .lb-score{color:var(--accent); font-weight:700;}
+
 /* game intro + control bar (Snake/Pong/Dodge) */
 .game-intro{text-align:center;}
 .game-intro .g-emoji{font-size:40px; margin-bottom:8px;}
@@ -1694,6 +1702,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         gameControlBar() +
         '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="dsScore">0</b></span></div>' +
         '<canvas id="demoSnakeCanvas" width="240" height="240"></canvas>' +
+        '<div class="leaderboard" id="dsBoard"></div>' +
         '<div class="joystick only-touch" id="demoJoystick" aria-hidden="true">' +
           '<div class="joystick-base"><div class="joystick-knob" id="demoJoystickKnob"></div></div>' +
         '</div>' +
@@ -1724,7 +1733,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           dir = nextDir;
           var head = {x:snake[0].x+dir.x, y:snake[0].y+dir.y};
           var hit = head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS||snake.some(function(s){return s.x===head.x&&s.y===head.y;});
-          if(hit){ gameBeep(120,0.25); gameVibrate(120); reset(); draw(); return; }
+          if(hit){ gameBeep(120,0.25); gameVibrate(120); if(window.__submitScore && score > 0) window.__submitScore('snake', score); reset(); draw(); return; }
           snake.unshift(head);
           if(head.x===food.x && head.y===food.y){ score++; scoreEl.textContent=String(score); gameBeep(660,0.08); gameVibrate(15); place(); }
           else snake.pop();
@@ -1751,6 +1760,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         wireGameBar(body, reset);
+        if(window.__renderLeaderboard) window.__renderLeaderboard('snake', 'dsBoard');
       }, function(){
         clearInterval(timer);
         document.removeEventListener('keydown', keyHandler);
@@ -1764,11 +1774,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function startPongGame(){
-      var raf, keyDownHandler, keyUpHandler;
+      var raf, keyDownHandler, keyUpHandler, score;
       var html =
         gameControlBar() +
         '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="dpScore">0</b></span></div>' +
         '<canvas id="demoPongCanvas" width="240" height="240"></canvas>' +
+        '<div class="leaderboard" id="dpBoard"></div>' +
         '<div class="joystick only-touch" id="pongJoystick" aria-hidden="true">' +
           '<div class="joystick-base"><div class="joystick-knob" id="pongJoystickKnob"></div></div>' +
         '</div>' +
@@ -1781,7 +1792,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var scoreEl = document.getElementById('dpScore');
         var W = canvas.width, H = canvas.height;
         var PW = 48, PH = 8;
-        var player, cpu, ball, score, frame, speedMult;
+        var player, cpu, ball, frame, speedMult;
         var keys = { left:false, right:false };
 
         function resetBall(dir){
@@ -1867,10 +1878,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         raf = requestAnimationFrame(step);
 
         wireGameBar(body, reset);
+        if(window.__renderLeaderboard) window.__renderLeaderboard('pong', 'dpBoard');
       }, function(){
         cancelAnimationFrame(raf);
         document.removeEventListener('keydown', keyDownHandler);
         document.removeEventListener('keyup', keyUpHandler);
+        if(window.__submitScore && score > 0) window.__submitScore('pong', score);
       });
     }
 
@@ -1886,6 +1899,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         gameControlBar() +
         '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="ddScore">0</b></span></div>' +
         '<canvas id="demoDodgeCanvas" width="240" height="240"></canvas>' +
+        '<div class="leaderboard" id="ddBoard"></div>' +
         '<div class="joystick only-touch" id="dodgeJoystick" aria-hidden="true">' +
           '<div class="joystick-base"><div class="joystick-knob" id="dodgeJoystickKnob"></div></div>' +
         '</div>' +
@@ -1942,7 +1956,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if(!withinX) return false;
             return (player.y - player.size/2 < o.gapY) || (player.y + player.size/2 > o.gapY + o.gapH);
           });
-          if(crashed){ gameBeep(120,0.25); gameVibrate(120); reset(); }
+          if(crashed){ gameBeep(120,0.25); gameVibrate(120); if(window.__submitScore && score > 0) window.__submitScore('dodge', score); reset(); }
 
           draw();
           raf = requestAnimationFrame(step);
@@ -1973,6 +1987,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         raf = requestAnimationFrame(step);
 
         wireGameBar(body, reset);
+        if(window.__renderLeaderboard) window.__renderLeaderboard('dodge', 'ddBoard');
       }, function(){
         cancelAnimationFrame(raf);
         document.removeEventListener('keydown', keyDownHandler);
@@ -3096,6 +3111,81 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     skipBtn.addEventListener('click', function(){ logSession('skip'); unlock(); });
 
     bootSequence();
+  })();
+  /* ---------------- Supabase: game leaderboard + gate analytics ---------------- */
+  // Backend for the mini-games' high scores and the access gate's anonymous
+  // completion stats. No accounts, no PII, no free-text fields anywhere.
+  //
+  //   - Score writes go through a Supabase Edge Function
+  //     (supabase/functions/submit-score), which validates game/score and
+  //     inserts with the service role — the `game_scores` table itself has
+  //     no anon INSERT policy (see supabase/migrations), so a visitor can't
+  //     just POST straight to PostgREST and fake a row.
+  //   - Gate-session writes are low-stakes aggregate analytics (outcome +
+  //     lang only), so those go straight to PostgREST under RLS.
+  //   - Every call is best-effort: if the network/API is unreachable, the
+  //     site keeps working exactly as it did before this file existed.
+  (function(){
+    var SUPABASE_URL = 'https://zqoxwfugrrzlqwehlauq.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_aH8WKyxhigMEuJxP1Lw6Aw_4fcmD4Ez';
+
+    function tr(es, en){ return (document.body.getAttribute('data-lang') === 'en') ? en : es; }
+
+    function submitScore(game, score){
+      try{
+        fetch(SUPABASE_URL + '/functions/v1/submit-score', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + SUPABASE_KEY,
+            'apikey': SUPABASE_KEY
+          },
+          body: JSON.stringify({ game: game, score: score })
+        }).catch(function(){});
+      } catch(e){}
+    }
+
+    function renderLeaderboard(game, containerId){
+      var el = document.getElementById(containerId);
+      if(!el) return;
+      el.innerHTML = '<div class="leaderboard-loading mono">' + tr('cargando ranking…','loading ranking…') + '</div>';
+      try{
+        fetch(SUPABASE_URL + '/rest/v1/game_scores?select=score&game=eq.' + encodeURIComponent(game) + '&order=score.desc&limit=5', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+        })
+          .then(function(r){ return r.ok ? r.json() : []; })
+          .then(function(rows){
+            if(!rows || !rows.length){
+              el.innerHTML = '<div class="leaderboard-empty mono">' + tr('sé el primero en sumar un puntaje','be the first to score') + '</div>';
+              return;
+            }
+            var items = rows.map(function(row, i){
+              return '<li><span class="lb-rank">#' + (i + 1) + '</span><span class="lb-score">' + row.score + '</span></li>';
+            }).join('');
+            el.innerHTML = '<span class="leaderboard-label mono">' + tr('top 5','top 5') + '</span><ol class="leaderboard-list mono">' + items + '</ol>';
+          })
+          .catch(function(){ el.innerHTML = ''; });
+      } catch(e){ el.innerHTML = ''; }
+    }
+
+    function logGateSession(entry){
+      try{
+        fetch(SUPABASE_URL + '/rest/v1/gate_sessions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_KEY,
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ outcome: entry.outcome, lang: entry.lang })
+        }).catch(function(){});
+      } catch(e){}
+    }
+
+    window.__submitScore = submitScore;
+    window.__renderLeaderboard = renderLeaderboard;
+    window.__logGateSession = logGateSession;
   })();
 })();
 </script>
