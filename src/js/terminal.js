@@ -198,6 +198,97 @@
       });
       if(onReset) body.querySelector('.game-reset').addEventListener('click', onReset);
     }
+    function livesDots(lives, max){
+      var out = '';
+      for(var i = 0; i < max; i++) out += '<span' + (i < lives ? '' : ' class="lost"') + '>●</span>';
+      return out;
+    }
+    function gameOverPanel(idPrefix){
+      return '<div class="game-over" id="' + idPrefix + 'Over" style="display:none;">' +
+        '<div class="go-title mono">' + tr('GAME OVER','GAME OVER') + '</div>' +
+        '<div class="go-score mono">' + tr('Puntos','Score') + ': <b id="' + idPrefix + 'FinalScore">0</b></div>' +
+        '<form class="go-form" id="' + idPrefix + 'Form" autocomplete="off">' +
+          '<input type="text" id="' + idPrefix + 'NameInput" class="mono" maxlength="12" data-es-placeholder="Tu nombre (opcional)" data-en-placeholder="Your name (optional)" placeholder="' + tr('Tu nombre (opcional)','Your name (optional)') + '">' +
+          '<button type="submit" class="btn btn-primary">' + tr('Guardar','Save') + '</button>' +
+        '</form>' +
+        '<p class="go-saved mono" id="' + idPrefix + 'Saved" style="display:none;">' + tr('¡Guardado! →','Saved! →') + ' <a href="#" class="go-play-again">' + tr('jugar de nuevo','play again') + '</a></p>' +
+      '</div>';
+    }
+    // Wires the name-entry form for a game-over panel. `getScore` reads the
+    // final score at submit time; `onPlayAgain` should fully reset the game
+    // (score + lives) and hide the panel.
+    function wireGameOver(idPrefix, game, getScore, onPlayAgain){
+      var panel = document.getElementById(idPrefix + 'Over');
+      var form = document.getElementById(idPrefix + 'Form');
+      var input = document.getElementById(idPrefix + 'NameInput');
+      var saved = document.getElementById(idPrefix + 'Saved');
+      var finalScoreEl = document.getElementById(idPrefix + 'FinalScore');
+
+      function show(score){
+        finalScoreEl.textContent = String(score);
+        saved.style.display = 'none';
+        form.style.display = '';
+        input.value = '';
+        panel.style.display = '';
+        setTimeout(function(){ input.focus(); }, 50);
+      }
+      function hide(){ panel.style.display = 'none'; }
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        var name = (input.value || '').trim().slice(0, 12) || null;
+        if(window.__submitScore) window.__submitScore(game, getScore(), name);
+        if(window.__renderLeaderboard) window.__renderLeaderboard(game, idPrefix + 'Board');
+        form.style.display = 'none';
+        saved.style.display = '';
+      });
+      saved.querySelector('.go-play-again').addEventListener('click', function(e){
+        e.preventDefault();
+        hide();
+        onPlayAgain();
+      });
+
+      return { show: show, hide: hide };
+    }
+    // Shared "click-and-drag" mouse control: calls onDir('up'|'down'|'left'|'right')
+    // continuously while the mouse is held and moved, same contract as the
+    // touch joystick callback — so games can wire one handler to both.
+    function wireMouseDrag(canvas, onDir){
+      var dragging = false, lastX = 0, lastY = 0;
+      var THRESHOLD = 12;
+      function toLocal(e){
+        var rect = canvas.getBoundingClientRect();
+        return { x: (e.clientX - rect.left) * (canvas.width / rect.width), y: (e.clientY - rect.top) * (canvas.height / rect.height) };
+      }
+      canvas.addEventListener('mousedown', function(e){
+        dragging = true;
+        var p = toLocal(e);
+        lastX = p.x; lastY = p.y;
+      });
+      window.addEventListener('mousemove', function(e){
+        if(!dragging) return;
+        var p = toLocal(e);
+        var dx = p.x - lastX, dy = p.y - lastY;
+        if(Math.abs(dx) < THRESHOLD && Math.abs(dy) < THRESHOLD) return;
+        if(Math.abs(dx) > Math.abs(dy)) onDir(dx > 0 ? 'right' : 'left');
+        else onDir(dy > 0 ? 'down' : 'up');
+        lastX = p.x; lastY = p.y;
+      });
+      window.addEventListener('mouseup', function(){ dragging = false; });
+    }
+    // Absolute position drag: while the mouse is held over the canvas,
+    // reports the local (x,y) on every move — used by Pong/Dodge, whose
+    // player position can track the cursor directly instead of by direction.
+    function wireMousePosition(canvas, onMove){
+      var dragging = false;
+      function toLocal(e){
+        var rect = canvas.getBoundingClientRect();
+        return { x: (e.clientX - rect.left) * (canvas.width / rect.width), y: (e.clientY - rect.top) * (canvas.height / rect.height) };
+      }
+      canvas.addEventListener('mousedown', function(e){ dragging = true; onMove(toLocal(e)); });
+      window.addEventListener('mousemove', function(e){ if(dragging) onMove(toLocal(e)); });
+      window.addEventListener('mouseup', function(){ dragging = false; });
+    }
     function gameIntro(emoji, title, rules, onPlay){
       var html =
         gameBackBtn() +
@@ -240,31 +331,45 @@
 
     function startSnakeGame(){
       var timer, keyHandler;
+      var MAX_LIVES = 3;
       var html =
         gameControlBar() +
-        '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="dsScore">0</b></span></div>' +
-        '<canvas id="demoSnakeCanvas" width="240" height="240"></canvas>' +
+        '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="dsScore">0</b></span><span class="game-lives mono" id="dsLives"></span></div>' +
+        '<div class="game-canvas-wrap"><canvas id="demoSnakeCanvas" width="240" height="240"></canvas></div>' +
+        gameOverPanel('ds') +
         '<div class="leaderboard" id="dsBoard"></div>' +
         '<div class="joystick only-touch" id="demoJoystick" aria-hidden="true">' +
           '<div class="joystick-base"><div class="joystick-knob" id="demoJoystickKnob"></div></div>' +
         '</div>' +
-        '<p class="term-hint only-desktop">' + tr('Flechas / WASD. Se reinicia solo si perdés.','Arrow keys / WASD. Restarts on its own if you lose.') + '</p>' +
-        '<p class="term-hint only-touch">' + tr('Arrastrá el joystick. Se reinicia solo si perdés.','Drag the joystick. Restarts on its own if you lose.') + '</p>';
+        '<p class="term-hint only-desktop">' + tr('Flechas / WASD, o hacé clic y arrastrá. 3 vidas.','Arrow keys / WASD, or click and drag. 3 lives.') + '</p>' +
+        '<p class="term-hint only-touch">' + tr('Arrastrá el joystick. 3 vidas.','Drag the joystick. 3 lives.') + '</p>';
 
       window.__openDemo(tr('Snake — minijuego','Snake — mini game'), html, function(body){
         var canvas = document.getElementById('demoSnakeCanvas');
         var ctx = canvas.getContext('2d');
         var scoreEl = document.getElementById('dsScore');
+        var livesEl = document.getElementById('dsLives');
         var CELL = 20, COLS = 12, ROWS = 12;
-        var snake, dir, nextDir, food, score;
+        var snake, dir, nextDir, food, score, lives;
+        var over = false;
+        var gameOver = wireGameOver('ds', 'snake', function(){ return score; }, newGame);
 
         function place(){
           var ok=false, fx, fy;
           while(!ok){ fx=Math.floor(Math.random()*COLS); fy=Math.floor(Math.random()*ROWS); ok=!snake.some(function(s){return s.x===fx&&s.y===fy;}); }
           food={x:fx,y:fy};
         }
-        function reset(){
-          snake=[{x:5,y:6},{x:4,y:6},{x:3,y:6}]; dir={x:1,y:0}; nextDir={x:1,y:0}; score=0; scoreEl.textContent='0'; place();
+        function resetRound(){
+          snake=[{x:5,y:6},{x:4,y:6},{x:3,y:6}]; dir={x:1,y:0}; nextDir={x:1,y:0}; place();
+        }
+        function newGame(){
+          score = 0; lives = MAX_LIVES; over = false;
+          scoreEl.textContent = '0';
+          livesEl.innerHTML = livesDots(lives, MAX_LIVES);
+          resetRound();
+          draw();
+          clearInterval(timer);
+          timer = setInterval(tick, 130);
         }
         function draw(){
           ctx.fillStyle='#171716'; ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -272,36 +377,49 @@
           ctx.fillStyle='#ff4d1c'; ctx.fillRect(food.x*CELL+2, food.y*CELL+2, CELL-4, CELL-4);
         }
         function tick(){
+          if(over) return;
           dir = nextDir;
           var head = {x:snake[0].x+dir.x, y:snake[0].y+dir.y};
           var hit = head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS||snake.some(function(s){return s.x===head.x&&s.y===head.y;});
-          if(hit){ gameBeep(120,0.25); gameVibrate(120); if(window.__submitScore && score > 0) window.__submitScore('snake', score); reset(); draw(); return; }
+          if(hit){
+            gameBeep(120,0.25); gameVibrate(120);
+            lives--; livesEl.innerHTML = livesDots(lives, MAX_LIVES);
+            if(lives <= 0){
+              over = true; clearInterval(timer);
+              gameOver.show(score);
+              draw();
+              return;
+            }
+            resetRound(); draw(); return;
+          }
           snake.unshift(head);
           if(head.x===food.x && head.y===food.y){ score++; scoreEl.textContent=String(score); gameBeep(660,0.08); gameVibrate(15); place(); }
           else snake.pop();
           draw();
         }
-        reset(); draw();
-        timer = setInterval(tick, 130);
+        newGame();
 
+        function handleDir(d){
+          if(over) return;
+          if(d==='up'&&dir.y!==1) nextDir={x:0,y:-1};
+          else if(d==='down'&&dir.y!==-1) nextDir={x:0,y:1};
+          else if(d==='left'&&dir.x!==1) nextDir={x:-1,y:0};
+          else if(d==='right'&&dir.x!==-1) nextDir={x:1,y:0};
+        }
         keyHandler = function(e){
           var k = e.key.toLowerCase();
-          if((k==='arrowup'||k==='w') && dir.y!==1){ nextDir={x:0,y:-1}; e.preventDefault(); }
-          else if((k==='arrowdown'||k==='s') && dir.y!==-1){ nextDir={x:0,y:1}; e.preventDefault(); }
-          else if((k==='arrowleft'||k==='a') && dir.x!==1){ nextDir={x:-1,y:0}; e.preventDefault(); }
-          else if((k==='arrowright'||k==='d') && dir.x!==-1){ nextDir={x:1,y:0}; e.preventDefault(); }
+          if(k==='arrowup'||k==='w'){ handleDir('up'); e.preventDefault(); }
+          else if(k==='arrowdown'||k==='s'){ handleDir('down'); e.preventDefault(); }
+          else if(k==='arrowleft'||k==='a'){ handleDir('left'); e.preventDefault(); }
+          else if(k==='arrowright'||k==='d'){ handleDir('right'); e.preventDefault(); }
         };
         document.addEventListener('keydown', keyHandler);
+        wireMouseDrag(canvas, handleDir);
         if(window.__createJoystick){
-          window.__createJoystick(body.querySelector('#demoJoystick'), body.querySelector('#demoJoystickKnob'), function(d){
-            if(d==='up'&&dir.y!==1) nextDir={x:0,y:-1};
-            else if(d==='down'&&dir.y!==-1) nextDir={x:0,y:1};
-            else if(d==='left'&&dir.x!==1) nextDir={x:-1,y:0};
-            else if(d==='right'&&dir.x!==-1) nextDir={x:1,y:0};
-          });
+          window.__createJoystick(body.querySelector('#demoJoystick'), body.querySelector('#demoJoystickKnob'), handleDir);
         }
 
-        wireGameBar(body, reset);
+        wireGameBar(body, newGame);
         if(window.__renderLeaderboard) window.__renderLeaderboard('snake', 'dsBoard');
       }, function(){
         clearInterval(timer);
@@ -316,38 +434,48 @@
     }
 
     function startPongGame(){
-      var raf, keyDownHandler, keyUpHandler, score;
+      var raf, keyDownHandler, keyUpHandler;
+      var MAX_LIVES = 3;
       var html =
         gameControlBar() +
-        '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="dpScore">0</b></span></div>' +
-        '<canvas id="demoPongCanvas" width="240" height="240"></canvas>' +
+        '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="dpScore">0</b></span><span class="game-lives mono" id="dpLives"></span></div>' +
+        '<div class="game-canvas-wrap"><canvas id="demoPongCanvas" width="240" height="240"></canvas></div>' +
+        gameOverPanel('dp') +
         '<div class="leaderboard" id="dpBoard"></div>' +
         '<div class="joystick only-touch" id="pongJoystick" aria-hidden="true">' +
           '<div class="joystick-base"><div class="joystick-knob" id="pongJoystickKnob"></div></div>' +
         '</div>' +
-        '<p class="term-hint only-desktop">' + tr('Flechas / A-D para mover la paleta.','Arrow keys / A-D to move the paddle.') + '</p>' +
-        '<p class="term-hint only-touch">' + tr('Arrastrá el joystick para mover la paleta.','Drag the joystick to move the paddle.') + '</p>';
+        '<p class="term-hint only-desktop">' + tr('Flechas / A-D, o hacé clic y arrastrá. 3 vidas.','Arrow keys / A-D, or click and drag. 3 lives.') + '</p>' +
+        '<p class="term-hint only-touch">' + tr('Arrastrá el joystick para mover la paleta. 3 vidas.','Drag the joystick to move the paddle. 3 lives.') + '</p>';
 
       window.__openDemo(tr('Pong — minijuego','Pong — mini game'), html, function(body){
         var canvas = document.getElementById('demoPongCanvas');
         var ctx = canvas.getContext('2d');
         var scoreEl = document.getElementById('dpScore');
+        var livesEl = document.getElementById('dpLives');
         var W = canvas.width, H = canvas.height;
         var PW = 48, PH = 8;
-        var player, cpu, ball, frame, speedMult;
+        var player, cpu, ball, frame, speedMult, score, lives;
+        var over = false;
         var keys = { left:false, right:false };
+        var gameOver = wireGameOver('dp', 'pong', function(){ return score; }, newGame);
 
         function resetBall(dir){
           ball = { x: W/2, y: H/2, r: 5 };
           ball.vx = (Math.random() < 0.5 ? -1 : 1) * (2 + Math.random()) * speedMult;
           ball.vy = dir * (2.4 + Math.random()*0.6) * speedMult;
         }
-        function reset(){
+        function newGame(){
           player = { x: (W-PW)/2 };
           cpu = { x: (W-PW)/2 };
           score = 0; scoreEl.textContent = '0';
+          lives = MAX_LIVES; livesEl.innerHTML = livesDots(lives, MAX_LIVES);
+          over = false;
           frame = 0; speedMult = 0.6;
           resetBall(-1);
+          draw();
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(step);
         }
 
         function draw(){
@@ -360,6 +488,7 @@
         }
 
         function step(){
+          if(over) return;
           frame++;
           if(frame % 300 === 0 && speedMult < 1.3) speedMult = Math.min(1.3, speedMult + 0.05);
 
@@ -388,7 +517,12 @@
             gameBeep(300, 0.05);
           }
 
-          if(ball.y - ball.r > H){ gameBeep(150,0.2); gameVibrate(80); resetBall(-1); }
+          if(ball.y - ball.r > H){
+            gameBeep(150,0.2); gameVibrate(80);
+            lives--; livesEl.innerHTML = livesDots(lives, MAX_LIVES);
+            if(lives <= 0){ over = true; gameOver.show(score); draw(); return; }
+            resetBall(-1);
+          }
           if(ball.y + ball.r < 0) resetBall(1);
 
           draw();
@@ -410,22 +544,24 @@
 
         if(window.__createJoystick){
           window.__createJoystick(body.querySelector('#pongJoystick'), body.querySelector('#pongJoystickKnob'), function(d){
+            if(over) return;
             if(d==='left') player.x = Math.max(0, player.x - 5);
             else if(d==='right') player.x = Math.min(W-PW, player.x + 5);
           });
         }
+        wireMousePosition(canvas, function(p){
+          if(over) return;
+          player.x = Math.max(0, Math.min(W-PW, p.x - PW/2));
+        });
 
-        reset();
-        draw();
-        raf = requestAnimationFrame(step);
+        newGame();
 
-        wireGameBar(body, reset);
+        wireGameBar(body, newGame);
         if(window.__renderLeaderboard) window.__renderLeaderboard('pong', 'dpBoard');
       }, function(){
         cancelAnimationFrame(raf);
         document.removeEventListener('keydown', keyDownHandler);
         document.removeEventListener('keyup', keyUpHandler);
-        if(window.__submitScore && score > 0) window.__submitScore('pong', score);
       });
     }
 
@@ -437,29 +573,39 @@
 
     function startDodgeGame(){
       var raf, keyDownHandler, keyUpHandler;
+      var MAX_LIVES = 3;
       var html =
         gameControlBar() +
-        '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="ddScore">0</b></span></div>' +
-        '<canvas id="demoDodgeCanvas" width="240" height="240"></canvas>' +
+        '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="ddScore">0</b></span><span class="game-lives mono" id="ddLives"></span></div>' +
+        '<div class="game-canvas-wrap"><canvas id="demoDodgeCanvas" width="240" height="240"></canvas></div>' +
+        gameOverPanel('dd') +
         '<div class="leaderboard" id="ddBoard"></div>' +
         '<div class="joystick only-touch" id="dodgeJoystick" aria-hidden="true">' +
           '<div class="joystick-base"><div class="joystick-knob" id="dodgeJoystickKnob"></div></div>' +
         '</div>' +
-        '<p class="term-hint only-desktop">' + tr('Flechas / W-S para esquivar. Se reinicia solo si chocás.','Arrow keys / W-S to dodge. Restarts on its own if you crash.') + '</p>' +
-        '<p class="term-hint only-touch">' + tr('Arrastrá el joystick para esquivar.','Drag the joystick to dodge.') + '</p>';
+        '<p class="term-hint only-desktop">' + tr('Flechas / W-S, o hacé clic y arrastrá. 3 vidas.','Arrow keys / W-S, or click and drag. 3 lives.') + '</p>' +
+        '<p class="term-hint only-touch">' + tr('Arrastrá el joystick para esquivar. 3 vidas.','Drag the joystick to dodge. 3 lives.') + '</p>';
 
       window.__openDemo(tr('Esquivar — minijuego','Dodge — mini game'), html, function(body){
         var canvas = document.getElementById('demoDodgeCanvas');
         var ctx = canvas.getContext('2d');
         var scoreEl = document.getElementById('ddScore');
+        var livesEl = document.getElementById('ddLives');
         var W = canvas.width, H = canvas.height;
         var player = { x: 26, y: H/2, size: 14 };
         var obstacles = [];
-        var score = 0, frame = 0, speed = 1.6;
+        var score, frame, speed, lives;
+        var over = false;
         var keys = { up:false, down:false };
+        var gameOver = wireGameOver('dd', 'dodge', function(){ return score; }, newGame);
 
-        function reset(){
+        function newGame(){
           obstacles = []; score = 0; scoreEl.textContent = '0'; frame = 0; speed = 1.6; player.y = H/2;
+          lives = MAX_LIVES; livesEl.innerHTML = livesDots(lives, MAX_LIVES);
+          over = false;
+          draw();
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(step);
         }
         function spawn(){
           var gapH = 46;
@@ -477,6 +623,7 @@
           ctx.fillRect(player.x-player.size/2, player.y-player.size/2, player.size, player.size);
         }
         function step(){
+          if(over) return;
           frame++;
           if(frame % 70 === 0) spawn();
           if(frame % 450 === 0 && speed < 4.2) speed = Math.min(4.2, speed + 0.25);
@@ -498,7 +645,12 @@
             if(!withinX) return false;
             return (player.y - player.size/2 < o.gapY) || (player.y + player.size/2 > o.gapY + o.gapH);
           });
-          if(crashed){ gameBeep(120,0.25); gameVibrate(120); if(window.__submitScore && score > 0) window.__submitScore('dodge', score); reset(); }
+          if(crashed){
+            gameBeep(120,0.25); gameVibrate(120);
+            lives--; livesEl.innerHTML = livesDots(lives, MAX_LIVES);
+            if(lives <= 0){ over = true; gameOver.show(score); draw(); return; }
+            obstacles = []; frame = 0; player.y = H/2;
+          }
 
           draw();
           raf = requestAnimationFrame(step);
@@ -519,16 +671,19 @@
 
         if(window.__createJoystick){
           window.__createJoystick(body.querySelector('#dodgeJoystick'), body.querySelector('#dodgeJoystickKnob'), function(d){
+            if(over) return;
             if(d==='up') player.y = Math.max(player.size/2, player.y - 6);
             else if(d==='down') player.y = Math.min(H-player.size/2, player.y + 6);
           });
         }
+        wireMousePosition(canvas, function(p){
+          if(over) return;
+          player.y = Math.max(player.size/2, Math.min(H-player.size/2, p.y));
+        });
 
-        reset();
-        draw();
-        raf = requestAnimationFrame(step);
+        newGame();
 
-        wireGameBar(body, reset);
+        wireGameBar(body, newGame);
         if(window.__renderLeaderboard) window.__renderLeaderboard('dodge', 'ddBoard');
       }, function(){
         cancelAnimationFrame(raf);

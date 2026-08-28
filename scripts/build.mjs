@@ -20,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const SRC = path.join(ROOT, 'src');
 
-const JS_MODULES = ['i18n.js', 'ui.js', 'terminal.js', 'lifecycle.js', 'footer.js', 'gate.js', 'supabase.js'];
+const JS_MODULES = ['i18n.js', 'ui.js', 'terminal.js', 'icons.js', 'lifecycle.js', 'footer.js', 'gate.js', 'supabase.js'];
 
 function read(relPath) {
   return fs.readFileSync(path.join(SRC, relPath), 'utf8');

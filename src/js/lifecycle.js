@@ -6,27 +6,29 @@
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
 
-  /* ---------------- background grid: traveling data nodes ---------------- */
+  /* ---------------- background grid: traveling icons ---------------- */
   (function(){
     var canvas = document.getElementById('bgGrid');
     if(!canvas) return;
     var ctx = canvas.getContext('2d');
     var reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     var GRID = 64;
+    var ICON_SIZE = 16;
+    var accentHex = '#cbff3e';
+    try{ accentHex = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || accentHex; } catch(e){}
     var accentRGB = '0,0,0';
-
-    function hexToRgb(hex){
-      hex = hex.trim().replace('#', '');
+    (function(){
+      var hex = accentHex.replace('#', '');
       if(hex.length === 3) hex = hex.split('').map(function(c){ return c + c; }).join('');
-      var num = parseInt(hex, 16);
-      return (num >> 16 & 255) + ',' + (num >> 8 & 255) + ',' + (num & 255);
-    }
-    try{
-      var accentHex = getComputedStyle(document.documentElement).getPropertyValue('--accent');
-      accentRGB = hexToRgb(accentHex);
-    } catch(e){}
+      var num = parseInt(hex, 16) || 0;
+      accentRGB = (num >> 16 & 255) + ',' + (num >> 8 & 255) + ',' + (num & 255);
+    })();
 
     var nodes = [], raf, last = null;
+    var iconImages = [], iconsReady = false;
+    // ICON_PATHS + loadIconImages come from icons.js — same set the footer
+    // rain uses, so the two effects read as one consistent system.
+    loadIconImages(accentHex, function(images){ iconImages = images; iconsReady = true; });
 
     function buildNodes(){
       var cols = Math.ceil(canvas.width / GRID);
@@ -43,7 +45,8 @@
           pos: lineIndex * GRID,
           travel: Math.random() * limit,
           speed: 14 + Math.random() * 34,
-          dir: Math.random() < 0.5 ? 1 : -1
+          dir: Math.random() < 0.5 ? 1 : -1,
+          icon: Math.floor(Math.random() * ICON_PATHS.length)
         });
       }
     }
@@ -67,9 +70,8 @@
     }
 
     function drawNodes(dt){
-      ctx.shadowColor = 'rgba(' + accentRGB + ',0.9)';
-      ctx.shadowBlur = 6;
-      ctx.fillStyle = 'rgba(' + accentRGB + ',0.8)';
+      if(!iconsReady) return;
+      ctx.globalAlpha = 0.5;
       nodes.forEach(function(n){
         var limit = n.horizontal ? canvas.width : canvas.height;
         n.travel += n.speed * n.dir * dt;
@@ -77,11 +79,10 @@
         if(n.travel > limit + 12) n.travel = -12;
         var x = n.horizontal ? n.travel : n.pos;
         var y = n.horizontal ? n.pos : n.travel;
-        ctx.beginPath();
-        ctx.arc(x, y, 2.2, 0, Math.PI * 2);
-        ctx.fill();
+        var img = iconImages[n.icon];
+        if(img && img.complete) ctx.drawImage(img, x - ICON_SIZE / 2, y - ICON_SIZE / 2, ICON_SIZE, ICON_SIZE);
       });
-      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
     }
 
     function frame(ts){

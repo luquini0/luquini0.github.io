@@ -17,7 +17,14 @@
 
     function tr(es, en){ return (document.body.getAttribute('data-lang') === 'en') ? en : es; }
 
-    function submitScore(game, score){
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, function(c){
+        return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+      });
+    }
+
+    // `name` is optional (nickname only, not an account — never required).
+    function submitScore(game, score, name){
       try{
         fetch(SUPABASE_URL + '/functions/v1/submit-score', {
           method: 'POST',
@@ -26,7 +33,7 @@
             'Authorization': 'Bearer ' + SUPABASE_KEY,
             'apikey': SUPABASE_KEY
           },
-          body: JSON.stringify({ game: game, score: score })
+          body: JSON.stringify({ game: game, score: score, name: name || null })
         }).catch(function(){});
       } catch(e){}
     }
@@ -36,7 +43,7 @@
       if(!el) return;
       el.innerHTML = '<div class="leaderboard-loading mono">' + tr('cargando ranking…','loading ranking…') + '</div>';
       try{
-        fetch(SUPABASE_URL + '/rest/v1/game_scores?select=score&game=eq.' + encodeURIComponent(game) + '&order=score.desc&limit=5', {
+        fetch(SUPABASE_URL + '/rest/v1/game_scores?select=score,name&game=eq.' + encodeURIComponent(game) + '&order=score.desc&limit=5', {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
         })
           .then(function(r){ return r.ok ? r.json() : []; })
@@ -46,7 +53,8 @@
               return;
             }
             var items = rows.map(function(row, i){
-              return '<li><span class="lb-rank">#' + (i + 1) + '</span><span class="lb-score">' + row.score + '</span></li>';
+              var name = row.name ? escapeHtml(row.name).toUpperCase() : tr('ANÓNIMO','ANON');
+              return '<li><span class="lb-rank">#' + (i + 1) + ' <span class="lb-name">' + name + '</span></span><span class="lb-score">' + row.score + '</span></li>';
             }).join('');
             el.innerHTML = '<span class="leaderboard-label mono">' + tr('top 5','top 5') + '</span><ol class="leaderboard-list mono">' + items + '</ol>';
           })

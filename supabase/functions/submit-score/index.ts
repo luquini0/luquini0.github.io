@@ -16,6 +16,23 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 const ALLOWED_GAMES = ["snake", "pong", "dodge"];
 const MAX_SCORE = 999;
+const MAX_NAME_LEN = 12;
+
+// Optional nickname only, never an account. Drops control characters by
+// char code (safer across transport layers than a regex escape range),
+// collapses whitespace, caps length. Empty after cleanup -> null, which
+// the frontend renders as anonymous.
+function sanitizeName(raw: unknown): string | null {
+  if (typeof raw !== "string") return null;
+  let noControl = "";
+  for (let i = 0; i < raw.length; i++) {
+    const code = raw.charCodeAt(i);
+    noControl += (code < 32 || code === 127) ? " " : raw[i];
+  }
+  const cleaned = noControl.split(" ").filter(Boolean).join(" ").trim();
+  if (!cleaned) return null;
+  return cleaned.slice(0, MAX_NAME_LEN);
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -31,7 +48,7 @@ Deno.serve(async (req: Request) => {
     return json({ error: "method_not_allowed" }, 405);
   }
 
-  let body: { game?: unknown; score?: unknown };
+  let body: { game?: unknown; score?: unknown; name?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -40,6 +57,7 @@ Deno.serve(async (req: Request) => {
 
   const game = body.game;
   const score = body.score;
+  const name = sanitizeName(body.name);
 
   if (typeof game !== "string" || !ALLOWED_GAMES.includes(game)) {
     return json({ error: "invalid_game" }, 400);
@@ -58,7 +76,7 @@ Deno.serve(async (req: Request) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
-  const { error } = await supabase.from("game_scores").insert({ game, score });
+  const { error } = await supabase.from("game_scores").insert({ game, score, name });
 
   if (error) {
     return json({ error: "insert_failed" }, 500);
