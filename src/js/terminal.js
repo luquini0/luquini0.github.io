@@ -208,24 +208,32 @@
         '<div class="go-title mono">' + tr('GAME OVER','GAME OVER') + '</div>' +
         '<div class="go-score mono">' + tr('Puntos','Score') + ': <b id="' + idPrefix + 'FinalScore">0</b></div>' +
         '<form class="go-form" id="' + idPrefix + 'Form" autocomplete="off">' +
-          '<input type="text" id="' + idPrefix + 'NameInput" class="mono" maxlength="12" data-es-placeholder="Tu nombre (opcional)" data-en-placeholder="Your name (optional)" placeholder="' + tr('Tu nombre (opcional)','Your name (optional)') + '">' +
+          '<input type="text" id="' + idPrefix + 'NameInput" class="mono" maxlength="12" data-es-placeholder="Tu nickname" data-en-placeholder="Your nickname" placeholder="' + tr('Tu nickname','Your nickname') + '">' +
           '<button type="submit" class="btn btn-primary">' + tr('Guardar','Save') + '</button>' +
         '</form>' +
+        '<p class="go-error mono" id="' + idPrefix + 'Error" style="display:none;">' + tr('Poné un nickname para guardar tu puntaje.','Enter a nickname to save your score.') + '</p>' +
+        '<p class="go-skip mono"><a href="#" class="go-play-again-skip">' + tr('jugar de nuevo sin guardar →','play again without saving →') + '</a></p>' +
         '<p class="go-saved mono" id="' + idPrefix + 'Saved" style="display:none;">' + tr('¡Guardado! →','Saved! →') + ' <a href="#" class="go-play-again">' + tr('jugar de nuevo','play again') + '</a></p>' +
       '</div>';
     }
-    // Wires the name-entry form for a game-over panel. `getScore` reads the
-    // final score at submit time; `onPlayAgain` should fully reset the game
-    // (score + lives) and hide the panel.
+    // Wires the name-entry form for a game-over panel. A nickname is required
+    // to actually register a score (server-side the column allows null, but
+    // the UI now enforces it so leaderboard entries always have a name) —
+    // players who don't want to save can always bail via the "skip" link.
+    // `getScore` reads the final score at submit time; `onPlayAgain` should
+    // fully reset the game (score + lives) and hide the panel.
     function wireGameOver(idPrefix, game, getScore, onPlayAgain){
       var panel = document.getElementById(idPrefix + 'Over');
       var form = document.getElementById(idPrefix + 'Form');
       var input = document.getElementById(idPrefix + 'NameInput');
+      var errorEl = document.getElementById(idPrefix + 'Error');
       var saved = document.getElementById(idPrefix + 'Saved');
       var finalScoreEl = document.getElementById(idPrefix + 'FinalScore');
+      var skipLink = panel.querySelector('.go-play-again-skip');
 
       function show(score){
         finalScoreEl.textContent = String(score);
+        errorEl.style.display = 'none';
         saved.style.display = 'none';
         form.style.display = '';
         input.value = '';
@@ -236,11 +244,22 @@
 
       form.addEventListener('submit', function(e){
         e.preventDefault();
-        var name = (input.value || '').trim().slice(0, 12) || null;
+        var name = (input.value || '').trim().slice(0, 12);
+        if(!name){
+          errorEl.style.display = '';
+          input.focus();
+          return;
+        }
+        errorEl.style.display = 'none';
         if(window.__submitScore) window.__submitScore(game, getScore(), name);
         if(window.__renderLeaderboard) window.__renderLeaderboard(game, idPrefix + 'Board');
         form.style.display = 'none';
         saved.style.display = '';
+      });
+      skipLink.addEventListener('click', function(e){
+        e.preventDefault();
+        hide();
+        onPlayAgain();
       });
       saved.querySelector('.go-play-again').addEventListener('click', function(e){
         e.preventDefault();
@@ -363,6 +382,7 @@
           snake=[{x:5,y:6},{x:4,y:6},{x:3,y:6}]; dir={x:1,y:0}; nextDir={x:1,y:0}; place();
         }
         function newGame(){
+          gameOver.hide();
           score = 0; lives = MAX_LIVES; over = false;
           scoreEl.textContent = '0';
           livesEl.innerHTML = livesDots(lives, MAX_LIVES);
@@ -466,6 +486,7 @@
           ball.vy = dir * (2.4 + Math.random()*0.6) * speedMult;
         }
         function newGame(){
+          gameOver.hide();
           player = { x: (W-PW)/2 };
           cpu = { x: (W-PW)/2 };
           score = 0; scoreEl.textContent = '0';
@@ -600,6 +621,7 @@
         var gameOver = wireGameOver('dd', 'dodge', function(){ return score; }, newGame);
 
         function newGame(){
+          gameOver.hide();
           obstacles = []; score = 0; scoreEl.textContent = '0'; frame = 0; speed = 1.6; player.y = H/2;
           lives = MAX_LIVES; livesEl.innerHTML = livesDots(lives, MAX_LIVES);
           over = false;

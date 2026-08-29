@@ -23,7 +23,8 @@
       });
     }
 
-    // `name` is optional (nickname only, not an account — never required).
+    // `name` is a nickname only, never an account — but the UI now requires
+    // one before it will call this, so every saved score has a name.
     function submitScore(game, score, name){
       try{
         fetch(SUPABASE_URL + '/functions/v1/submit-score', {
@@ -42,11 +43,17 @@
       var el = document.getElementById(containerId);
       if(!el) return;
       el.innerHTML = '<div class="leaderboard-loading mono">' + tr('cargando ranking…','loading ranking…') + '</div>';
+      function showError(){
+        el.innerHTML = '<div class="leaderboard-error mono">' + tr('no se pudo cargar el ranking.','couldn’t load the ranking.') +
+          ' <a href="#" class="lb-retry">' + tr('reintentar','retry') + '</a></div>';
+        var retry = el.querySelector('.lb-retry');
+        if(retry) retry.addEventListener('click', function(e){ e.preventDefault(); renderLeaderboard(game, containerId); });
+      }
       try{
         fetch(SUPABASE_URL + '/rest/v1/game_scores?select=score,name&game=eq.' + encodeURIComponent(game) + '&order=score.desc&limit=5', {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
         })
-          .then(function(r){ return r.ok ? r.json() : []; })
+          .then(function(r){ if(!r.ok) throw new Error('bad response'); return r.json(); })
           .then(function(rows){
             if(!rows || !rows.length){
               el.innerHTML = '<div class="leaderboard-empty mono">' + tr('sé el primero en sumar un puntaje','be the first to score') + '</div>';
@@ -58,8 +65,8 @@
             }).join('');
             el.innerHTML = '<span class="leaderboard-label mono">' + tr('top 5','top 5') + '</span><ol class="leaderboard-list mono">' + items + '</ol>';
           })
-          .catch(function(){ el.innerHTML = ''; });
-      } catch(e){ el.innerHTML = ''; }
+          .catch(showError);
+      } catch(e){ showError(); }
     }
 
     function logGateSession(entry){
