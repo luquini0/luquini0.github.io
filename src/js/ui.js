@@ -90,8 +90,10 @@
   })();
 
   /* ---------------- CV download gate (contact section button) ---------------- */
+  // Code is checked server-side (supabase/functions/get-cv-link) against a
+  // private Storage bucket — see the matching comment in terminal.js's `cv`
+  // command. No code and no file link ever sit in this page's source.
   (function(){
-    var CV_CODE = 'gettoknowme';
     var gate = document.querySelector('.cv-gate');
     var btn = document.getElementById('cvGateBtn');
     var form = document.getElementById('cvGateForm');
@@ -108,27 +110,33 @@
       input.focus();
     });
 
+    function downloadIcon(){
+      return '<svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+    }
+
     form.addEventListener('submit', function(e){
       e.preventDefault();
-      var val = (input.value || '').trim().toLowerCase();
-      if(val === CV_CODE){
+      // Same generic "incorrect code" message for a real wrong code or a
+      // network/server hiccup — errEl's text comes from its own data-es/
+      // data-en (see index.html), left untouched here so it still
+      // re-renders correctly on a language switch.
+      if(!window.__fetchCvLinks){
+        errEl.style.display = 'block';
+        return;
+      }
+      var code = (input.value || '').trim();
+      window.__fetchCvLinks(code, function(links){
         form.style.display = 'none';
         errEl.style.display = 'none';
         linksEl.innerHTML =
-          '<a href="CV_Luquini0_ES.docx" class="btn btn-ghost" download>' +
-            '<svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
-            tr('Descargar CV (ES)', 'Download CV (ES)') +
-          '</a>' +
-          '<a href="CV_Luquini0_EN.docx" class="btn btn-ghost" download>' +
-            '<svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
-            tr('Descargar CV (EN)', 'Download CV (EN)') +
-          '</a>';
+          '<a href="' + links.es + '" class="btn btn-ghost">' + downloadIcon() + tr('Descargar CV (ES)', 'Download CV (ES)') + '</a>' +
+          '<a href="' + links.en + '" class="btn btn-ghost">' + downloadIcon() + tr('Descargar CV (EN)', 'Download CV (EN)') + '</a>';
         linksEl.style.display = 'flex';
-      } else {
+      }, function(){
         errEl.style.display = 'block';
         input.value = '';
         input.focus();
-      }
+      });
     });
   })();
 

@@ -80,13 +80,14 @@
       ['Tap Mundial 2026', 'https://tap-mundial.pages.dev/']
     ];
 
-    /* CV downloads are code-gated: the file links never sit in the page
-       source, they're only built once the visitor types the right code. */
-    var CV_CODE = 'gettoknowme';
-    function printCvLinks(){
+    /* CV downloads are code-gated server-side (supabase/functions/
+       get-cv-link): the code is never checked here and no file link ever
+       sits in the page source — a correct code gets back short-lived
+       signed URLs from a private Storage bucket, built fresh each time. */
+    function printCvLinks(links){
       printRaw(tr('Descargar CV:', 'Download CV:'));
-      printRaw('<a href="CV_Luquini0_ES.docx" download>CV (ES) &rarr;</a>');
-      printRaw('<a href="CV_Luquini0_EN.docx" download>CV (EN) &rarr;</a>');
+      printRaw('<a href="' + links.es + '">CV (ES) &rarr;</a>');
+      printRaw('<a href="' + links.en + '">CV (EN) &rarr;</a>');
     }
     function startCvCode(){
       termState = 'cvcode';
@@ -102,15 +103,19 @@
         printRaw(tr('Cancelado.', 'Cancelled.'));
         return;
       }
-      if(raw.trim().toLowerCase() === CV_CODE){
+      if(!window.__fetchCvLinks){
+        printRaw('<span class="c2">✕</span> ' + tr('No se pudo verificar el código — probá de nuevo más tarde.', "Couldn't verify the code — try again later."));
+        return;
+      }
+      window.__fetchCvLinks(raw.trim(), function(links){
         termState = 'idle';
         termInput.type = 'text';
         termInput.placeholder = tr("escribí 'help' y presioná Enter", "type 'help' and press Enter");
         printRaw('<span class="c1">✓</span> ' + tr('Código correcto.', 'Correct code.'));
-        printCvLinks();
-      } else {
+        printCvLinks(links);
+      }, function(){
         printRaw('<span class="c2">✕</span> ' + tr('Código incorrecto — probá de nuevo (o <span class="c2">cancel</span>).', "Incorrect code — try again (or <span class=\"c2\">cancel</span>)."));
-      }
+      });
     }
 
     var guessTarget = null, guessTries = 0;

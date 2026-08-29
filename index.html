@@ -1477,8 +1477,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   })();
 
   /* ---------------- CV download gate (contact section button) ---------------- */
+  // Code is checked server-side (supabase/functions/get-cv-link) against a
+  // private Storage bucket — see the matching comment in terminal.js's `cv`
+  // command. No code and no file link ever sit in this page's source.
   (function(){
-    var CV_CODE = 'gettoknowme';
     var gate = document.querySelector('.cv-gate');
     var btn = document.getElementById('cvGateBtn');
     var form = document.getElementById('cvGateForm');
@@ -1495,27 +1497,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       input.focus();
     });
 
+    function downloadIcon(){
+      return '<svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+    }
+
     form.addEventListener('submit', function(e){
       e.preventDefault();
-      var val = (input.value || '').trim().toLowerCase();
-      if(val === CV_CODE){
+      // Same generic "incorrect code" message for a real wrong code or a
+      // network/server hiccup — errEl's text comes from its own data-es/
+      // data-en (see index.html), left untouched here so it still
+      // re-renders correctly on a language switch.
+      if(!window.__fetchCvLinks){
+        errEl.style.display = 'block';
+        return;
+      }
+      var code = (input.value || '').trim();
+      window.__fetchCvLinks(code, function(links){
         form.style.display = 'none';
         errEl.style.display = 'none';
         linksEl.innerHTML =
-          '<a href="CV_Luquini0_ES.docx" class="btn btn-ghost" download>' +
-            '<svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
-            tr('Descargar CV (ES)', 'Download CV (ES)') +
-          '</a>' +
-          '<a href="CV_Luquini0_EN.docx" class="btn btn-ghost" download>' +
-            '<svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
-            tr('Descargar CV (EN)', 'Download CV (EN)') +
-          '</a>';
+          '<a href="' + links.es + '" class="btn btn-ghost">' + downloadIcon() + tr('Descargar CV (ES)', 'Download CV (ES)') + '</a>' +
+          '<a href="' + links.en + '" class="btn btn-ghost">' + downloadIcon() + tr('Descargar CV (EN)', 'Download CV (EN)') + '</a>';
         linksEl.style.display = 'flex';
-      } else {
+      }, function(){
         errEl.style.display = 'block';
         input.value = '';
         input.focus();
-      }
+      });
     });
   })();
 
@@ -1630,13 +1638,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       ['Tap Mundial 2026', 'https://tap-mundial.pages.dev/']
     ];
 
-    /* CV downloads are code-gated: the file links never sit in the page
-       source, they're only built once the visitor types the right code. */
-    var CV_CODE = 'gettoknowme';
-    function printCvLinks(){
+    /* CV downloads are code-gated server-side (supabase/functions/
+       get-cv-link): the code is never checked here and no file link ever
+       sits in the page source — a correct code gets back short-lived
+       signed URLs from a private Storage bucket, built fresh each time. */
+    function printCvLinks(links){
       printRaw(tr('Descargar CV:', 'Download CV:'));
-      printRaw('<a href="CV_Luquini0_ES.docx" download>CV (ES) &rarr;</a>');
-      printRaw('<a href="CV_Luquini0_EN.docx" download>CV (EN) &rarr;</a>');
+      printRaw('<a href="' + links.es + '">CV (ES) &rarr;</a>');
+      printRaw('<a href="' + links.en + '">CV (EN) &rarr;</a>');
     }
     function startCvCode(){
       termState = 'cvcode';
@@ -1652,15 +1661,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         printRaw(tr('Cancelado.', 'Cancelled.'));
         return;
       }
-      if(raw.trim().toLowerCase() === CV_CODE){
+      if(!window.__fetchCvLinks){
+        printRaw('<span class="c2">✕</span> ' + tr('No se pudo verificar el código — probá de nuevo más tarde.', "Couldn't verify the code — try again later."));
+        return;
+      }
+      window.__fetchCvLinks(raw.trim(), function(links){
         termState = 'idle';
         termInput.type = 'text';
         termInput.placeholder = tr("escribí 'help' y presioná Enter", "type 'help' and press Enter");
         printRaw('<span class="c1">✓</span> ' + tr('Código correcto.', 'Correct code.'));
-        printCvLinks();
-      } else {
+        printCvLinks(links);
+      }, function(){
         printRaw('<span class="c2">✕</span> ' + tr('Código incorrecto — probá de nuevo (o <span class="c2">cancel</span>).', "Incorrect code — try again (or <span class=\"c2\">cancel</span>)."));
-      }
+      });
     }
 
     var guessTarget = null, guessTries = 0;
@@ -3553,9 +3566,40 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch(e){}
     }
 
+    // CV downloads: the code is checked server-side (supabase/functions/
+    // get-cv-link) against a private Storage bucket with zero anon
+    // policies — there is no local fallback and no code baked into this
+    // file, so unlike the old client-side check, reading this bundle
+    // doesn't reveal anything usable. On success the callback receives
+    // `{ es, en }` short-lived signed URLs (expire in 5 minutes).
+    function fetchCvLinks(code, onSuccess, onError){
+      try{
+        fetch(SUPABASE_URL + '/functions/v1/get-cv-link', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + SUPABASE_KEY,
+            'apikey': SUPABASE_KEY
+          },
+          body: JSON.stringify({ code: code })
+        })
+          .then(function(r){
+            return r.json().catch(function(){ return null; }).then(function(data){
+              return { ok: r.ok, data: data };
+            });
+          })
+          .then(function(res){
+            if(res.ok && res.data && res.data.links && res.data.links.es && res.data.links.en) onSuccess(res.data.links);
+            else onError();
+          })
+          .catch(onError);
+      } catch(e){ onError(); }
+    }
+
     window.__submitScore = submitScore;
     window.__renderLeaderboard = renderLeaderboard;
     window.__logGateSession = logGateSession;
+    window.__fetchCvLinks = fetchCvLinks;
   })();
 })();
 </script>

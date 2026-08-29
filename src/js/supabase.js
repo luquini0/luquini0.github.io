@@ -84,7 +84,38 @@
       } catch(e){}
     }
 
+    // CV downloads: the code is checked server-side (supabase/functions/
+    // get-cv-link) against a private Storage bucket with zero anon
+    // policies — there is no local fallback and no code baked into this
+    // file, so unlike the old client-side check, reading this bundle
+    // doesn't reveal anything usable. On success the callback receives
+    // `{ es, en }` short-lived signed URLs (expire in 5 minutes).
+    function fetchCvLinks(code, onSuccess, onError){
+      try{
+        fetch(SUPABASE_URL + '/functions/v1/get-cv-link', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + SUPABASE_KEY,
+            'apikey': SUPABASE_KEY
+          },
+          body: JSON.stringify({ code: code })
+        })
+          .then(function(r){
+            return r.json().catch(function(){ return null; }).then(function(data){
+              return { ok: r.ok, data: data };
+            });
+          })
+          .then(function(res){
+            if(res.ok && res.data && res.data.links && res.data.links.es && res.data.links.en) onSuccess(res.data.links);
+            else onError();
+          })
+          .catch(onError);
+      } catch(e){ onError(); }
+    }
+
     window.__submitScore = submitScore;
     window.__renderLeaderboard = renderLeaderboard;
     window.__logGateSession = logGateSession;
+    window.__fetchCvLinks = fetchCvLinks;
   })();
