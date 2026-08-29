@@ -21,6 +21,7 @@
     if(window.__termWelcome) window.__termWelcome();
     if(window.__gateRerender) window.__gateRerender();
     if(window.__footerRetype) window.__footerRetype();
+    if(window.__updateThemeToggleLabel) window.__updateThemeToggleLabel();
   }
   window.__setLang = applyLang;
 

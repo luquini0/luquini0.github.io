@@ -175,116 +175,162 @@
     function gameBackBtn(){
       return '<button type="button" class="game-btn game-back" title="' + tr('Elegir otro juego','Choose another game') + '">← ' + tr('Menú','Menu') + '</button>';
     }
-    function gameControlBar(){
-      return '<div class="game-bar">' +
-        gameBackBtn() +
-        '<span class="game-bar-spacer"></span>' +
-        '<button type="button" class="game-btn game-sound" title="' + tr('Sonido','Sound') + '">' + (GAME_PREFS.sound ? '🔊' : '🔇') + '</button>' +
-        '<button type="button" class="game-btn game-vibe" title="' + tr('Vibración','Vibration') + '">' + (GAME_PREFS.vibe ? '📳' : '📴') + '</button>' +
-        '<button type="button" class="game-btn game-reset" title="' + tr('Reiniciar','Reset') + '">↺</button>' +
-      '</div>';
-    }
-    function wireGameBar(body, onReset){
-      body.querySelector('.game-back').addEventListener('click', openPlayDemo);
-      var soundBtn = body.querySelector('.game-sound');
-      soundBtn.addEventListener('click', function(){
-        gameSetPref('sound', !GAME_PREFS.sound);
-        soundBtn.textContent = GAME_PREFS.sound ? '🔊' : '🔇';
-      });
-      var vibeBtn = body.querySelector('.game-vibe');
-      vibeBtn.addEventListener('click', function(){
-        gameSetPref('vibe', !GAME_PREFS.vibe);
-        vibeBtn.textContent = GAME_PREFS.vibe ? '📳' : '📴';
-      });
-      if(onReset) body.querySelector('.game-reset').addEventListener('click', onReset);
-    }
     function livesDots(lives, max){
       var out = '';
       for(var i = 0; i < max; i++) out += '<span' + (i < lives ? '' : ' class="lost"') + '>●</span>';
       return out;
     }
-    function gameOverPanel(idPrefix){
-      return '<div class="game-over" id="' + idPrefix + 'Over" style="display:none;">' +
-        '<div class="go-title mono">' + tr('GAME OVER','GAME OVER') + '</div>' +
-        '<div class="go-score mono">' + tr('Puntos','Score') + ': <b id="' + idPrefix + 'FinalScore">0</b></div>' +
-        '<form class="go-form" id="' + idPrefix + 'Form" autocomplete="off">' +
-          '<input type="text" id="' + idPrefix + 'NameInput" class="mono" maxlength="12" data-es-placeholder="Tu nickname" data-en-placeholder="Your nickname" placeholder="' + tr('Tu nickname','Your nickname') + '">' +
-          '<button type="submit" class="btn btn-primary">' + tr('Guardar','Save') + '</button>' +
-        '</form>' +
-        '<p class="go-error mono" id="' + idPrefix + 'Error" style="display:none;">' + tr('Poné un nickname para guardar tu puntaje.','Enter a nickname to save your score.') + '</p>' +
-        '<p class="go-skip mono"><a href="#" class="go-play-again-skip">' + tr('jugar de nuevo sin guardar →','play again without saving →') + '</a></p>' +
-        '<p class="go-saved mono" id="' + idPrefix + 'Saved" style="display:none;">' + tr('¡Guardado! →','Saved! →') + ' <a href="#" class="go-play-again">' + tr('jugar de nuevo','play again') + '</a></p>' +
+    // Icon-only sound/vibe toggles — live in each game's panel header now
+    // (see gamePanelHtml), not in the top play bar.
+    function soundVibeButtonsHtml(){
+      return '<button type="button" class="game-btn game-sound" title="' + tr('Sonido','Sound') + '">' + (GAME_PREFS.sound ? '🔊' : '🔇') + '</button>' +
+        '<button type="button" class="game-btn game-vibe" title="' + tr('Vibración','Vibration') + '">' + (GAME_PREFS.vibe ? '📳' : '📴') + '</button>';
+    }
+    function wireSoundVibeButtons(scope){
+      var soundBtn = scope.querySelector('.game-sound');
+      if(soundBtn) soundBtn.addEventListener('click', function(){
+        gameSetPref('sound', !GAME_PREFS.sound);
+        soundBtn.textContent = GAME_PREFS.sound ? '🔊' : '🔇';
+      });
+      var vibeBtn = scope.querySelector('.game-vibe');
+      if(vibeBtn) vibeBtn.addEventListener('click', function(){
+        gameSetPref('vibe', !GAME_PREFS.vibe);
+        vibeBtn.textContent = GAME_PREFS.vibe ? '📳' : '📴';
+      });
+    }
+    // Wires every "← Menú" button found under `scope` (the play bar has
+    // one, the panel bar has another) back to the game picker.
+    function wireBackButtons(scope){
+      scope.querySelectorAll('.game-back').forEach(function(btn){
+        btn.addEventListener('click', openPlayDemo);
+      });
+    }
+    // Markup for the bar shown while a game is actually running: back
+    // button, live lives dots, and a single gear button that opens the
+    // shared panel (paused) — sound/vibe/reset don't live here anymore so
+    // the background game is never one accidental tap away while playing.
+    function gamePlayBarHtml(idPrefix){
+      return '<div class="game-bar">' +
+        gameBackBtn() +
+        '<span class="game-bar-spacer"></span>' +
+        '<span class="game-lives mono" id="' + idPrefix + 'Lives"></span>' +
+        '<button type="button" class="game-btn game-gear" title="' + tr('Menú','Menu') + '">⚙</button>' +
       '</div>';
     }
-    // Wires the name-entry form for a game-over panel. A nickname is required
-    // to actually register a score (server-side the column allows null, but
-    // the UI now enforces it so leaderboard entries always have a name) —
-    // players who don't want to save can always bail via the "skip" link.
-    // `getScore` reads the final score at submit time; `onPlayAgain` should
-    // fully reset the game (score + lives) and hide the panel.
-    function wireGameOver(idPrefix, game, getScore, onPlayAgain){
-      var panel = document.getElementById(idPrefix + 'Over');
-      var form = document.getElementById(idPrefix + 'Form');
-      var input = document.getElementById(idPrefix + 'NameInput');
-      var errorEl = document.getElementById(idPrefix + 'Error');
-      var saved = document.getElementById(idPrefix + 'Saved');
-      var finalScoreEl = document.getElementById(idPrefix + 'FinalScore');
-      var skipLink = panel.querySelector('.go-play-again-skip');
+    // Markup for the shared panel: one overlay reused for the pre-game
+    // intro, the pause menu (opened via the gear button) and the game-over
+    // screen — always with sound/vibe toggles + a live leaderboard, and a
+    // `.gp-body` slot swapped per mode by createGamePanel().
+    function gamePanelHtml(idPrefix){
+      return '<div class="game-panel" id="' + idPrefix + 'Panel">' +
+        '<div class="game-bar">' + gameBackBtn() + '<span class="game-bar-spacer"></span>' + soundVibeButtonsHtml() + '</div>' +
+        '<div class="gp-body"></div>' +
+        '<div class="leaderboard" id="' + idPrefix + 'Board"></div>' +
+      '</div>';
+    }
+    // Creates the shared panel controller for one game. `playEl` wraps the
+    // actual play-bar/canvas/joystick and is hidden whenever the panel is
+    // showing, so the running game is never reachable behind it — this is
+    // what fixes the game-over popup getting stuck on screen with no way
+    // back in: there's now exactly one way to see the canvas again (Jugar /
+    // Reanudar / jugar de nuevo), and it always tears the panel down first.
+    // `hooks.onPlay()` must (re)start a fresh game (reset score+lives) and
+    // reveal `playEl`; `hooks.onResume()` must continue the current game
+    // unchanged and reveal `playEl`.
+    function createGamePanel(idPrefix, game, playEl, hooks){
+      var panel = document.getElementById(idPrefix + 'Panel');
+      var bodyEl = panel.querySelector('.gp-body');
+      wireBackButtons(panel);
+      wireSoundVibeButtons(panel);
 
-      function show(score){
-        finalScoreEl.textContent = String(score);
-        errorEl.style.display = 'none';
-        saved.style.display = 'none';
-        form.style.display = '';
-        input.value = '';
-        panel.style.display = '';
+      function refreshBoard(){
+        if(window.__renderLeaderboard) window.__renderLeaderboard(game, idPrefix + 'Board');
+      }
+      function reveal(){ panel.style.display = ''; playEl.style.display = 'none'; }
+      function conceal(){ panel.style.display = 'none'; playEl.style.display = ''; }
+
+      function showIntro(emoji, title, rules){
+        bodyEl.innerHTML =
+          '<div class="game-intro">' +
+            '<div class="g-emoji">' + emoji + '</div>' +
+            '<h3>' + title + '</h3>' +
+            '<p class="demo-note">' + rules + '</p>' +
+            '<button type="button" class="btn btn-primary gp-play" style="width:100%;justify-content:center;">▶ ' + tr('Jugar','Play') + '</button>' +
+          '</div>';
+        bodyEl.querySelector('.gp-play').addEventListener('click', function(){ conceal(); hooks.onPlay(); });
+        refreshBoard();
+        reveal();
+      }
+
+      function showPause(){
+        bodyEl.innerHTML =
+          '<div class="gp-heading">' + tr('Pausa','Paused') + '</div>' +
+          '<button type="button" class="btn btn-primary gp-resume" style="width:100%;justify-content:center;margin-bottom:8px;">▶ ' + tr('Reanudar','Resume') + '</button>' +
+          '<button type="button" class="btn btn-ghost gp-restart" style="width:100%;justify-content:center;">↺ ' + tr('Reiniciar','Restart') + '</button>';
+        bodyEl.querySelector('.gp-resume').addEventListener('click', function(){ conceal(); hooks.onResume(); });
+        bodyEl.querySelector('.gp-restart').addEventListener('click', function(){ conceal(); hooks.onPlay(); });
+        refreshBoard();
+        reveal();
+      }
+
+      // Nickname is required to actually register a score — the server
+      // column stays nullable, but the UI enforces it so every leaderboard
+      // entry has a name. Players who'd rather not save can always bail
+      // via the "skip" link instead of getting stuck on this screen.
+      function showGameOver(score){
+        bodyEl.innerHTML =
+          '<div class="go-title mono">' + tr('GAME OVER','GAME OVER') + '</div>' +
+          '<div class="go-score mono">' + tr('Puntos','Score') + ': <b>' + score + '</b></div>' +
+          '<form class="go-form" autocomplete="off">' +
+            '<input type="text" class="mono gp-name-input" maxlength="12" data-es-placeholder="Tu nickname" data-en-placeholder="Your nickname" placeholder="' + tr('Tu nickname','Your nickname') + '">' +
+            '<button type="submit" class="btn btn-primary">' + tr('Guardar','Save') + '</button>' +
+          '</form>' +
+          '<p class="go-error mono" style="display:none;">' + tr('Poné un nickname para guardar tu puntaje.','Enter a nickname to save your score.') + '</p>' +
+          '<p class="go-skip mono"><a href="#" class="gp-skip">' + tr('jugar de nuevo sin guardar →','play again without saving →') + '</a></p>' +
+          '<p class="go-saved mono" style="display:none;">' + tr('¡Guardado! →','Saved! →') + ' <a href="#" class="gp-again">' + tr('jugar de nuevo','play again') + '</a></p>';
+        var form = bodyEl.querySelector('form');
+        var input = bodyEl.querySelector('.gp-name-input');
+        var errorEl = bodyEl.querySelector('.go-error');
+        var saved = bodyEl.querySelector('.go-saved');
+        form.addEventListener('submit', function(e){
+          e.preventDefault();
+          var name = (input.value || '').trim().slice(0, 12);
+          if(!name){ errorEl.style.display = ''; input.focus(); return; }
+          errorEl.style.display = 'none';
+          if(window.__submitScore) window.__submitScore(game, score, name);
+          refreshBoard();
+          form.style.display = 'none';
+          saved.style.display = '';
+        });
+        bodyEl.querySelector('.gp-skip').addEventListener('click', function(e){ e.preventDefault(); conceal(); hooks.onPlay(); });
+        bodyEl.querySelector('.gp-again').addEventListener('click', function(e){ e.preventDefault(); conceal(); hooks.onPlay(); });
+        refreshBoard();
+        reveal();
         setTimeout(function(){ input.focus(); }, 50);
       }
-      function hide(){ panel.style.display = 'none'; }
 
-      form.addEventListener('submit', function(e){
-        e.preventDefault();
-        var name = (input.value || '').trim().slice(0, 12);
-        if(!name){
-          errorEl.style.display = '';
-          input.focus();
-          return;
-        }
-        errorEl.style.display = 'none';
-        if(window.__submitScore) window.__submitScore(game, getScore(), name);
-        if(window.__renderLeaderboard) window.__renderLeaderboard(game, idPrefix + 'Board');
-        form.style.display = 'none';
-        saved.style.display = '';
-      });
-      skipLink.addEventListener('click', function(e){
-        e.preventDefault();
-        hide();
-        onPlayAgain();
-      });
-      saved.querySelector('.go-play-again').addEventListener('click', function(e){
-        e.preventDefault();
-        hide();
-        onPlayAgain();
-      });
-
-      return { show: show, hide: hide };
+      return { showIntro: showIntro, showPause: showPause, showGameOver: showGameOver };
     }
-    // Shared "click-and-drag" mouse control: calls onDir('up'|'down'|'left'|'right')
-    // continuously while the mouse is held and moved, same contract as the
-    // touch joystick callback — so games can wire one handler to both.
+    // Shared "click-and-drag" pointer control: calls onDir('up'|'down'|'left'|'right')
+    // continuously while the pointer (mouse or touch) is held and moved,
+    // same contract as the touch joystick callback. Pointer Events cover
+    // mouse and touch with one code path, so dragging a finger directly on
+    // the canvas now works the same as a mouse drag.
     function wireMouseDrag(canvas, onDir){
       var dragging = false, lastX = 0, lastY = 0;
       var THRESHOLD = 12;
+      canvas.style.touchAction = 'none';
       function toLocal(e){
         var rect = canvas.getBoundingClientRect();
         return { x: (e.clientX - rect.left) * (canvas.width / rect.width), y: (e.clientY - rect.top) * (canvas.height / rect.height) };
       }
-      canvas.addEventListener('mousedown', function(e){
+      canvas.addEventListener('pointerdown', function(e){
         dragging = true;
+        try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
         var p = toLocal(e);
         lastX = p.x; lastY = p.y;
       });
-      window.addEventListener('mousemove', function(e){
+      canvas.addEventListener('pointermove', function(e){
         if(!dragging) return;
         var p = toLocal(e);
         var dx = p.x - lastX, dy = p.y - lastY;
@@ -293,34 +339,28 @@
         else onDir(dy > 0 ? 'down' : 'up');
         lastX = p.x; lastY = p.y;
       });
-      window.addEventListener('mouseup', function(){ dragging = false; });
+      canvas.addEventListener('pointerup', function(){ dragging = false; });
+      canvas.addEventListener('pointercancel', function(){ dragging = false; });
     }
-    // Absolute position drag: while the mouse is held over the canvas,
-    // reports the local (x,y) on every move — used by Pong/Dodge, whose
-    // player position can track the cursor directly instead of by direction.
+    // Absolute position drag: while the pointer (mouse or touch) is held
+    // over the canvas, reports the local (x,y) on every move — used by
+    // Pong/Dodge, whose player position can track the pointer directly
+    // instead of by direction.
     function wireMousePosition(canvas, onMove){
       var dragging = false;
+      canvas.style.touchAction = 'none';
       function toLocal(e){
         var rect = canvas.getBoundingClientRect();
         return { x: (e.clientX - rect.left) * (canvas.width / rect.width), y: (e.clientY - rect.top) * (canvas.height / rect.height) };
       }
-      canvas.addEventListener('mousedown', function(e){ dragging = true; onMove(toLocal(e)); });
-      window.addEventListener('mousemove', function(e){ if(dragging) onMove(toLocal(e)); });
-      window.addEventListener('mouseup', function(){ dragging = false; });
-    }
-    function gameIntro(emoji, title, rules, onPlay){
-      var html =
-        gameBackBtn() +
-        '<div class="game-intro" style="margin-top:14px;">' +
-          '<div class="g-emoji">' + emoji + '</div>' +
-          '<h3>' + title + '</h3>' +
-          '<p class="demo-note">' + rules + '</p>' +
-          '<button type="button" class="btn btn-primary game-play-btn" style="width:100%;justify-content:center;">▶ ' + tr('Jugar','Play') + '</button>' +
-        '</div>';
-      window.__openDemo(title, html, function(body){
-        body.querySelector('.game-back').addEventListener('click', openPlayDemo);
-        body.querySelector('.game-play-btn').addEventListener('click', onPlay);
-      }, null);
+      canvas.addEventListener('pointerdown', function(e){
+        dragging = true;
+        try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
+        onMove(toLocal(e));
+      });
+      canvas.addEventListener('pointermove', function(e){ if(dragging) onMove(toLocal(e)); });
+      canvas.addEventListener('pointerup', function(){ dragging = false; });
+      canvas.addEventListener('pointercancel', function(){ dragging = false; });
     }
 
     function openPlayDemo(){
@@ -334,44 +374,40 @@
         body.querySelectorAll('.game-pick').forEach(function(btn){
           btn.addEventListener('click', function(){
             var g = btn.getAttribute('data-game');
-            if(g === 'snake') openSnakeGame();
-            else if(g === 'pong') openPongGame();
-            else if(g === 'dodge') openDodgeGame();
+            if(g === 'snake') startSnakeGame();
+            else if(g === 'pong') startPongGame();
+            else if(g === 'dodge') startDodgeGame();
           });
         });
       }, null);
-    }
-
-    function openSnakeGame(){
-      gameIntro('🐍', tr('Snake','Snake'),
-        tr('Comé los cuadrados rojos para crecer y sumar puntos. Si chocás contra el borde o contra vos mismo, arrancás de nuevo.','Eat the red squares to grow and score. Hit the wall or yourself and you start over.'),
-        startSnakeGame);
     }
 
     function startSnakeGame(){
       var timer, keyHandler;
       var MAX_LIVES = 3;
       var html =
-        gameControlBar() +
-        '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="dsScore">0</b></span><span class="game-lives mono" id="dsLives"></span></div>' +
-        '<div class="game-canvas-wrap"><canvas id="demoSnakeCanvas" width="240" height="240"></canvas></div>' +
-        gameOverPanel('ds') +
-        '<div class="leaderboard" id="dsBoard"></div>' +
-        '<div class="joystick only-touch" id="demoJoystick" aria-hidden="true">' +
-          '<div class="joystick-base"><div class="joystick-knob" id="demoJoystickKnob"></div></div>' +
-        '</div>' +
-        '<p class="term-hint only-desktop">' + tr('Flechas / WASD, o hacé clic y arrastrá. 3 vidas.','Arrow keys / WASD, or click and drag. 3 lives.') + '</p>' +
-        '<p class="term-hint only-touch">' + tr('Arrastrá el joystick. 3 vidas.','Drag the joystick. 3 lives.') + '</p>';
+        gamePanelHtml('ds') +
+        '<div class="game-play" id="dsPlay" style="display:none;">' +
+          gamePlayBarHtml('ds') +
+          '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="dsScore">0</b></span></div>' +
+          '<div class="game-canvas-wrap"><canvas id="demoSnakeCanvas" width="240" height="240"></canvas></div>' +
+          '<div class="joystick only-touch" id="demoJoystick" aria-hidden="true">' +
+            '<div class="joystick-base"><div class="joystick-knob" id="demoJoystickKnob"></div></div>' +
+          '</div>' +
+          '<p class="term-hint only-desktop">' + tr('Flechas / WASD, o hacé clic y arrastrá. 3 vidas.','Arrow keys / WASD, or click and drag. 3 lives.') + '</p>' +
+          '<p class="term-hint only-touch">' + tr('Arrastrá el joystick o el dedo sobre el tablero. 3 vidas.','Drag the joystick or your finger on the board. 3 lives.') + '</p>' +
+        '</div>';
 
       window.__openDemo(tr('Snake — minijuego','Snake — mini game'), html, function(body){
+        var playEl = document.getElementById('dsPlay');
         var canvas = document.getElementById('demoSnakeCanvas');
         var ctx = canvas.getContext('2d');
         var scoreEl = document.getElementById('dsScore');
         var livesEl = document.getElementById('dsLives');
         var CELL = 20, COLS = 12, ROWS = 12;
         var snake, dir, nextDir, food, score, lives;
-        var over = false;
-        var gameOver = wireGameOver('ds', 'snake', function(){ return score; }, newGame);
+        var over = true, paused = false;
+        var panel = createGamePanel('ds', 'snake', playEl, { onPlay: newGame, onResume: resumeGame });
 
         function place(){
           var ok=false, fx, fy;
@@ -382,13 +418,22 @@
           snake=[{x:5,y:6},{x:4,y:6},{x:3,y:6}]; dir={x:1,y:0}; nextDir={x:1,y:0}; place();
         }
         function newGame(){
-          gameOver.hide();
-          score = 0; lives = MAX_LIVES; over = false;
+          score = 0; lives = MAX_LIVES; over = false; paused = false;
           scoreEl.textContent = '0';
           livesEl.innerHTML = livesDots(lives, MAX_LIVES);
           resetRound();
           draw();
           clearInterval(timer);
+          timer = setInterval(tick, 130);
+        }
+        function pauseGame(){
+          if(over || paused) return;
+          paused = true;
+          clearInterval(timer);
+          panel.showPause();
+        }
+        function resumeGame(){
+          paused = false;
           timer = setInterval(tick, 130);
         }
         function draw(){
@@ -397,7 +442,7 @@
           ctx.fillStyle='#ff4d1c'; ctx.fillRect(food.x*CELL+2, food.y*CELL+2, CELL-4, CELL-4);
         }
         function tick(){
-          if(over) return;
+          if(over || paused) return;
           dir = nextDir;
           var head = {x:snake[0].x+dir.x, y:snake[0].y+dir.y};
           var hit = head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS||snake.some(function(s){return s.x===head.x&&s.y===head.y;});
@@ -406,7 +451,7 @@
             lives--; livesEl.innerHTML = livesDots(lives, MAX_LIVES);
             if(lives <= 0){
               over = true; clearInterval(timer);
-              gameOver.show(score);
+              panel.showGameOver(score);
               draw();
               return;
             }
@@ -417,10 +462,9 @@
           else snake.pop();
           draw();
         }
-        newGame();
 
         function handleDir(d){
-          if(over) return;
+          if(over || paused) return;
           if(d==='up'&&dir.y!==1) nextDir={x:0,y:-1};
           else if(d==='down'&&dir.y!==-1) nextDir={x:0,y:1};
           else if(d==='left'&&dir.x!==1) nextDir={x:-1,y:0};
@@ -439,36 +483,34 @@
           window.__createJoystick(body.querySelector('#demoJoystick'), body.querySelector('#demoJoystickKnob'), handleDir);
         }
 
-        wireGameBar(body, newGame);
-        if(window.__renderLeaderboard) window.__renderLeaderboard('snake', 'dsBoard');
+        wireBackButtons(playEl);
+        playEl.querySelector('.game-gear').addEventListener('click', pauseGame);
+        panel.showIntro('🐍', tr('Snake','Snake'),
+          tr('Comé los cuadrados rojos para crecer y sumar puntos. Si chocás contra el borde o contra vos mismo, perdés una vida. 3 vidas.','Eat the red squares to grow and score. Hit the wall or yourself and you lose a life. 3 lives.'));
       }, function(){
         clearInterval(timer);
         document.removeEventListener('keydown', keyHandler);
       });
     }
 
-    function openPongGame(){
-      gameIntro('🏓', tr('Pong','Pong'),
-        tr('Movete de izquierda a derecha para devolver la pelota. La CPU juega arriba. Cada rebote tuyo suma un punto.','Move left and right to return the ball. The CPU plays up top. Every return you make scores a point.'),
-        startPongGame);
-    }
-
     function startPongGame(){
       var raf, keyDownHandler, keyUpHandler;
       var MAX_LIVES = 3;
       var html =
-        gameControlBar() +
-        '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="dpScore">0</b></span><span class="game-lives mono" id="dpLives"></span></div>' +
-        '<div class="game-canvas-wrap"><canvas id="demoPongCanvas" width="240" height="240"></canvas></div>' +
-        gameOverPanel('dp') +
-        '<div class="leaderboard" id="dpBoard"></div>' +
-        '<div class="joystick only-touch" id="pongJoystick" aria-hidden="true">' +
-          '<div class="joystick-base"><div class="joystick-knob" id="pongJoystickKnob"></div></div>' +
-        '</div>' +
-        '<p class="term-hint only-desktop">' + tr('Flechas / A-D, o hacé clic y arrastrá. 3 vidas.','Arrow keys / A-D, or click and drag. 3 lives.') + '</p>' +
-        '<p class="term-hint only-touch">' + tr('Arrastrá el joystick para mover la paleta. 3 vidas.','Drag the joystick to move the paddle. 3 lives.') + '</p>';
+        gamePanelHtml('dp') +
+        '<div class="game-play" id="dpPlay" style="display:none;">' +
+          gamePlayBarHtml('dp') +
+          '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="dpScore">0</b></span></div>' +
+          '<div class="game-canvas-wrap"><canvas id="demoPongCanvas" width="240" height="240"></canvas></div>' +
+          '<div class="joystick only-touch" id="pongJoystick" aria-hidden="true">' +
+            '<div class="joystick-base"><div class="joystick-knob" id="pongJoystickKnob"></div></div>' +
+          '</div>' +
+          '<p class="term-hint only-desktop">' + tr('Flechas / A-D, o hacé clic y arrastrá. 3 vidas.','Arrow keys / A-D, or click and drag. 3 lives.') + '</p>' +
+          '<p class="term-hint only-touch">' + tr('Arrastrá el joystick o el dedo sobre el tablero para mover la paleta. 3 vidas.','Drag the joystick or your finger on the board to move the paddle. 3 lives.') + '</p>' +
+        '</div>';
 
       window.__openDemo(tr('Pong — minijuego','Pong — mini game'), html, function(body){
+        var playEl = document.getElementById('dpPlay');
         var canvas = document.getElementById('demoPongCanvas');
         var ctx = canvas.getContext('2d');
         var scoreEl = document.getElementById('dpScore');
@@ -476,9 +518,9 @@
         var W = canvas.width, H = canvas.height;
         var PW = 48, PH = 8;
         var player, cpu, ball, frame, speedMult, score, lives;
-        var over = false;
+        var over = true, paused = false;
         var keys = { left:false, right:false };
-        var gameOver = wireGameOver('dp', 'pong', function(){ return score; }, newGame);
+        var panel = createGamePanel('dp', 'pong', playEl, { onPlay: newGame, onResume: resumeGame });
 
         function resetBall(dir){
           ball = { x: W/2, y: H/2, r: 5 };
@@ -486,16 +528,25 @@
           ball.vy = dir * (2.4 + Math.random()*0.6) * speedMult;
         }
         function newGame(){
-          gameOver.hide();
           player = { x: (W-PW)/2 };
           cpu = { x: (W-PW)/2 };
           score = 0; scoreEl.textContent = '0';
           lives = MAX_LIVES; livesEl.innerHTML = livesDots(lives, MAX_LIVES);
-          over = false;
+          over = false; paused = false;
           frame = 0; speedMult = 0.6;
           resetBall(-1);
           draw();
           cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(step);
+        }
+        function pauseGame(){
+          if(over || paused) return;
+          paused = true;
+          cancelAnimationFrame(raf);
+          panel.showPause();
+        }
+        function resumeGame(){
+          paused = false;
           raf = requestAnimationFrame(step);
         }
 
@@ -509,7 +560,7 @@
         }
 
         function step(){
-          if(over) return;
+          if(over || paused) return;
           frame++;
           if(frame % 300 === 0 && speedMult < 1.3) speedMult = Math.min(1.3, speedMult + 0.05);
 
@@ -541,7 +592,7 @@
           if(ball.y - ball.r > H){
             gameBeep(150,0.2); gameVibrate(80);
             lives--; livesEl.innerHTML = livesDots(lives, MAX_LIVES);
-            if(lives <= 0){ over = true; gameOver.show(score); draw(); return; }
+            if(lives <= 0){ over = true; panel.showGameOver(score); draw(); return; }
             resetBall(-1);
           }
           if(ball.y + ball.r < 0) resetBall(1);
@@ -565,20 +616,20 @@
 
         if(window.__createJoystick){
           window.__createJoystick(body.querySelector('#pongJoystick'), body.querySelector('#pongJoystickKnob'), function(d){
-            if(over) return;
+            if(over || paused) return;
             if(d==='left') player.x = Math.max(0, player.x - 5);
             else if(d==='right') player.x = Math.min(W-PW, player.x + 5);
           });
         }
         wireMousePosition(canvas, function(p){
-          if(over) return;
+          if(over || paused) return;
           player.x = Math.max(0, Math.min(W-PW, p.x - PW/2));
         });
 
-        newGame();
-
-        wireGameBar(body, newGame);
-        if(window.__renderLeaderboard) window.__renderLeaderboard('pong', 'dpBoard');
+        wireBackButtons(playEl);
+        playEl.querySelector('.game-gear').addEventListener('click', pauseGame);
+        panel.showIntro('🏓', tr('Pong','Pong'),
+          tr('Movete de izquierda a derecha para devolver la pelota. La CPU juega arriba. Cada rebote tuyo suma un punto.','Move left and right to return the ball. The CPU plays up top. Every return you make scores a point.'));
       }, function(){
         cancelAnimationFrame(raf);
         document.removeEventListener('keydown', keyDownHandler);
@@ -586,28 +637,24 @@
       });
     }
 
-    function openDodgeGame(){
-      gameIntro('🚀', tr('Esquivar','Dodge'),
-        tr('Subí y bajá para esquivar los obstáculos que vienen desde la derecha. Cada uno que pasás suma un punto, la velocidad sube con el tiempo.','Move up and down to dodge the obstacles coming from the right. Each one you pass scores a point, speed increases over time.'),
-        startDodgeGame);
-    }
-
     function startDodgeGame(){
       var raf, keyDownHandler, keyUpHandler;
       var MAX_LIVES = 3;
       var html =
-        gameControlBar() +
-        '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="ddScore">0</b></span><span class="game-lives mono" id="ddLives"></span></div>' +
-        '<div class="game-canvas-wrap"><canvas id="demoDodgeCanvas" width="240" height="240"></canvas></div>' +
-        gameOverPanel('dd') +
-        '<div class="leaderboard" id="ddBoard"></div>' +
-        '<div class="joystick only-touch" id="dodgeJoystick" aria-hidden="true">' +
-          '<div class="joystick-base"><div class="joystick-knob" id="dodgeJoystickKnob"></div></div>' +
-        '</div>' +
-        '<p class="term-hint only-desktop">' + tr('Flechas / W-S, o hacé clic y arrastrá. 3 vidas.','Arrow keys / W-S, or click and drag. 3 lives.') + '</p>' +
-        '<p class="term-hint only-touch">' + tr('Arrastrá el joystick para esquivar. 3 vidas.','Drag the joystick to dodge. 3 lives.') + '</p>';
+        gamePanelHtml('dd') +
+        '<div class="game-play" id="ddPlay" style="display:none;">' +
+          gamePlayBarHtml('dd') +
+          '<div class="demo-hud"><span>' + tr('Puntos','Score') + ': <b id="ddScore">0</b></span></div>' +
+          '<div class="game-canvas-wrap"><canvas id="demoDodgeCanvas" width="240" height="240"></canvas></div>' +
+          '<div class="joystick only-touch" id="dodgeJoystick" aria-hidden="true">' +
+            '<div class="joystick-base"><div class="joystick-knob" id="dodgeJoystickKnob"></div></div>' +
+          '</div>' +
+          '<p class="term-hint only-desktop">' + tr('Flechas / W-S, o hacé clic y arrastrá. 3 vidas.','Arrow keys / W-S, or click and drag. 3 lives.') + '</p>' +
+          '<p class="term-hint only-touch">' + tr('Arrastrá el joystick o el dedo sobre el tablero para esquivar. 3 vidas.','Drag the joystick or your finger on the board to dodge. 3 lives.') + '</p>' +
+        '</div>';
 
       window.__openDemo(tr('Esquivar — minijuego','Dodge — mini game'), html, function(body){
+        var playEl = document.getElementById('ddPlay');
         var canvas = document.getElementById('demoDodgeCanvas');
         var ctx = canvas.getContext('2d');
         var scoreEl = document.getElementById('ddScore');
@@ -616,17 +663,26 @@
         var player = { x: 26, y: H/2, size: 14 };
         var obstacles = [];
         var score, frame, speed, lives;
-        var over = false;
+        var over = true, paused = false;
         var keys = { up:false, down:false };
-        var gameOver = wireGameOver('dd', 'dodge', function(){ return score; }, newGame);
+        var panel = createGamePanel('dd', 'dodge', playEl, { onPlay: newGame, onResume: resumeGame });
 
         function newGame(){
-          gameOver.hide();
           obstacles = []; score = 0; scoreEl.textContent = '0'; frame = 0; speed = 1.6; player.y = H/2;
           lives = MAX_LIVES; livesEl.innerHTML = livesDots(lives, MAX_LIVES);
-          over = false;
+          over = false; paused = false;
           draw();
           cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(step);
+        }
+        function pauseGame(){
+          if(over || paused) return;
+          paused = true;
+          cancelAnimationFrame(raf);
+          panel.showPause();
+        }
+        function resumeGame(){
+          paused = false;
           raf = requestAnimationFrame(step);
         }
         function spawn(){
@@ -645,7 +701,7 @@
           ctx.fillRect(player.x-player.size/2, player.y-player.size/2, player.size, player.size);
         }
         function step(){
-          if(over) return;
+          if(over || paused) return;
           frame++;
           if(frame % 70 === 0) spawn();
           if(frame % 450 === 0 && speed < 4.2) speed = Math.min(4.2, speed + 0.25);
@@ -670,7 +726,7 @@
           if(crashed){
             gameBeep(120,0.25); gameVibrate(120);
             lives--; livesEl.innerHTML = livesDots(lives, MAX_LIVES);
-            if(lives <= 0){ over = true; gameOver.show(score); draw(); return; }
+            if(lives <= 0){ over = true; panel.showGameOver(score); draw(); return; }
             obstacles = []; frame = 0; player.y = H/2;
           }
 
@@ -693,20 +749,20 @@
 
         if(window.__createJoystick){
           window.__createJoystick(body.querySelector('#dodgeJoystick'), body.querySelector('#dodgeJoystickKnob'), function(d){
-            if(over) return;
+            if(over || paused) return;
             if(d==='up') player.y = Math.max(player.size/2, player.y - 6);
             else if(d==='down') player.y = Math.min(H-player.size/2, player.y + 6);
           });
         }
         wireMousePosition(canvas, function(p){
-          if(over) return;
+          if(over || paused) return;
           player.y = Math.max(player.size/2, Math.min(H-player.size/2, p.y));
         });
 
-        newGame();
-
-        wireGameBar(body, newGame);
-        if(window.__renderLeaderboard) window.__renderLeaderboard('dodge', 'ddBoard');
+        wireBackButtons(playEl);
+        playEl.querySelector('.game-gear').addEventListener('click', pauseGame);
+        panel.showIntro('🚀', tr('Esquivar','Dodge'),
+          tr('Subí y bajá para esquivar los obstáculos que vienen desde la derecha. Cada uno que pasás suma un punto, la velocidad sube con el tiempo.','Move up and down to dodge the obstacles coming from the right. Each one you pass scores a point, speed increases over time.'));
       }, function(){
         cancelAnimationFrame(raf);
         document.removeEventListener('keydown', keyDownHandler);

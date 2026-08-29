@@ -24,6 +24,34 @@
     });
   }
 
+  /* ---------------- light/dark theme toggle (nav logo) ---------------- */
+  // Clicking the logo mark flips the whole platform between the default
+  // dark theme and a light one (same accent colors, backgrounds/ink
+  // flipped — see :root[data-theme="light"] in styles.css). The "Luquini0"
+  // text next to it stays a plain link back to #hero.
+  (function(){
+    var btn = document.getElementById('themeToggleBtn');
+    if(!btn) return;
+    function tr(es, en){ return (document.body.getAttribute('data-lang') === 'en') ? en : es; }
+    function current(){ return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
+    function applyTitle(){
+      btn.title = current() === 'light' ? tr('Cambiar a modo oscuro', 'Switch to dark mode') : tr('Cambiar a modo claro', 'Switch to light mode');
+    }
+    function setTheme(theme){
+      if(theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      else document.documentElement.removeAttribute('data-theme');
+      try{ localStorage.setItem('luq_theme', theme); }catch(e){}
+      applyTitle();
+    }
+    function toggle(){ setTheme(current() === 'light' ? 'dark' : 'light'); }
+    btn.addEventListener('click', toggle);
+    btn.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
+    });
+    applyTitle();
+    window.__updateThemeToggleLabel = applyTitle;
+  })();
+
   /* ---------------- demo modal shell ---------------- */
   (function(){
     var modal = document.getElementById('demoModal');
@@ -37,12 +65,19 @@
       titleEl.textContent = title;
       bodyEl.innerHTML = html;
       modal.classList.add('open');
+      // Belt-and-suspenders against the background staying clickable/scrollable
+      // behind the modal (reported: nav links still worked while a game was
+      // open) — lock body scroll and hard-disable pointer events on the rest
+      // of the page for as long as the modal is open, regardless of any
+      // z-index/stacking quirk.
+      document.body.classList.add('modal-open');
       if(onOpen) onOpen(bodyEl);
       cleanupFn = onClose || null;
     }
     function close(){
       if(!modal.classList.contains('open')) return;
       modal.classList.remove('open');
+      document.body.classList.remove('modal-open');
       if(cleanupFn){ try{ cleanupFn(); }catch(e){} cleanupFn = null; }
       bodyEl.innerHTML = '';
     }
