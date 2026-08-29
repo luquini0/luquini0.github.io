@@ -16,6 +16,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { minify as minifyJs } from 'terser';
+import CleanCSS from 'clean-css';
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const SRC = path.join(ROOT, 'src');
@@ -31,24 +33,32 @@ function toDataUri(assetRelPath) {
   return `data:image/webp;base64,${buf.toString('base64')}`;
 }
 
-function build() {
+async function build() {
   let html = read('index.html');
 
-  // 1. Inline the stylesheet.
-  const css = read('css/styles.css').replace(/\n$/, '');
+  // 1. Inline the stylesheet, minified (dev source in src/css/styles.css
+  //    stays fully readable/formatted — only the shipped copy is dense).
+  const rawCss = read('css/styles.css');
+  const { styles: css, errors: cssErrors } = new CleanCSS({ level: 2 }).minify(rawCss);
+  if (cssErrors && cssErrors.length) throw new Error('CSS minify failed: ' + cssErrors.join('; '));
   html = html.replace(
     '<link rel="stylesheet" href="css/styles.css">',
-    `<style>\n${css}\n</style>`,
+    `<style>${css}</style>`,
   );
 
   // 2. Concatenate the JS modules into the one wrapping IIFE the site
   //    has always shipped as (module order matters — it's the same
   //    top-to-bottom order the code was originally written in, since
   //    later modules read module-scoped `var`/function declarations
-  //    hoisted from earlier ones).
+  //    hoisted from earlier ones), then minify the whole thing with
+  //    Terser. Source files under src/js/ are untouched — this only
+  //    compresses the copy that gets embedded in index.html.
   const scriptTags = JS_MODULES.map((name) => `<script src="js/${name}"></script>`).join('\n');
   const body = JS_MODULES.map((name) => read(`js/${name}`).replace(/\n$/, '')).join('\n');
-  const inlineScript = `<script>\n(function(){\n  "use strict";\n\n${body}\n})();\n</script>`;
+  const rawScript = `(function(){\n"use strict";\n${body}\n})();`;
+  const { code: minifiedScript, error: jsError } = await minifyJs(rawScript, { mangle: true, compress: true });
+  if (jsError) throw jsError;
+  const inlineScript = `<script>${minifiedScript}</script>`;
   html = html.replace(scriptTags, inlineScript);
 
   // 3. Inline the two images (logo appears 3x: favicon reference is added
@@ -62,4 +72,7 @@ function build() {
   console.log(`Built index.html (${(html.length / 1024).toFixed(1)} KB)`);
 }
 
-build();
+build().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

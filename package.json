@@ -1,0 +1,19 @@
+{
+  "name": "luquini0",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Build tooling for the Luquini0 platform (luquini0.github.io) — assembles src/ into the deployed index.html.",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luquini0/luquini0.github.io.git"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "clean-css": "^5.3.3",
+    "terser": "^5.51.2"
+  }
+}
