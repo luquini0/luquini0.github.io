@@ -35,7 +35,7 @@
     function tr(es, en){ return (document.body.getAttribute('data-lang') === 'en') ? en : es; }
     function current(){ return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
     function applyTitle(){
-      btn.title = current() === 'light' ? tr('Cambiar a modo oscuro', 'Switch to dark mode') : tr('Cambiar a modo claro', 'Switch to light mode');
+      btn.title = current() === 'light' ? tr('Está muy brillante', "It's too shiny") : tr('Está muy oscuro', "It's too dark");
     }
     function setTheme(theme){
       if(theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
