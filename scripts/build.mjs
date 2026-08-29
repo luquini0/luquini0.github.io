@@ -69,7 +69,16 @@ async function build() {
   html = html.split('assets/avatar.webp').join(avatarUri);
 
   fs.writeFileSync(path.join(ROOT, 'index.html'), html);
-  console.log(`Built index.html (${(html.length / 1024).toFixed(1)} KB)`);
+
+  // Also drop a copy in dist/ — a clean, deploy-only directory containing
+  // *just* the public site, so tools like `wrangler pages deploy dist`
+  // never see the rest of the repo (supabase/, versions/, private cover
+  // letters, debug.jsonl, etc.).
+  const dist = path.join(ROOT, 'dist');
+  fs.mkdirSync(dist, { recursive: true });
+  fs.writeFileSync(path.join(dist, 'index.html'), html);
+
+  console.log(`Built index.html (${(html.length / 1024).toFixed(1)} KB) — also copied to dist/`);
 }
 
 build().catch((err) => {
