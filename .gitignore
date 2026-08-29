@@ -16,3 +16,4 @@ supabase/.temp/
 supabase/.branches/
 node_modules/
 dist/
+.wrangler/
