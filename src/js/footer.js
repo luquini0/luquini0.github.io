@@ -110,6 +110,20 @@
     }, { threshold: 0.15 });
     io.observe(footer);
 
-    window.addEventListener('resize', function(){ if(sized) resize(); });
+    // Same fix as the full-page bgGrid canvas (lifecycle.js): mobile
+    // browsers fire `resize` on scroll as the URL bar collapses/expands,
+    // which only changes height — rebuilding every drop then made the rain
+    // visibly reset/flash mid-scroll. Only rebuild on an actual width
+    // change; on a height-only change just resize the canvas.
+    var lastFooterW = footer.clientWidth;
+    window.addEventListener('resize', function(){
+      if(!sized) return;
+      if(footer.clientWidth === lastFooterW){
+        canvas.height = footer.clientHeight;
+        return;
+      }
+      lastFooterW = footer.clientWidth;
+      resize();
+    });
   })();
 

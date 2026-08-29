@@ -100,7 +100,20 @@
     drawNodes(0);
     if(!reduceMotion) raf = requestAnimationFrame(frame);
 
+    // Mobile browsers fire `resize` on scroll as the URL bar collapses/
+    // expands (only the viewport height changes, not the width) — rebuilding
+    // every node on that made icons visibly reset to new random
+    // positions/speeds/icons mid-flight while scrolling. Only actually
+    // rebuild the traveling icons when the width changes (a real resize or
+    // rotation); on a height-only change just resize the canvas so the grid
+    // still covers it, without touching the nodes already in flight.
+    var lastW = window.innerWidth;
     window.addEventListener('resize', function(){
+      if(window.innerWidth === lastW){
+        canvas.height = window.innerHeight;
+        return;
+      }
+      lastW = window.innerWidth;
       cancelAnimationFrame(raf);
       last = null;
       resize();

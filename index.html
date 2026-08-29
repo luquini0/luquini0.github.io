@@ -3029,7 +3029,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     drawNodes(0);
     if(!reduceMotion) raf = requestAnimationFrame(frame);
 
+    // Mobile browsers fire `resize` on scroll as the URL bar collapses/
+    // expands (only the viewport height changes, not the width) — rebuilding
+    // every node on that made icons visibly reset to new random
+    // positions/speeds/icons mid-flight while scrolling. Only actually
+    // rebuild the traveling icons when the width changes (a real resize or
+    // rotation); on a height-only change just resize the canvas so the grid
+    // still covers it, without touching the nodes already in flight.
+    var lastW = window.innerWidth;
     window.addEventListener('resize', function(){
+      if(window.innerWidth === lastW){
+        canvas.height = window.innerHeight;
+        return;
+      }
+      lastW = window.innerWidth;
       cancelAnimationFrame(raf);
       last = null;
       resize();
@@ -3155,7 +3168,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }, { threshold: 0.15 });
     io.observe(footer);
 
-    window.addEventListener('resize', function(){ if(sized) resize(); });
+    // Same fix as the full-page bgGrid canvas (lifecycle.js): mobile
+    // browsers fire `resize` on scroll as the URL bar collapses/expands,
+    // which only changes height — rebuilding every drop then made the rain
+    // visibly reset/flash mid-scroll. Only rebuild on an actual width
+    // change; on a height-only change just resize the canvas.
+    var lastFooterW = footer.clientWidth;
+    window.addEventListener('resize', function(){
+      if(!sized) return;
+      if(footer.clientWidth === lastFooterW){
+        canvas.height = footer.clientHeight;
+        return;
+      }
+      lastFooterW = footer.clientWidth;
+      resize();
+    });
   })();
 
   /* ---------------- access gate: dev-skill challenge ---------------- */
