@@ -17,10 +17,22 @@
   /* ---------------- mobile nav ---------------- */
   var burger = document.getElementById('navBurger');
   var links = document.getElementById('navLinks');
+  var backdrop = document.getElementById('navBackdrop');
   if(burger){
-    burger.addEventListener('click', function(){ links.classList.toggle('open'); });
+    var setNavOpen = function(isOpen){
+      links.classList.toggle('open', isOpen);
+      burger.classList.toggle('open', isOpen);
+      burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      if(backdrop) backdrop.classList.toggle('open', isOpen);
+      document.body.classList.toggle('nav-open', isOpen);
+    };
+    burger.addEventListener('click', function(){ setNavOpen(!links.classList.contains('open')); });
     links.querySelectorAll('a').forEach(function(a){
-      a.addEventListener('click', function(){ links.classList.remove('open'); });
+      a.addEventListener('click', function(){ setNavOpen(false); });
+    });
+    if(backdrop) backdrop.addEventListener('click', function(){ setNavOpen(false); });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') setNavOpen(false);
     });
   }
 
