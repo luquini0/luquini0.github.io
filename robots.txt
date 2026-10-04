@@ -5,3 +5,9 @@ Disallow: /cover-letter-EN.html
 Disallow: /versions/
 
 Sitemap: https://luquini0.github.io/sitemap.xml
+Sitemap: https://luquini0.github.io/OneBlast/sitemap.xml
+Sitemap: https://luquini0.github.io/sacredcircles/sitemap.xml
+Sitemap: https://luquini0.github.io/Tap/sitemap.xml
+Sitemap: https://luquini0.github.io/HuertaUrbana/sitemap.xml
+Sitemap: https://luquini0.github.io/estrategia.financiera/sitemap.xml
+Sitemap: https://luquini0.github.io/ArteOrganica/sitemap.xml
