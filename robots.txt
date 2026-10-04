@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /carta-presentacion-ES.html
+Disallow: /cover-letter-EN.html
+Disallow: /versions/
+
+Sitemap: https://luquini0.github.io/sitemap.xml
