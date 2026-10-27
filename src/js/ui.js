@@ -37,7 +37,7 @@
   }
 
   /* ---------------- light/dark theme toggle (nav logo) ---------------- */
-  // Clicking the logo mark flips the whole platform between the default
+  // Clicking the logo mark flips the whole platform between the default light
   // dark theme and a light one (same accent colors, backgrounds/ink
   // flipped — see :root[data-theme="light"] in styles.css). The "Luquini0"
   // text next to it stays a plain link back to #hero.
