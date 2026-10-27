@@ -197,9 +197,34 @@
       var tmp = order[i]; order[i] = order[j]; order[j] = tmp;
     }
 
+    // Once the gate is passed, a refresh in the same tab stays unlocked and
+    // returns to the same scroll position (sessionStorage: a new tab or a
+    // new visit still goes through the gate).
+    function save(k, v){ try{ sessionStorage.setItem(k, v); }catch(e){} }
+    function load(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }
+
     function unlock(){
       document.body.classList.add('unlocked');
+      save('luq_unlocked', '1');
       window.scrollTo(0,0);
+    }
+
+    function restoreIfUnlocked(){
+      if(load('luq_unlocked') !== '1') return false;
+      document.body.classList.add('unlocked');
+      if('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      var y = parseInt(load('luq_scroll') || '0', 10) || 0;
+      if(y > 0){
+        window.scrollTo(0, y);
+        window.addEventListener('load', function(){ window.scrollTo(0, y); });
+        setTimeout(function(){ window.scrollTo(0, y); }, 400);
+      }
+      var tick = null;
+      window.addEventListener('scroll', function(){
+        if(tick) return;
+        tick = setTimeout(function(){ tick = null; save('luq_scroll', String(Math.round(window.scrollY))); }, 150);
+      }, { passive: true });
+      return true;
     }
 
     // Anonymous, no personal data. Kept in localStorage for now; once the
@@ -277,6 +302,23 @@
     };
 
     skipBtn.addEventListener('click', function(){ logSession('skip'); unlock(); });
+
+    // The brand name in the nav sends the visitor back to the gate.
+    var brandLink = document.querySelector('#nav .brand a');
+    if(brandLink){
+      brandLink.addEventListener('click', function(e){
+        e.preventDefault();
+        try{ sessionStorage.removeItem('luq_unlocked'); sessionStorage.removeItem('luq_scroll'); }catch(err){}
+        window.scrollTo(0,0);
+        location.reload();
+      });
+    }
+
+    if(restoreIfUnlocked()) return;
+    window.addEventListener('scroll', function(){
+      if(!document.body.classList.contains('unlocked')) return;
+      save('luq_scroll', String(Math.round(window.scrollY)));
+    }, { passive: true });
 
     bootSequence();
   })();

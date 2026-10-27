@@ -987,6 +987,8 @@
       tr('Ciberseguridad & Infraestructura', 'Cybersecurity & Infrastructure'),
       tr('SEO/SEM & Marketing Digital', 'SEO/SEM & Digital Marketing'),
       tr('Blockchain & IA', 'Blockchain & AI'),
+      tr('Sistemas, Redes & Soporte IT', 'Systems, Networks & IT Support'),
+      tr('E-commerce & CMS (tiendas online, pagos)', 'E-commerce & CMS (online stores, payments)'),
     ]; };
 
     var SERVICE_LIST = function(){ return [
@@ -1000,12 +1002,14 @@
 
     var EXPERIENCE_LIST = function(){ return [
       'IT Support — Remote Hero (' + tr('EE. UU., remoto, actual','USA, remote, current') + ')',
-      tr('Consultor IT & Desarrollador Web — Ríe La Huerta (2024–2025)', 'IT Consultant & Web Developer — Ríe La Huerta (2024–2025)'),
-      tr('Analista de Sistemas — Brader Hops (2016–2025)', 'Systems Analyst — Brader Hops (2016–2025)'),
-      tr('CEO — Luquini0, España (2018–2025)', 'CEO — Luquini0, Spain (2018–2025)'),
-      tr('Analista de Sistemas — Ríe La Huerta (2018–2025)', 'Systems Analyst — Ríe La Huerta (2018–2025)'),
-      tr('Desarrollador Web & Community Manager — Arikaya (2020–2022)', 'Web Developer & Community Manager — Arikaya (2020–2022)'),
-      tr('Desarrollador Web & Redes Sociales — Huerta Gourmet (2012–2018)', 'Web & Social Media Developer — Huerta Gourmet (2012–2018)'),
+      'Owner — Sacred Circles (2026–' + tr('presente','present') + ')',
+      'App Developer — Play Comunidad (2026–' + tr('presente','present') + ')',
+      tr('Consultor IT — GEOBOX (2026–presente)', 'IT Consultant — GEOBOX (2026–present)'),
+      tr('Consultor IT & Desarrollador Web — Ríe La Huerta (2018–2025)', 'IT Consultant & Web Developer — Ríe La Huerta (2018–2025)'),
+      tr('Desarrollo de tienda online — Brader Hops (2016–2025)', 'Online Store Development — Brader Hops (2016–2025)'),
+      tr('Owner — Luquini0, España (2018–presente)', 'Owner — Luquini0, Spain (2018–present)'),
+      tr('Desarrollador de plataforma de gestión online y redes — Arikaya (2020–2022)', 'Online Management Platform & Social Media Developer — Arikaya (2020–2022)'),
+      tr('Consultor IT — Huerta Gourmet (2012–2018)', 'IT Consultant — Huerta Gourmet (2012–2018)'),
     ]; };
 
     var PROJECT_LIST = function(){ return [
@@ -1014,9 +1018,11 @@
       tr('Rie La Huerta — rielahuerta.com (propio, en producción)', 'Rie La Huerta — rielahuerta.com (own build, live)'),
       tr('Arikaya — arikaya.com.au (propio, en producción)', 'Arikaya — arikaya.com.au (own build, live)'),
       tr('Tap Mundial 2026 — tap-mundial.pages.dev (propio, en producción)', 'Tap Mundial 2026 — tap-mundial.pages.dev (own build, live)'),
+      tr('Sacred Circles — sacred-circles-art.pages.dev (propio, owner, en producción)', 'Sacred Circles — sacred-circles-art.pages.dev (own build, owner, live)'),
+      tr('GEOBOX — geobox.bgeobox.workers.dev (consultoría IT, en producción)', 'GEOBOX — geobox.bgeobox.workers.dev (IT consulting, live)'),
+      tr('Play Comunidad — play.comunidad94.workers.dev (app developer, en producción)', 'Play Comunidad — play.comunidad94.workers.dev (app developer, live)'),
       tr('OneBlast (plantilla propia)', 'OneBlast (own template)'),
       tr('Guchini Mundial (plantilla propia)', 'Guchini Mundial (own template)'),
-      tr('Sacred Circles — HTML/CSS/JS & Webflow (plantilla propia, dos versiones)', 'Sacred Circles — HTML/CSS/JS & Webflow (own template, two builds)'),
       tr('Tap — Cervecería (plantilla propia)', 'Tap — Brewery (own template)'),
       tr('Huerta Urbana — Landing (plantilla propia)', 'Huerta Urbana — Landing (own template)'),
       tr('Estrategia Financiera (plantilla propia)', 'Financial Strategy (own template)'),
@@ -1204,7 +1210,7 @@
             '<div><b>luquini0</b>@platform</div><div>-------------------</div>' +
             '<div>OS: Human, 15+ ' + tr('años de uptime', 'years uptime') + '</div>' +
             '<div>Host: Mendoza, Argentina</div>' +
-            '<div>' + tr('Idiomas', 'Langs') + ': ES(native) EN IT PT</div>' +
+            '<div>' + tr('Idiomas', 'Langs') + ': ES(native) EN IT</div>' +
             '<div>Shell: curiosity &amp;&amp; cleanCode</div>' +
             '<div>Stack: Python · Django · JS · React Native</div>' +
             '<div>' + tr('Intereses', 'Interests') + ': Sec · 3D · Blockchain</div>' +

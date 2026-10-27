@@ -364,16 +364,16 @@ body:not([data-lang]) .t{visibility:hidden;}
 .langs-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:22px;}
 
 /* ---------- Skills ---------- */
-.skills-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+.skills-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; grid-auto-rows:1fr;}
 @media (max-width:900px){.skills-grid{grid-template-columns:repeat(2,1fr);}}
 @media (max-width:600px){.skills-grid{grid-template-columns:1fr;}}
-.skill-card{background:var(--panel); border:2px solid var(--text); padding:22px; box-shadow:6px 6px 0 0 var(--hc,var(--accent)); transition:transform .2s ease, box-shadow .2s ease;}
+.skill-card{background:var(--panel); border:2px solid var(--text); padding:18px; box-shadow:6px 6px 0 0 var(--hc,var(--accent)); transition:transform .2s ease, box-shadow .2s ease;}
 .skill-card:hover{transform:translate(-3px,-3px); box-shadow:9px 9px 0 0 var(--hc,var(--accent));}
-.skill-card .sicon{width:36px; height:36px; display:flex; align-items:center; justify-content:center; margin-bottom:14px; background:var(--hc,var(--accent)); color:#0a0a08; border:2px solid var(--text);}
-.skill-card h4{font-size:15px; margin-bottom:12px; text-transform:uppercase;}
-.skill-tags{display:flex; flex-wrap:wrap; gap:6px;}
-.skill-tags span{font-size:11.5px; padding:4px 10px;}
-.skill-more{margin-top:14px; padding-top:14px; border-top:2px dashed var(--border);}
+.skill-card .sicon{width:32px; height:32px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; background:var(--hc,var(--accent)); color:#0a0a08; border:2px solid var(--text);}
+.skill-card h4{font-size:14px; margin-bottom:10px; text-transform:uppercase;}
+.skill-tags{display:flex; flex-wrap:wrap; gap:5px;}
+.skill-tags span{font-size:11px; padding:3px 9px;}
+.skill-more{margin-top:12px; padding-top:10px; border-top:2px dashed var(--border);}
 .skill-more-label{display:block; font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-faint); margin-bottom:9px;}
 .skill-tags.alt span{background:transparent; border-style:dashed; color:var(--text-faint);}
 

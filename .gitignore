@@ -17,3 +17,9 @@ supabase/.branches/
 node_modules/
 dist/
 .wrangler/
+
+# Marketing assets live here locally, never deployed
+Marketing/
+
+# Material viejo movido desde OneDrive (plantillas, logos, cuentas) - nunca subir
+_recursos-onedrive/
