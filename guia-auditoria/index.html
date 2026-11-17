@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Auditoría básica de seguridad web: qué se revisa | Luquini0</title>
+<meta name="description" content="Qué revisa una auditoría básica de seguridad de un sitio web: HTTPS, cabeceras, accesos y MFA, actualizaciones, respaldos y correo (SPF, DKIM, DMARC).">
+<link rel="canonical" href="https://luquini0.github.io/guia-auditoria/">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Luquini0">
+<meta property="og:title" content="Auditoría básica de seguridad web: qué se revisa | Luquini0">
+<meta property="og:description" content="Qué revisa una auditoría básica de seguridad de un sitio web: HTTPS, cabeceras, accesos y MFA, actualizaciones, respaldos y correo (SPF, DKIM, DMARC).">
+<meta property="og:url" content="https://luquini0.github.io/guia-auditoria/">
+<meta property="og:image" content="https://luquini0.github.io/og-image.png">
+<meta property="og:locale" content="es_ES">
+<meta name="theme-color" content="#080807">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4P9CDLRZHD"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-4P9CDLRZHD');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{--bg:#080807;--panel:#111110;--border:#333230;--text:#f4f2ea;--dim:#a3a096;--accent:#008c33;--blue:#2f8bff}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+header.top{border-bottom:2px solid var(--border);padding:14px 0}
+header.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand,.tag,code,pre,.back,footer{font-family:'JetBrains Mono',ui-monospace,monospace}
+.brand{color:var(--text);text-decoration:none;font-weight:600}.brand b{color:var(--accent)}
+.back{color:var(--dim);font-size:.85rem;text-decoration:none}.back:hover{color:var(--blue)}
+.tag{color:var(--accent);font-size:.85rem;margin:40px 0 10px}
+h1,h2{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em;line-height:1.15;margin:0}
+h1{font-size:clamp(1.8rem,6vw,2.7rem);margin-bottom:16px}
+h2{font-size:1.4rem;margin:38px 0 10px;padding-left:12px;border-left:4px solid var(--accent)}
+.lead{color:var(--dim);font-size:1.1rem}
+p,ul,ol,pre{margin:0 0 14px}li{margin-bottom:6px}
+a{color:var(--blue)}
+code{background:var(--panel);border:1px solid var(--border);padding:1px 6px;font-size:.88em;overflow-wrap:anywhere}
+pre{background:var(--panel);border:2px solid var(--border);padding:14px;overflow-x:auto}pre code{border:0;padding:0}
+.notice{background:var(--panel);border:2px solid var(--accent);box-shadow:6px 6px 0 0 var(--accent);padding:16px;margin:26px 6px 10px 0}
+ul.check{list-style:none;padding:0}
+ul.check li{background:var(--panel);border:2px solid var(--border);padding:10px 12px 10px 40px;position:relative}
+ul.check li::before{content:"[ ]";position:absolute;left:10px;font-family:'JetBrains Mono',monospace;color:var(--accent)}
+.cta{border:2px solid var(--border);background:var(--panel);padding:20px;margin:44px 6px 30px 0;box-shadow:6px 6px 0 0 var(--blue)}
+.cta h2{border:0;padding:0;margin:0 0 8px;font-size:1.2rem}
+footer{border-top:2px solid var(--border);padding:20px 0 40px;color:var(--dim);font-size:.85rem}
+footer a{color:var(--dim)}
+.other{display:flex;gap:14px;flex-wrap:wrap}
+@media (max-width:480px){h2{font-size:1.2rem}.wrap{padding:0 16px}}</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="/"><b>&gt;</b> luquini0</a><a class="back" href="/">&larr; volver al sitio</a></div></header>
+<main class="wrap">
+<p class="tag">// guía / auditoría</p>
+<h1>Auditoría básica de seguridad web: qué se revisa y por qué</h1>
+<p class="lead">No hace falta ser técnico para entender qué mira una revisión básica. Acá va el mapa, con una checklist para que la sigas.</p>
+<div class="notice" role="note"><strong>Aclaración importante:</strong> solo se trabaja sobre sitios propios o con autorización escrita del dueño. Revisar sistemas ajenos sin permiso no es una auditoría: es un problema.</div>
+
+<h2>1. HTTPS y certificado</h2>
+<p>El sitio debería abrir siempre por HTTPS, con un certificado válido, no vencido y emitido para tu dominio. Revisá también que la versión http redirija a https y que no haya contenido mixto (imágenes o scripts cargados por http).</p>
+<h2>2. Cabeceras de seguridad</h2>
+<p>Las cabeceras HTTP le indican al navegador cómo proteger a tus visitantes. Podés mirarlas en tu propio sitio con:</p>
+<pre><code>curl -sI https://tusitio.com</code></pre>
+<p>Buscá, entre otras, estas cabeceras:</p>
+<ul>
+<li><code>Strict-Transport-Security</code> (fuerza HTTPS).</li>
+<li><code>Content-Security-Policy</code> (limita qué recursos puede cargar la página).</li>
+<li><code>X-Content-Type-Options</code> y <code>X-Frame-Options</code> (o <code>frame-ancestors</code> dentro de la CSP).</li>
+<li><code>Referrer-Policy</code> y <code>Permissions-Policy</code>.</li>
+</ul>
+<p>Que falte alguna no es una catástrofe, pero es una oportunidad concreta de mejora.</p>
+<h2>3. Accesos y MFA</h2>
+<ul>
+<li>Contraseñas únicas y largas, guardadas en un gestor.</li>
+<li>Verificación en dos pasos (MFA) en hosting, dominio, correo y panel del sitio.</li>
+<li>Cuentas de personas que ya no trabajan con vos: dadas de baja.</li>
+<li>Cada persona con el mínimo permiso que necesita.</li>
+</ul>
+<h2>4. Actualizaciones</h2>
+<p>El software desactualizado (CMS, plugins, temas, librerías, servidor) es una de las puertas de entrada más comunes. Revisá qué usás, qué versión tenés y si hay un proceso para actualizar. Eliminá lo que ya no usás.</p>
+<h2>5. Respaldos</h2>
+<p>Una auditoría también pregunta si existen copias, si están fuera del servidor y si alguien probó restaurarlas. Mirá la <a href="/guia-backup/">guía de backup</a> para el detalle.</p>
+<h2>6. Correo: SPF, DKIM y DMARC</h2>
+<p>Son registros DNS que ayudan a que tu correo llegue bien y a que nadie suplante fácilmente tu dominio. <strong>SPF</strong> indica qué servidores pueden enviar en tu nombre, <strong>DKIM</strong> firma los mensajes y <strong>DMARC</strong> define qué hacer cuando fallan las anteriores. Podés consultarlos con tu proveedor de correo o con herramientas públicas de consulta DNS.</p>
+<h2>Checklist</h2>
+<ul class="check">
+<li>El sitio abre por HTTPS y el certificado es válido.</li>
+<li>http redirige a https.</li>
+<li>Revisé las cabeceras de seguridad con <code>curl -sI</code>.</li>
+<li>Hay MFA en hosting, dominio, correo y panel.</li>
+<li>No quedan usuarios viejos ni permisos de más.</li>
+<li>El software y los plugins están al día.</li>
+<li>Existen respaldos fuera del servidor y probé restaurarlos.</li>
+<li>SPF, DKIM y DMARC están configurados.</li>
+</ul>
+<div class="cta">
+<h2>¿Te sirvió?</h2>
+<p>Si querés, seguime en Instagram <a href="https://www.instagram.com/luquini0/" rel="noopener">@luquini0</a>. Y si te quedó alguna duda o querés comentarme tu caso, escribime por DM cuando quieras. Sin apuro y sin compromiso.</p>
+</div>
+</main>
+<footer><div class="wrap other"><span>Otras guías:</span><a href="/guia-backup/">Backup</a><a href="/guia-seo/">SEO técnico</a></div></footer>
+</body>
+</html>

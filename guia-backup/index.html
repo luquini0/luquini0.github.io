@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guía de backup para tu sitio web: regla 3-2-1 y checklist | Luquini0</title>
+<meta name="description" content="Guía corta para dueños de negocio: la regla 3-2-1, qué respaldar en un sitio web, cada cuánto, cómo probar la restauración y una checklist de 8 puntos.">
+<link rel="canonical" href="https://luquini0.github.io/guia-backup/">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Luquini0">
+<meta property="og:title" content="Guía de backup para tu sitio web: regla 3-2-1 y checklist | Luquini0">
+<meta property="og:description" content="Guía corta para dueños de negocio: la regla 3-2-1, qué respaldar en un sitio web, cada cuánto, cómo probar la restauración y una checklist de 8 puntos.">
+<meta property="og:url" content="https://luquini0.github.io/guia-backup/">
+<meta property="og:image" content="https://luquini0.github.io/og-image.png">
+<meta property="og:locale" content="es_ES">
+<meta name="theme-color" content="#080807">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4P9CDLRZHD"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-4P9CDLRZHD');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{--bg:#080807;--panel:#111110;--border:#333230;--text:#f4f2ea;--dim:#a3a096;--accent:#008c33;--blue:#2f8bff}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+header.top{border-bottom:2px solid var(--border);padding:14px 0}
+header.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand,.tag,code,pre,.back,footer{font-family:'JetBrains Mono',ui-monospace,monospace}
+.brand{color:var(--text);text-decoration:none;font-weight:600}.brand b{color:var(--accent)}
+.back{color:var(--dim);font-size:.85rem;text-decoration:none}.back:hover{color:var(--blue)}
+.tag{color:var(--accent);font-size:.85rem;margin:40px 0 10px}
+h1,h2{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em;line-height:1.15;margin:0}
+h1{font-size:clamp(1.8rem,6vw,2.7rem);margin-bottom:16px}
+h2{font-size:1.4rem;margin:38px 0 10px;padding-left:12px;border-left:4px solid var(--accent)}
+.lead{color:var(--dim);font-size:1.1rem}
+p,ul,ol,pre{margin:0 0 14px}li{margin-bottom:6px}
+a{color:var(--blue)}
+code{background:var(--panel);border:1px solid var(--border);padding:1px 6px;font-size:.88em;overflow-wrap:anywhere}
+pre{background:var(--panel);border:2px solid var(--border);padding:14px;overflow-x:auto}pre code{border:0;padding:0}
+.notice{background:var(--panel);border:2px solid var(--accent);box-shadow:6px 6px 0 0 var(--accent);padding:16px;margin:26px 6px 10px 0}
+ul.check{list-style:none;padding:0}
+ul.check li{background:var(--panel);border:2px solid var(--border);padding:10px 12px 10px 40px;position:relative}
+ul.check li::before{content:"[ ]";position:absolute;left:10px;font-family:'JetBrains Mono',monospace;color:var(--accent)}
+.cta{border:2px solid var(--border);background:var(--panel);padding:20px;margin:44px 6px 30px 0;box-shadow:6px 6px 0 0 var(--blue)}
+.cta h2{border:0;padding:0;margin:0 0 8px;font-size:1.2rem}
+footer{border-top:2px solid var(--border);padding:20px 0 40px;color:var(--dim);font-size:.85rem}
+footer a{color:var(--dim)}
+.other{display:flex;gap:14px;flex-wrap:wrap}
+@media (max-width:480px){h2{font-size:1.2rem}.wrap{padding:0 16px}}</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="/"><b>&gt;</b> luquini0</a><a class="back" href="/">&larr; volver al sitio</a></div></header>
+<main class="wrap">
+<p class="tag">// guía / backup</p>
+<h1>Backup de tu sitio: lo básico que sí o sí tenés que tener</h1>
+<p class="lead">Un respaldo que nunca probaste restaurar es una esperanza, no un respaldo. Esta guía te lleva por lo esencial en unos 3 minutos.</p>
+
+
+<h2>La regla 3-2-1</h2>
+<p>Es una regla clásica y muy difundida: <strong>3</strong> copias de tus datos, en <strong>2</strong> tipos de soporte distintos, con <strong>1</strong> copia fuera del lugar principal. Así, si falla el servidor, el proveedor o te equivocás vos, siempre queda algo de dónde volver.</p>
+<h2>Qué respaldar en un sitio</h2>
+<ul>
+<li><strong>Archivos:</strong> código, temas, plugins, imágenes y archivos subidos por usuarios.</li>
+<li><strong>Base de datos:</strong> contenido, usuarios, pedidos, configuración. Suele ser lo más valioso.</li>
+<li><strong>Correo:</strong> si tu casilla vive en el mismo hosting, también necesita copia.</li>
+<li><strong>DNS:</strong> exportá o anotá tus registros (A, CNAME, MX, TXT). Si se pierden, reconstruirlos de memoria es un dolor.</li>
+<li><strong>Configuración y credenciales:</strong> guardadas en un gestor de contraseñas, no en el mismo servidor.</li>
+</ul>
+<h2>Cada cuánto</h2>
+<p>La pregunta útil es: <em>¿cuánto trabajo o cuántas ventas puedo permitirme perder?</em> Un sitio que casi no cambia se respalda semanalmente; uno con pedidos o contenido diario, a diario o con más frecuencia. Además, hacé una copia manual antes de cualquier cambio grande (actualización, migración, rediseño).</p>
+<h2>Probá la restauración en una base limpia</h2>
+<p>Este es el paso que casi todos se saltean. Cada tanto (por ejemplo, una vez por trimestre):</p>
+<ol>
+<li>Levantá un entorno de prueba vacío (otro hosting, un subdominio o una máquina local).</li>
+<li>Restaurá archivos y base de datos desde la copia, sin tocar el sitio real.</li>
+<li>Verificá que abre, que podés iniciar sesión y que el contenido y las imágenes están completos.</li>
+<li>Anotá cuánto tardó y qué pasos faltaban en tu documentación.</li>
+</ol>
+<h2>Copias fuera del servidor e inmutables</h2>
+<p>Una copia guardada en el mismo servidor se pierde junto con él. Guardá al menos una en otro proveedor o ubicación. Si es posible, que sea <strong>inmutable</strong>: un almacenamiento que no permita modificar ni borrar la copia durante un período definido, lo que te protege de borrados accidentales y de ransomware. Muchos servicios de almacenamiento en la nube ofrecen esta opción; revisá la documentación de tu proveedor.</p>
+<h2>Checklist de 8 puntos</h2>
+<ul class="check">
+<li>Tengo 3 copias de mis datos importantes.</li>
+<li>Usan al menos 2 tipos de soporte distintos.</li>
+<li>Al menos 1 copia está fuera del servidor y del proveedor principal.</li>
+<li>Respaldo archivos y base de datos (y correo y DNS si aplica).</li>
+<li>La frecuencia está definida según lo que puedo permitirme perder.</li>
+<li>Hay una copia inmutable o protegida contra borrado.</li>
+<li>Probé una restauración completa en un entorno limpio y funcionó.</li>
+<li>Sé dónde están las credenciales y quién puede restaurar si yo no estoy.</li>
+</ul>
+<div class="cta">
+<h2>¿Te sirvió?</h2>
+<p>Si querés, seguime en Instagram <a href="https://www.instagram.com/luquini0/" rel="noopener">@luquini0</a>. Y si te quedó alguna duda o querés comentarme tu caso, escribime por DM cuando quieras. Sin apuro y sin compromiso.</p>
+</div>
+</main>
+<footer><div class="wrap other"><span>Otras guías:</span><a href="/guia-auditoria/">Auditoría</a><a href="/guia-seo/">SEO técnico</a></div></footer>
+</body>
+</html>
