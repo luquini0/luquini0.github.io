@@ -60,7 +60,7 @@ footer a{color:var(--dim)}
 <p class="lead">AI tools are useful and they are also software that reads untrusted text and sometimes has your permissions. Treat them accordingly.</p>
 
 <h2>1. Prompt injection: text can carry instructions</h2>
-<p>A model cannot reliably tell your instructions apart from instructions hidden in a web page, document, email or code comment it was asked to read. OWASP lists prompt injection as the first item in its Top 10 for LLM applications. Practical consequences:</p>
+<p>A model cannot reliably tell your instructions apart from instructions hidden in a web page, document, email or code comment it was asked to read. In the 2026 edition of the OWASP Top 10 for LLM Applications, prompt injection is still number one, and Excessive Agency (an LLM that can call tools, modify files or send email) climbed from sixth to third. Practical consequences:</p>
 <ul>
 <li>Anything the model reads from outside (web, inbox, tickets, shared files) is untrusted input, even if it came through a tool you trust.</li>
 <li>The more an assistant can do (send email, run commands, edit files), the more a planted instruction can cost you. Limit actions, not just prompts.</li>
@@ -68,7 +68,7 @@ footer a{color:var(--dim)}
 <li>Do not rely on "ignore malicious instructions" in the system prompt as your only defense.</li>
 </ul>
 <h2>2. MCP servers and tool permissions</h2>
-<p>The Model Context Protocol lets an assistant call tools through servers you connect. Each server is code that runs with some access, and its tool descriptions are text the model reads.</p>
+<p>The Model Context Protocol lets an assistant call tools through servers you connect. Each server is code that runs with some access to your files, accounts or network.</p>
 <ul>
 <li>Install only servers whose source and maintainer you can check, the same way you would vet a dependency.</li>
 <li>Give each one the least access it needs: read-only where possible, a dedicated account or token instead of yours, a narrow folder instead of your whole disk.</li>
@@ -80,7 +80,7 @@ footer a{color:var(--dim)}
 <ul>
 <li>Read it as you would read a stranger's pull request. If you cannot explain it, do not ship it.</li>
 <li>Run it and run tests, ideally tests you wrote or reviewed yourself, in a throwaway environment first.</li>
-<li>Check every dependency it adds: does the package exist, is it the one you meant (watch for look-alike names), is it maintained?</li>
+<li>Check every dependency it adds: does the package exist, is it the one you meant (watch for look-alike names; models sometimes suggest package names that do not exist, and those names can repeat predictably), is it maintained?</li>
 <li>Look hard at authentication, input handling, SQL and shell calls, file paths and anything that makes network requests.</li>
 <li>Run your normal linters, dependency audit and secret scanner on it. Generated code gets no exemption.</li>
 </ul>
