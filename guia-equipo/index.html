@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>One-page anti-phishing guide for teams: ClickFix, QR, cloned voices | Luquini0</title>
+<meta name="description" content="A one-page guide for teams: ClickFix, QR code phishing, voice cloning scams and passkeys, with simple rules you can print and pin up.">
+<link rel="canonical" href="https://luquini0.github.io/guia-equipo/">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Luquini0">
+<meta property="og:title" content="One-page anti-phishing guide for teams: ClickFix, QR, cloned voices | Luquini0">
+<meta property="og:description" content="A one-page guide for teams: ClickFix, QR code phishing, voice cloning scams and passkeys, with simple rules you can print and pin up.">
+<meta property="og:url" content="https://luquini0.github.io/guia-equipo/">
+<meta property="og:image" content="https://luquini0.github.io/og-image.png">
+<meta property="og:locale" content="en_US">
+<meta name="theme-color" content="#080807">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4P9CDLRZHD"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-4P9CDLRZHD');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{--bg:#080807;--panel:#111110;--border:#333230;--text:#f4f2ea;--dim:#a3a096;--accent:#008c33;--blue:#2f8bff}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+header.top{border-bottom:2px solid var(--border);padding:14px 0}
+header.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand,.tag,code,pre,.back,footer{font-family:'JetBrains Mono',ui-monospace,monospace}
+.brand{color:var(--text);text-decoration:none;font-weight:600}.brand b{color:var(--accent)}
+.back{color:var(--dim);font-size:.85rem;text-decoration:none}.back:hover{color:var(--blue)}
+.tag{color:var(--accent);font-size:.85rem;margin:40px 0 10px}
+h1,h2{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em;line-height:1.15;margin:0}
+h1{font-size:clamp(1.8rem,6vw,2.7rem);margin-bottom:16px}
+h2{font-size:1.4rem;margin:38px 0 10px;padding-left:12px;border-left:4px solid var(--accent)}
+.lead{color:var(--dim);font-size:1.1rem}
+p,ul,ol,pre{margin:0 0 14px}li{margin-bottom:6px}
+a{color:var(--blue)}
+code{background:var(--panel);border:1px solid var(--border);padding:1px 6px;font-size:.88em;overflow-wrap:anywhere}
+pre{background:var(--panel);border:2px solid var(--border);padding:14px;overflow-x:auto}pre code{border:0;padding:0}
+.notice{background:var(--panel);border:2px solid var(--accent);box-shadow:6px 6px 0 0 var(--accent);padding:16px;margin:26px 6px 10px 0}
+ul.check{list-style:none;padding:0}
+ul.check li{background:var(--panel);border:2px solid var(--border);padding:10px 12px 10px 40px;position:relative}
+ul.check li::before{content:"[ ]";position:absolute;left:10px;font-family:'JetBrains Mono',monospace;color:var(--accent)}
+.cta{border:2px solid var(--border);background:var(--panel);padding:20px;margin:44px 6px 30px 0;box-shadow:6px 6px 0 0 var(--blue)}
+.cta h2{border:0;padding:0;margin:0 0 8px;font-size:1.2rem}
+footer{border-top:2px solid var(--border);padding:20px 0 40px;color:var(--dim);font-size:.85rem}
+footer a{color:var(--dim)}
+.other{display:flex;gap:14px;flex-wrap:wrap}
+@media (max-width:480px){h2{font-size:1.2rem}.wrap{padding:0 16px}}
+@media print{header.top,footer,.cta{display:none}body{background:#fff;color:#000}pre,code,ul.check li,.notice{background:#fff;color:#000;border-color:#000;box-shadow:none}a{color:#000}}</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="/"><b>&gt;</b> luquini0</a><a class="back" href="/">&larr; back to site</a></div></header>
+<main class="wrap">
+<p class="tag">// guide / team</p>
+<h1>One page for your team: phishing and scams in 2026</h1>
+<p class="lead">Print this, pin it up, and agree on it before the bad day. Five scams, one rule each.</p>
+
+<h2>1. ClickFix: "paste this to prove you're human"</h2>
+<p>A web page or message shows a fake error or CAPTCHA and tells you to press Win+R (or open a terminal) and paste something it has just copied for you. That is you running the attacker's command.</p>
+<p><strong>Rule:</strong> no real website needs you to paste a command to read a page. Close it and tell IT.</p>
+<h2>2. QR codes</h2>
+<p>A QR code hides the address. Attackers stick fake ones over real ones or put them in emails and PDFs to avoid link filters ("quishing").</p>
+<p><strong>Rule:</strong> read the address your phone shows before opening it. Never sign in from a QR code you did not expect; type the site's address yourself.</p>
+<h2>3. Cloned voices and urgent calls</h2>
+<p>Short audio samples can be enough to imitate someone's voice. A call from "the boss" or "a relative" asking for money, gift cards or a quick transfer is a classic.</p>
+<p><strong>Rule:</strong> hang up and call back on a number you already had. Agree on a code word with family. Payments and bank-detail changes need a second person, whatever the voice says.</p>
+<h2>4. Passkeys over passwords</h2>
+<p>A passkey is tied to the real site's domain, so a look-alike site cannot use it, and there is no password to type into a fake page or reuse. Turn them on where you can (email, cloud storage, code host, bank) and keep a recovery method.</p>
+<p><strong>Rule:</strong> where passkeys exist, use them. Where they do not, use a password manager and app-based or hardware MFA.</p>
+<h2>5. Urgency, secrecy, authority</h2>
+<p>Almost every scam pushes at least one of these: "right now", "don't tell anyone", "I'm the CEO". The pressure is the signal.</p>
+<p><strong>Rule:</strong> pause, verify through a second channel, then act.</p>
+<h2>If you already clicked or pasted</h2>
+<ol>
+<li>Disconnect the device from the network.</li>
+<li>Tell IT or the owner immediately. Nobody gets blamed; speed matters.</li>
+<li>Change passwords from a different, clean device.</li>
+<li>Note what you saw: the page, the message, what you typed.</li>
+</ol>
+<h2>Pin-up checklist</h2>
+<ul class="check">
+<li>I never paste commands from a web page.</li>
+<li>I check the address behind a QR code.</li>
+<li>I call back on a known number and use the family/team code word.</li>
+<li>Money and bank-detail changes need two people.</li>
+<li>I use passkeys where available.</li>
+<li>I know who to tell, and I tell them fast.</li>
+</ul>
+<div class="cta">
+<h2>Did it help?</h2>
+<p>Follow me on Instagram <a href="https://www.instagram.com/luquini0/" rel="noopener">@luquini0</a>. If you have a question or want to tell me about your case, send me a DM any time. No rush, no strings attached.</p>
+</div>
+</main>
+<footer><div class="wrap other"><span>More guides:</span><a href="/guia-automatizacion/">Automation</a><a href="/guia-ia-segura/">Safe AI</a><a href="/guia-mail/">Email (SPF/DKIM/DMARC)</a><a href="/en/guia-backup/">Backup</a><a href="/en/guia-auditoria/">Audit</a><a href="/en/guia-seo/">Technical SEO</a></div></footer>
+</body>
+</html>

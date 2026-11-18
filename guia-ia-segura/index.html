@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Using AI at work without losing control: a practical checklist | Luquini0</title>
+<meta name="description" content="A practical checklist for using AI tools at work: prompt injection, MCP servers and permissions, reviewing generated code, and keeping keys out of your code.">
+<link rel="canonical" href="https://luquini0.github.io/guia-ia-segura/">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Luquini0">
+<meta property="og:title" content="Using AI at work without losing control: a practical checklist | Luquini0">
+<meta property="og:description" content="A practical checklist for using AI tools at work: prompt injection, MCP servers and permissions, reviewing generated code, and keeping keys out of your code.">
+<meta property="og:url" content="https://luquini0.github.io/guia-ia-segura/">
+<meta property="og:image" content="https://luquini0.github.io/og-image.png">
+<meta property="og:locale" content="en_US">
+<meta name="theme-color" content="#080807">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4P9CDLRZHD"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-4P9CDLRZHD');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{--bg:#080807;--panel:#111110;--border:#333230;--text:#f4f2ea;--dim:#a3a096;--accent:#008c33;--blue:#2f8bff}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+header.top{border-bottom:2px solid var(--border);padding:14px 0}
+header.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand,.tag,code,pre,.back,footer{font-family:'JetBrains Mono',ui-monospace,monospace}
+.brand{color:var(--text);text-decoration:none;font-weight:600}.brand b{color:var(--accent)}
+.back{color:var(--dim);font-size:.85rem;text-decoration:none}.back:hover{color:var(--blue)}
+.tag{color:var(--accent);font-size:.85rem;margin:40px 0 10px}
+h1,h2{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em;line-height:1.15;margin:0}
+h1{font-size:clamp(1.8rem,6vw,2.7rem);margin-bottom:16px}
+h2{font-size:1.4rem;margin:38px 0 10px;padding-left:12px;border-left:4px solid var(--accent)}
+.lead{color:var(--dim);font-size:1.1rem}
+p,ul,ol,pre{margin:0 0 14px}li{margin-bottom:6px}
+a{color:var(--blue)}
+code{background:var(--panel);border:1px solid var(--border);padding:1px 6px;font-size:.88em;overflow-wrap:anywhere}
+pre{background:var(--panel);border:2px solid var(--border);padding:14px;overflow-x:auto}pre code{border:0;padding:0}
+.notice{background:var(--panel);border:2px solid var(--accent);box-shadow:6px 6px 0 0 var(--accent);padding:16px;margin:26px 6px 10px 0}
+ul.check{list-style:none;padding:0}
+ul.check li{background:var(--panel);border:2px solid var(--border);padding:10px 12px 10px 40px;position:relative}
+ul.check li::before{content:"[ ]";position:absolute;left:10px;font-family:'JetBrains Mono',monospace;color:var(--accent)}
+.cta{border:2px solid var(--border);background:var(--panel);padding:20px;margin:44px 6px 30px 0;box-shadow:6px 6px 0 0 var(--blue)}
+.cta h2{border:0;padding:0;margin:0 0 8px;font-size:1.2rem}
+footer{border-top:2px solid var(--border);padding:20px 0 40px;color:var(--dim);font-size:.85rem}
+footer a{color:var(--dim)}
+.other{display:flex;gap:14px;flex-wrap:wrap}
+@media (max-width:480px){h2{font-size:1.2rem}.wrap{padding:0 16px}}
+@media print{header.top,footer,.cta{display:none}body{background:#fff;color:#000}pre,code,ul.check li,.notice{background:#fff;color:#000;border-color:#000;box-shadow:none}a{color:#000}}</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="/"><b>&gt;</b> luquini0</a><a class="back" href="/">&larr; back to site</a></div></header>
+<main class="wrap">
+<p class="tag">// guide / safe ai</p>
+<h1>Using AI at work without losing control</h1>
+<p class="lead">AI tools are useful and they are also software that reads untrusted text and sometimes has your permissions. Treat them accordingly.</p>
+
+<h2>1. Prompt injection: text can carry instructions</h2>
+<p>A model cannot reliably tell your instructions apart from instructions hidden in a web page, document, email or code comment it was asked to read. OWASP lists prompt injection as the first item in its Top 10 for LLM applications. Practical consequences:</p>
+<ul>
+<li>Anything the model reads from outside (web, inbox, tickets, shared files) is untrusted input, even if it came through a tool you trust.</li>
+<li>The more an assistant can do (send email, run commands, edit files), the more a planted instruction can cost you. Limit actions, not just prompts.</li>
+<li>Require your confirmation for anything that sends data out, deletes, pays or changes permissions.</li>
+<li>Do not rely on "ignore malicious instructions" in the system prompt as your only defense.</li>
+</ul>
+<h2>2. MCP servers and tool permissions</h2>
+<p>The Model Context Protocol lets an assistant call tools through servers you connect. Each server is code that runs with some access, and its tool descriptions are text the model reads.</p>
+<ul>
+<li>Install only servers whose source and maintainer you can check, the same way you would vet a dependency.</li>
+<li>Give each one the least access it needs: read-only where possible, a dedicated account or token instead of yours, a narrow folder instead of your whole disk.</li>
+<li>Prefer approval prompts for write actions, and read them instead of clicking through.</li>
+<li>Remove servers you stopped using.</li>
+<li>Keep production credentials out of reach of an assistant that also reads untrusted content.</li>
+</ul>
+<h2>3. Reviewing generated code</h2>
+<ul>
+<li>Read it as you would read a stranger's pull request. If you cannot explain it, do not ship it.</li>
+<li>Run it and run tests, ideally tests you wrote or reviewed yourself, in a throwaway environment first.</li>
+<li>Check every dependency it adds: does the package exist, is it the one you meant (watch for look-alike names), is it maintained?</li>
+<li>Look hard at authentication, input handling, SQL and shell calls, file paths and anything that makes network requests.</li>
+<li>Run your normal linters, dependency audit and secret scanner on it. Generated code gets no exemption.</li>
+</ul>
+<h2>4. Keys and secrets</h2>
+<ul>
+<li>Never paste API keys, passwords or customer data into a prompt unless your organization has approved that tool for that data.</li>
+<li>Keep secrets in environment variables or a secrets manager, never in source files, and add the env file to <code>.gitignore</code>.</li>
+<li>Turn on secret scanning in your code host. If a key leaks, rotate it first and clean the history afterwards: assume it is already copied.</li>
+<li>Give assistants and automations their own keys with narrow scopes, so you can revoke one without breaking everything.</li>
+</ul>
+<h2>5. Data and accountability</h2>
+<ul>
+<li>Know where your prompts go and whether they are stored or used for training under your plan's terms.</li>
+<li>Decide as a team which data is never allowed into external tools.</li>
+<li>You stay accountable for the output. Verify facts, numbers and citations before they leave your desk.</li>
+</ul>
+<h2>Checklist</h2>
+<ul class="check">
+<li>I treat everything an assistant reads from outside as untrusted.</li>
+<li>Actions that send, delete, pay or change access need my confirmation.</li>
+<li>Every MCP server is vetted, least-privilege and still in use.</li>
+<li>I review generated code and its dependencies before merging.</li>
+<li>No secrets in prompts, source files or history; secret scanning is on.</li>
+<li>Assistants use dedicated, revocable keys.</li>
+<li>My team has a written rule on what data may enter external tools.</li>
+</ul>
+<div class="cta">
+<h2>Did it help?</h2>
+<p>Follow me on Instagram <a href="https://www.instagram.com/luquini0/" rel="noopener">@luquini0</a>. If you have a question or want to tell me about your case, send me a DM any time. No rush, no strings attached.</p>
+</div>
+</main>
+<footer><div class="wrap other"><span>More guides:</span><a href="/guia-automatizacion/">Automation</a><a href="/guia-mail/">Email (SPF/DKIM/DMARC)</a><a href="/guia-equipo/">Team anti-scam</a><a href="/en/guia-backup/">Backup</a><a href="/en/guia-auditoria/">Audit</a><a href="/en/guia-seo/">Technical SEO</a></div></footer>
+</body>
+</html>

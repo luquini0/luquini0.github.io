@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Basic website security audit: what gets checked | Luquini0</title>
+<meta name="description" content="What a basic website security audit checks: HTTPS, headers, access and MFA, updates, backups and email (SPF, DKIM, DMARC).">
+<link rel="canonical" href="https://luquini0.github.io/en/guia-auditoria/">
+<link rel="alternate" hreflang="es" href="https://luquini0.github.io/guia-auditoria/">
+<link rel="alternate" hreflang="en" href="https://luquini0.github.io/en/guia-auditoria/">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Luquini0">
+<meta property="og:title" content="Basic website security audit: what gets checked | Luquini0">
+<meta property="og:description" content="What a basic website security audit checks: HTTPS, headers, access and MFA, updates, backups and email (SPF, DKIM, DMARC).">
+<meta property="og:url" content="https://luquini0.github.io/en/guia-auditoria/">
+<meta property="og:image" content="https://luquini0.github.io/og-image.png">
+<meta property="og:locale" content="en_US">
+<meta name="theme-color" content="#080807">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4P9CDLRZHD"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-4P9CDLRZHD');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{--bg:#080807;--panel:#111110;--border:#333230;--text:#f4f2ea;--dim:#a3a096;--accent:#008c33;--blue:#2f8bff}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+header.top{border-bottom:2px solid var(--border);padding:14px 0}
+header.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand,.tag,code,pre,.back,footer{font-family:'JetBrains Mono',ui-monospace,monospace}
+.brand{color:var(--text);text-decoration:none;font-weight:600}.brand b{color:var(--accent)}
+.back{color:var(--dim);font-size:.85rem;text-decoration:none}.back:hover{color:var(--blue)}
+.tag{color:var(--accent);font-size:.85rem;margin:40px 0 10px}
+h1,h2{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em;line-height:1.15;margin:0}
+h1{font-size:clamp(1.8rem,6vw,2.7rem);margin-bottom:16px}
+h2{font-size:1.4rem;margin:38px 0 10px;padding-left:12px;border-left:4px solid var(--accent)}
+.lead{color:var(--dim);font-size:1.1rem}
+p,ul,ol,pre{margin:0 0 14px}li{margin-bottom:6px}
+a{color:var(--blue)}
+code{background:var(--panel);border:1px solid var(--border);padding:1px 6px;font-size:.88em;overflow-wrap:anywhere}
+pre{background:var(--panel);border:2px solid var(--border);padding:14px;overflow-x:auto}pre code{border:0;padding:0}
+.notice{background:var(--panel);border:2px solid var(--accent);box-shadow:6px 6px 0 0 var(--accent);padding:16px;margin:26px 6px 10px 0}
+ul.check{list-style:none;padding:0}
+ul.check li{background:var(--panel);border:2px solid var(--border);padding:10px 12px 10px 40px;position:relative}
+ul.check li::before{content:"[ ]";position:absolute;left:10px;font-family:'JetBrains Mono',monospace;color:var(--accent)}
+.cta{border:2px solid var(--border);background:var(--panel);padding:20px;margin:44px 6px 30px 0;box-shadow:6px 6px 0 0 var(--blue)}
+.cta h2{border:0;padding:0;margin:0 0 8px;font-size:1.2rem}
+footer{border-top:2px solid var(--border);padding:20px 0 40px;color:var(--dim);font-size:.85rem}
+footer a{color:var(--dim)}
+.other{display:flex;gap:14px;flex-wrap:wrap}
+@media (max-width:480px){h2{font-size:1.2rem}.wrap{padding:0 16px}}
+@media print{header.top,footer,.cta{display:none}body{background:#fff;color:#000}pre,code,ul.check li,.notice{background:#fff;color:#000;border-color:#000;box-shadow:none}a{color:#000}}</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="/"><b>&gt;</b> luquini0</a><a class="back" href="/">&larr; back to site</a></div></header>
+<main class="wrap">
+<p class="tag">// guide / audit</p>
+<h1>Basic website security audit: what gets checked and why</h1>
+<p class="lead">You do not need to be technical to understand what a basic review looks at. Here is the map, with a checklist to follow.</p>
+
+<div class="notice" role="note"><strong>Important:</strong> I only work on sites you own or have written permission from the owner to review. Looking at someone else's systems without permission is not an audit: it is a problem.</div>
+<h2>1. HTTPS and certificate</h2>
+<p>The site should always open over HTTPS, with a valid, unexpired certificate issued for your domain. Also check that http redirects to https and that there is no mixed content (images or scripts loaded over http). Want an alert before it expires? See the <a href="/guia-automatizacion/">automation guide</a>.</p>
+<h2>2. Security headers</h2>
+<p>HTTP headers tell the browser how to protect your visitors. You can look at them on your own site with:</p>
+<pre><code>curl -sI https://yoursite.com</code></pre>
+<p>Look for these, among others:</p>
+<ul>
+<li><code>Strict-Transport-Security</code> (forces HTTPS).</li>
+<li><code>Content-Security-Policy</code> (limits which resources the page can load).</li>
+<li><code>X-Content-Type-Options</code> and <code>X-Frame-Options</code> (or <code>frame-ancestors</code> inside the CSP).</li>
+<li><code>Referrer-Policy</code> and <code>Permissions-Policy</code>.</li>
+</ul>
+<p>A missing header is not a catastrophe, but it is a concrete chance to improve.</p>
+<h2>3. Access and MFA</h2>
+<ul>
+<li>Unique, long passwords kept in a password manager.</li>
+<li>Two-step verification (MFA) on hosting, domain, email and the site admin panel.</li>
+<li>Accounts of people who no longer work with you: removed.</li>
+<li>Everyone with the minimum permission they need.</li>
+</ul>
+<h2>4. Updates</h2>
+<p>Outdated software (CMS, plugins, themes, libraries, server) is one of the most common ways in. Check what you run, which version, and whether there is a process to update. Remove what you no longer use.</p>
+<h2>5. Backups</h2>
+<p>An audit also asks whether copies exist, whether they are off the server, and whether anyone has tested a restore. See the <a href="/en/guia-backup/">backup guide</a> for details.</p>
+<h2>6. Email: SPF, DKIM and DMARC</h2>
+<p>These are DNS records that help your email arrive and make it harder for anyone to spoof your domain. <strong>SPF</strong> says which servers may send on your behalf, <strong>DKIM</strong> signs the messages and <strong>DMARC</strong> says what to do when the other two fail. Step by step in the <a href="/guia-mail/">email guide</a>.</p>
+<h2>Checklist</h2>
+<ul class="check">
+<li>The site opens over HTTPS and the certificate is valid.</li>
+<li>http redirects to https.</li>
+<li>I checked the security headers with <code>curl -sI</code>.</li>
+<li>MFA is on for hosting, domain, email and admin panel.</li>
+<li>No old users or extra permissions remain.</li>
+<li>Software and plugins are up to date.</li>
+<li>Backups exist off the server and I tested a restore.</li>
+<li>SPF, DKIM and DMARC are set up.</li>
+</ul>
+<div class="cta">
+<h2>Did it help?</h2>
+<p>Follow me on Instagram <a href="https://www.instagram.com/luquini0/" rel="noopener">@luquini0</a>. If you have a question or want to tell me about your case, send me a DM any time. No rush, no strings attached.</p>
+</div>
+</main>
+<footer><div class="wrap other"><span>More guides:</span><a href="/guia-automatizacion/">Automation</a><a href="/guia-ia-segura/">Safe AI</a><a href="/guia-mail/">Email (SPF/DKIM/DMARC)</a><a href="/guia-equipo/">Team anti-scam</a><a href="/en/guia-backup/">Backup</a><a href="/en/guia-seo/">Technical SEO</a></div></footer>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Website backup guide: the 3-2-1 rule and a checklist | Luquini0</title>
+<meta name="description" content="A short guide for business owners: the 3-2-1 rule, what to back up on a website, how often, how to test a restore, and an 8-point checklist.">
+<link rel="canonical" href="https://luquini0.github.io/en/guia-backup/">
+<link rel="alternate" hreflang="es" href="https://luquini0.github.io/guia-backup/">
+<link rel="alternate" hreflang="en" href="https://luquini0.github.io/en/guia-backup/">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Luquini0">
+<meta property="og:title" content="Website backup guide: the 3-2-1 rule and a checklist | Luquini0">
+<meta property="og:description" content="A short guide for business owners: the 3-2-1 rule, what to back up on a website, how often, how to test a restore, and an 8-point checklist.">
+<meta property="og:url" content="https://luquini0.github.io/en/guia-backup/">
+<meta property="og:image" content="https://luquini0.github.io/og-image.png">
+<meta property="og:locale" content="en_US">
+<meta name="theme-color" content="#080807">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4P9CDLRZHD"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-4P9CDLRZHD');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{--bg:#080807;--panel:#111110;--border:#333230;--text:#f4f2ea;--dim:#a3a096;--accent:#008c33;--blue:#2f8bff}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+header.top{border-bottom:2px solid var(--border);padding:14px 0}
+header.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand,.tag,code,pre,.back,footer{font-family:'JetBrains Mono',ui-monospace,monospace}
+.brand{color:var(--text);text-decoration:none;font-weight:600}.brand b{color:var(--accent)}
+.back{color:var(--dim);font-size:.85rem;text-decoration:none}.back:hover{color:var(--blue)}
+.tag{color:var(--accent);font-size:.85rem;margin:40px 0 10px}
+h1,h2{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em;line-height:1.15;margin:0}
+h1{font-size:clamp(1.8rem,6vw,2.7rem);margin-bottom:16px}
+h2{font-size:1.4rem;margin:38px 0 10px;padding-left:12px;border-left:4px solid var(--accent)}
+.lead{color:var(--dim);font-size:1.1rem}
+p,ul,ol,pre{margin:0 0 14px}li{margin-bottom:6px}
+a{color:var(--blue)}
+code{background:var(--panel);border:1px solid var(--border);padding:1px 6px;font-size:.88em;overflow-wrap:anywhere}
+pre{background:var(--panel);border:2px solid var(--border);padding:14px;overflow-x:auto}pre code{border:0;padding:0}
+.notice{background:var(--panel);border:2px solid var(--accent);box-shadow:6px 6px 0 0 var(--accent);padding:16px;margin:26px 6px 10px 0}
+ul.check{list-style:none;padding:0}
+ul.check li{background:var(--panel);border:2px solid var(--border);padding:10px 12px 10px 40px;position:relative}
+ul.check li::before{content:"[ ]";position:absolute;left:10px;font-family:'JetBrains Mono',monospace;color:var(--accent)}
+.cta{border:2px solid var(--border);background:var(--panel);padding:20px;margin:44px 6px 30px 0;box-shadow:6px 6px 0 0 var(--blue)}
+.cta h2{border:0;padding:0;margin:0 0 8px;font-size:1.2rem}
+footer{border-top:2px solid var(--border);padding:20px 0 40px;color:var(--dim);font-size:.85rem}
+footer a{color:var(--dim)}
+.other{display:flex;gap:14px;flex-wrap:wrap}
+@media (max-width:480px){h2{font-size:1.2rem}.wrap{padding:0 16px}}
+@media print{header.top,footer,.cta{display:none}body{background:#fff;color:#000}pre,code,ul.check li,.notice{background:#fff;color:#000;border-color:#000;box-shadow:none}a{color:#000}}</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="/"><b>&gt;</b> luquini0</a><a class="back" href="/">&larr; back to site</a></div></header>
+<main class="wrap">
+<p class="tag">// guide / backup</p>
+<h1>Backing up your website: the basics you actually need</h1>
+<p class="lead">A backup you have never restored is a hope, not a backup. This guide covers the essentials in about 3 minutes.</p>
+
+<h2>The 3-2-1 rule</h2>
+<p>A classic, widely used rule: keep <strong>3</strong> copies of your data, on <strong>2</strong> different types of storage, with <strong>1</strong> copy off-site. If the server fails, the provider has a bad day or you make a mistake, there is always something to go back to.</p>
+<h2>What to back up on a website</h2>
+<ul>
+<li><strong>Files:</strong> code, themes, plugins, images and anything users upload.</li>
+<li><strong>Database:</strong> content, users, orders, settings. Usually the most valuable part.</li>
+<li><strong>Email:</strong> if your mailboxes live on the same hosting, they need a copy too.</li>
+<li><strong>DNS:</strong> export or write down your records (A, CNAME, MX, TXT). Rebuilding them from memory is miserable.</li>
+<li><strong>Settings and credentials:</strong> kept in a password manager, not on the same server.</li>
+</ul>
+<h2>How often</h2>
+<p>The useful question is: <em>how much work or how many sales can I afford to lose?</em> A site that rarely changes can be backed up weekly; one with daily orders or content, daily or more often. Also take a manual copy before any big change (update, migration, redesign).</p>
+<h2>Test the restore on a clean environment</h2>
+<p>This is the step almost everyone skips. Every so often (say, once a quarter):</p>
+<ol>
+<li>Spin up an empty test environment (another host, a subdomain or a local machine).</li>
+<li>Restore files and database from the backup without touching the real site.</li>
+<li>Check that it opens, that you can log in, and that content and images are complete.</li>
+<li>Write down how long it took and which steps were missing from your documentation.</li>
+</ol>
+<h2>Off-server and immutable copies</h2>
+<p>A copy stored on the same server is lost together with it. Keep at least one with another provider or in another location. If possible, make it <strong>immutable</strong>: storage that does not allow the copy to be modified or deleted for a set period, which protects you from accidental deletion and ransomware. Many cloud storage services offer this; check your provider's documentation.</p>
+<h2>8-point checklist</h2>
+<ul class="check">
+<li>I have 3 copies of my important data.</li>
+<li>They use at least 2 different types of storage.</li>
+<li>At least 1 copy is outside the server and the main provider.</li>
+<li>I back up files and database (and email and DNS where it applies).</li>
+<li>The frequency is based on what I can afford to lose.</li>
+<li>There is an immutable or delete-protected copy.</li>
+<li>I tested a full restore on a clean environment and it worked.</li>
+<li>I know where the credentials are and who can restore if I am not around.</li>
+</ul>
+<div class="cta">
+<h2>Did it help?</h2>
+<p>Follow me on Instagram <a href="https://www.instagram.com/luquini0/" rel="noopener">@luquini0</a>. If you have a question or want to tell me about your case, send me a DM any time. No rush, no strings attached.</p>
+</div>
+</main>
+<footer><div class="wrap other"><span>More guides:</span><a href="/guia-automatizacion/">Automation</a><a href="/guia-ia-segura/">Safe AI</a><a href="/guia-mail/">Email (SPF/DKIM/DMARC)</a><a href="/guia-equipo/">Team anti-scam</a><a href="/en/guia-auditoria/">Audit</a><a href="/en/guia-seo/">Technical SEO</a></div></footer>
+</body>
+</html>

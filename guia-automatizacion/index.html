@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Small automations for IT: certificate expiry and CISA KEV alerts | Luquini0</title>
+<meta name="description" content="Three small automations that work: a certificate expiry check in bash, a CISA KEV watcher in Node, and a scheduled GitHub Actions workflow to run both, plus an n8n recipe.">
+<link rel="canonical" href="https://luquini0.github.io/guia-automatizacion/">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Luquini0">
+<meta property="og:title" content="Small automations for IT: certificate expiry and CISA KEV alerts | Luquini0">
+<meta property="og:description" content="Three small automations that work: a certificate expiry check in bash, a CISA KEV watcher in Node, and a scheduled GitHub Actions workflow to run both, plus an n8n recipe.">
+<meta property="og:url" content="https://luquini0.github.io/guia-automatizacion/">
+<meta property="og:image" content="https://luquini0.github.io/og-image.png">
+<meta property="og:locale" content="en_US">
+<meta name="theme-color" content="#080807">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4P9CDLRZHD"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-4P9CDLRZHD');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{--bg:#080807;--panel:#111110;--border:#333230;--text:#f4f2ea;--dim:#a3a096;--accent:#008c33;--blue:#2f8bff}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+header.top{border-bottom:2px solid var(--border);padding:14px 0}
+header.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand,.tag,code,pre,.back,footer{font-family:'JetBrains Mono',ui-monospace,monospace}
+.brand{color:var(--text);text-decoration:none;font-weight:600}.brand b{color:var(--accent)}
+.back{color:var(--dim);font-size:.85rem;text-decoration:none}.back:hover{color:var(--blue)}
+.tag{color:var(--accent);font-size:.85rem;margin:40px 0 10px}
+h1,h2{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em;line-height:1.15;margin:0}
+h1{font-size:clamp(1.8rem,6vw,2.7rem);margin-bottom:16px}
+h2{font-size:1.4rem;margin:38px 0 10px;padding-left:12px;border-left:4px solid var(--accent)}
+.lead{color:var(--dim);font-size:1.1rem}
+p,ul,ol,pre{margin:0 0 14px}li{margin-bottom:6px}
+a{color:var(--blue)}
+code{background:var(--panel);border:1px solid var(--border);padding:1px 6px;font-size:.88em;overflow-wrap:anywhere}
+pre{background:var(--panel);border:2px solid var(--border);padding:14px;overflow-x:auto}pre code{border:0;padding:0}
+.notice{background:var(--panel);border:2px solid var(--accent);box-shadow:6px 6px 0 0 var(--accent);padding:16px;margin:26px 6px 10px 0}
+ul.check{list-style:none;padding:0}
+ul.check li{background:var(--panel);border:2px solid var(--border);padding:10px 12px 10px 40px;position:relative}
+ul.check li::before{content:"[ ]";position:absolute;left:10px;font-family:'JetBrains Mono',monospace;color:var(--accent)}
+.cta{border:2px solid var(--border);background:var(--panel);padding:20px;margin:44px 6px 30px 0;box-shadow:6px 6px 0 0 var(--blue)}
+.cta h2{border:0;padding:0;margin:0 0 8px;font-size:1.2rem}
+footer{border-top:2px solid var(--border);padding:20px 0 40px;color:var(--dim);font-size:.85rem}
+footer a{color:var(--dim)}
+.other{display:flex;gap:14px;flex-wrap:wrap}
+@media (max-width:480px){h2{font-size:1.2rem}.wrap{padding:0 16px}}
+@media print{header.top,footer,.cta{display:none}body{background:#fff;color:#000}pre,code,ul.check li,.notice{background:#fff;color:#000;border-color:#000;box-shadow:none}a{color:#000}}</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="/"><b>&gt;</b> luquini0</a><a class="back" href="/">&larr; back to site</a></div></header>
+<main class="wrap">
+<p class="tag">// guide / automation</p>
+<h1>Three small automations that save you from boring emergencies</h1>
+<p class="lead">Expired certificates and unpatched known-exploited bugs are not exotic. They are things nobody was assigned to watch. Let a script watch them.</p>
+
+<div class="notice" role="note"><strong>Scope:</strong> run these against domains and software you own or manage. The scripts only read public data (a TLS handshake on port 443, and a public CISA feed).</div>
+<h2>1. Certificate expiry alert (bash + OpenSSL)</h2>
+<p>This reads the certificate a server presents and exits with an error if it expires within N days (default 21). Save it as <code>certcheck.sh</code>:</p>
+<pre><code>#!/usr/bin/env bash
+# Usage: ./certcheck.sh example.com [days]
+set -u
+host="${1:?usage: certcheck.sh host [days]}"
+days="${2:-21}"
+cert="$(echo | openssl s_client -servername "$host" -connect "$host:443" 2>/dev/null | openssl x509 2>/dev/null)"
+if [ -z "$cert" ]; then echo "ERROR: could not read a certificate from $host:443"; exit 2; fi
+expires="$(echo "$cert" | openssl x509 -noout -enddate | cut -d= -f2)"
+if echo "$cert" | openssl x509 -noout -checkend $((days * 86400)) >/dev/null; then
+  echo "OK: $host certificate valid for more than $days days (expires $expires)"
+else
+  echo "WARNING: $host certificate expires within $days days (expires $expires)"; exit 1
+fi</code></pre>
+<p>Exit code 0 means fine, 1 means close to expiry, 2 means it could not read a certificate. Test it first against a domain of yours with a big number (<code>./certcheck.sh yoursite.com 400</code>) to see the warning path.</p>
+<h2>2. CISA KEV watcher (Node 18+)</h2>
+<p>CISA publishes the Known Exploited Vulnerabilities (KEV) catalog as a JSON feed. Each entry has fields such as <code>cveID</code>, <code>vendorProject</code>, <code>product</code>, <code>dateAdded</code> and <code>dueDate</code>. This script lists entries added in the last N days that match words from your stack. Save it as <code>kev-watch.mjs</code>:</p>
+<pre><code>// Usage: node kev-watch.mjs "fortinet,wordpress,apache" 7
+const URL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json";
+const terms = (process.argv[2] || "").toLowerCase().split(",").map(s => s.trim()).filter(Boolean);
+const days = Number(process.argv[3] || 7);
+if (!terms.length) { console.error('usage: node kev-watch.mjs "vendor1,product2" [days]'); process.exit(2); }
+
+const res = await fetch(URL);
+if (!res.ok) { console.error("KEV feed error: HTTP " + res.status); process.exit(2); }
+const { vulnerabilities } = await res.json();
+
+const since = Date.now() - days * 86400_000;
+const hits = vulnerabilities.filter(v =>
+  Date.parse(v.dateAdded) >= since &&
+  terms.some(t => `${v.vendorProject} ${v.product}`.toLowerCase().includes(t)));
+
+for (const v of hits) {
+  console.log(`${v.cveID}  ${v.vendorProject} ${v.product}  added ${v.dateAdded}  due ${v.dueDate}`);
+  console.log(`  ${v.vulnerabilityName}`);
+}
+console.log(hits.length ? `${hits.length} match(es) in the last ${days} days.` : `No matches in the last ${days} days.`);
+process.exit(hits.length ? 1 : 0);</code></pre>
+<p>It exits 1 when something matches, so a scheduler can treat it as a failure and make noise. Matching is a plain text search on vendor and product names, so use words that appear in them. The <code>dueDate</code> is the deadline CISA sets for US federal agencies; for you it is just a useful sense of urgency.</p>
+<h2>3. Run both on a schedule with GitHub Actions</h2>
+<p>Put the two scripts in a repository and add <code>.github/workflows/watch.yml</code>:</p>
+<pre><code>name: watch
+on:
+  schedule:
+    - cron: "17 6 * * *"   # every day at 06:17 UTC
+  workflow_dispatch:        # lets you run it by hand
+jobs:
+  certs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash certcheck.sh yoursite.com 21
+  kev:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node kev-watch.mjs "wordpress,apache,fortinet" 2</code></pre>
+<p>A failing job turns the run red. Things worth knowing from GitHub's documentation: scheduled workflows run on UTC time, the shortest interval is 5 minutes, runs can be delayed under heavy load, notifications for scheduled workflows go to the user who last modified the cron line, and in a public repository scheduled workflows are disabled automatically after 60 days without repository activity. That last one is the classic way an alert quietly dies, so put a calendar reminder on it or use the plain cron option below.</p>
+<h2>Plain cron alternative</h2>
+<pre><code>17 6 * * * /opt/watch/certcheck.sh yoursite.com 21 || echo "cert warning" | mail -s "cert" you@yourdomain.com</code></pre>
+<p>Requires a working <code>mail</code> command on that machine. Without one, use the Actions route.</p>
+<h2>4. The same idea in n8n</h2>
+<p>As a recipe, not an exported flow: a <strong>Schedule Trigger</strong> (daily) feeds an <strong>HTTP Request</strong> node that GETs the KEV JSON URL above; a <strong>Code</strong> or <strong>Filter</strong> step keeps entries whose <code>dateAdded</code> is recent and whose <code>vendorProject</code> or <code>product</code> matches your list; an <strong>IF</strong> node checks that something is left; then a notification node (email, chat) sends the CVE ID and due date. Build it step by step and test with a wide time window first so you can see it fire.</p>
+<h2>Checklist</h2>
+<ul class="check">
+<li>I list every domain whose certificate I am responsible for.</li>
+<li>A scheduled job checks each one and fails loudly under 21 days.</li>
+<li>I know which vendors and products I run, and the KEV watcher uses those names.</li>
+<li>I tested both alerts by forcing a match, not just the quiet path.</li>
+<li>Someone specific receives the alert and knows what to do with it.</li>
+<li>I know how the schedule could silently stop (inactive repo, changed address).</li>
+</ul>
+<div class="cta">
+<h2>Did it help?</h2>
+<p>Follow me on Instagram <a href="https://www.instagram.com/luquini0/" rel="noopener">@luquini0</a>. If you have a question or want to tell me about your case, send me a DM any time. No rush, no strings attached.</p>
+</div>
+</main>
+<footer><div class="wrap other"><span>More guides:</span><a href="/guia-ia-segura/">Safe AI</a><a href="/guia-mail/">Email (SPF/DKIM/DMARC)</a><a href="/guia-equipo/">Team anti-scam</a><a href="/en/guia-backup/">Backup</a><a href="/en/guia-auditoria/">Audit</a><a href="/en/guia-seo/">Technical SEO</a></div></footer>
+</body>
+</html>
