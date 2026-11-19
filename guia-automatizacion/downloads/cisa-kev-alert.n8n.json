@@ -1,0 +1,157 @@
+{
+  "name": "CISA KEV daily alert (luquini0)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "a1000001-0000-4000-8000-000000000001",
+      "name": "Daily",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1000001-0000-4000-8000-0000000000a1",
+              "name": "stack",
+              "value": "fortinet,wordpress,apache",
+              "type": "string"
+            },
+            {
+              "id": "a1000001-0000-4000-8000-0000000000a2",
+              "name": "days",
+              "value": 2,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000001-0000-4000-8000-000000000002",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "notesInFlow": true,
+      "notes": "EDIT: stack = comma-separated vendor/product words. days = look-back window (use 30 for a first test)."
+    },
+    {
+      "parameters": {
+        "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "a1000001-0000-4000-8000-000000000003",
+      "name": "CISA KEV JSON",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Filter CISA KEV entries: added in the last N days AND matching your stack.\nconst cfg = $('Config').first().json;\nconst terms = String(cfg.stack).toLowerCase().split(',').map(s => s.trim()).filter(Boolean);\nconst days = Number(cfg.days);\nconst since = Date.now() - days * 86400000;\nconst vulns = $input.first().json.vulnerabilities || [];\nconst hits = vulns.filter(v =>\n  Date.parse(v.dateAdded) >= since &&\n  terms.some(t => (v.vendorProject + ' ' + v.product).toLowerCase().includes(t)));\nif (!hits.length) return [];\nconst lines = hits.map(v => v.cveID + '  ' + v.vendorProject + ' ' + v.product + '  added ' + v.dateAdded + '  due ' + v.dueDate + '\\n  ' + v.vulnerabilityName);\nreturn [{ json: { count: hits.length, text: 'CISA KEV: ' + hits.length + ' new match(es) for your stack in the last ' + days + ' days\\n\\n' + lines.join('\\n') } }];"
+      },
+      "id": "a1000001-0000-4000-8000-000000000004",
+      "name": "Filter by stack",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "a1000001-0000-4000-8000-000000000005",
+      "name": "Chat alert (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        0
+      ],
+      "notesInFlow": true,
+      "notes": "Select your Telegram credential and set the chat ID. Swap for Slack/Discord/Email if you prefer; the message is in {{ $json.text }}."
+    }
+  ],
+  "connections": {
+    "Daily": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "CISA KEV JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CISA KEV JSON": {
+      "main": [
+        [
+          {
+            "node": "Filter by stack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter by stack": {
+      "main": [
+        [
+          {
+            "node": "Chat alert (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}
